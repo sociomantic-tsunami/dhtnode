@@ -27,8 +27,9 @@ Many machines run multiple instances of the dhtnode. There should be a directory
 in ``/srv/dhtnode/`` for each instance, like ``/srv/dhtnode/dhtnode-XX``. Each
 directory should contain:
   * An ``etc/config.ini`` file with the configuration for that instance.
-  * A symlink -- named `dhtnode` -- to the binary to run (should be one of the
-    binaries located in ``/usr/sbin/``).
+  * In case when using upstart as an init system, a symlink -- named `dhtnode`
+    -- to the binary to run (should be one of the binaries located in ``/usr/sbin/``).
+
 
 Upstart
 -------
@@ -39,8 +40,22 @@ dhtnode and the former starts all instances configured on the server. Configured
 instances are auto-detected by checking for the presence of ``config.ini`` files
 in ``/srv/dhtnode/dhtnode-*/etc/``.
 
+
+Systemd
+-------
+
+Two systemd unit templates exist: ``/lib/systemd/system/dht@.service`` and
+``/lib/systemd/system/dhtdum@.service``. These files are service templates and
+they can be used to start any number of enabled instances on the machine. Enabling
+instances is done via ``sudo systemctl enable dht@N`` where ``N`` is the instance
+number. To enable first 8 instances, one can use its shell and do
+``sudo systemctl enable dht@{1..8}``.
+
 Manually
 --------
+
+upstart
+.......
 
 To manually start the DHT node(s) on a server, run ``sudo service dht start``.
 This will start the processes. If the nodes are already running, you'll need to
@@ -48,9 +63,35 @@ shut them down first (``sudo service dht stop``) before restarting them.
 
 An individual dhtnode instance can be started like this:
 ``sudo start dhtnode-instance INSTANCE=1 CONFIG=/srv/dhtnode/dhtnode-1/etc/config.ini``
-
 and stopped like this:
 ``sudo stop dhtnode-instance INSTANCE=1``
+
+systemd
+.......
+
+To manually start the DHT node(s) on a server, run ``sudo systemctl start dht@{1..n}``.
+This will start the first ``n`` enabled instances.. To manually restart or stop
+all instances, wild card can be used: ``sudo systemctl {verb} 'dht@*'``, where
+``{verb}`` can be either ``stop`` or ``restart``. An individual node can be started,
+stopped, or restarted in the same fashion, just specify the instance number after
+the ``@`` in the previous commands.
+
+Overriding the binary to run
+----------------------------
+
+In case you want to run different binary of dhtnode than the one in
+``/usr/sbin/dhtnode``, you can specify that by providing systemd override file.
+To do so, create a file ``/etc/systemd/system/dht@1.service.d/override.conf``
+with the following content:
+
+.. code:: ini
+
+    [Unit]
+    Description=Custom executable image to run
+    [Service]
+    # Need to clear the previous one first
+    ExecPath=
+    ExecPath=/tmp/dhtnode-test -c /srv/dhtnode/dhtnode-1/etc/config.ini
 
 Monitoring
 ==========
@@ -87,6 +128,12 @@ The dht node's ``data`` folder should contain one ``.tcm`` file per channel
 stored. These are periodically written from the data in memory. When a dump
 happens, the old ``.tcm`` file is renamed to ``.tcm.backup``. The ``.tcm`` file
 for each channel should have been updated within the last 6 hours.
+
+Systemctl journal
+-----------------
+
+To inspect the state of the DHT service, one can use
+``sudo systemctl status 'dht@*'``. To see the log, use ``journalctl -u 'dht@*'``.
 
 Possible Problems
 -----------------
