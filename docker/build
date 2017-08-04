@@ -1,5 +1,9 @@
-FROM sociomantic/dlang
-RUN apt-get update && apt-get install -y \
+#!/bin/sh
+set -xe
+
+# Install dependencies
+apt-get update
+apt-get install -y \
 	libebtree6-dev \
 	libtokyocabinet-dev \
     liblzo2-dev \
