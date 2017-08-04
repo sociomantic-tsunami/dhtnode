@@ -13,3 +13,6 @@
 [submodule "turtle"]
 	path = submodules/turtle
 	url = git@github.com:sociomantic-tsunami/turtle.git
+[submodule "beaver"]
+	path = submodules/beaver
+	url = git@github.com:sociomantic-tsunami/beaver.git
