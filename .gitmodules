@@ -1,0 +1,15 @@
+[submodule "swarm"]
+	path = submodules/swarm
+	url = git@github.com:sociomantic-tsunami/swarm.git
+[submodule "ocean"]
+	path = submodules/ocean
+	url = git@github.com:sociomantic-tsunami/ocean.git
+[submodule "dhtproto"]
+	path = submodules/dhtproto
+	url = git@github.com:sociomantic-tsunami/dhtproto.git
+[submodule "makd"]
+	path = submodules/makd
+	url = git@github.com:sociomantic-tsunami/makd.git
+[submodule "turtle"]
+	path = submodules/turtle
+	url = git@github.com:sociomantic-tsunami/turtle.git

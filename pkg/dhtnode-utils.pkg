@@ -1,0 +1,16 @@
+from defaults import OPTS, ARGS
+
+bins = [ 'tcmcli', 'dhtperformance', 'dhtredist' ]
+
+OPTS.update(
+    name = VAR.fullname,
+    description = FUN.desc(OPTS, 'utilities', epilog='''\
+This package includes the following DHT tools:
+{}.'''.format(', '.join(bins))),
+    provides = VAR.shortname,
+    depends = FUN.autodeps(bins, path=VAR.bindir),
+)
+
+ARGS.extend(FUN.mapfiles(VAR.bindir, '/usr/bin', bins))
+
+# vim: set ft=python et sw=4 sts=4 :
