@@ -1,0 +1,17 @@
+# Rotate all dhtdump log files, then send SIGHUP to notify
+# Note that SIGHUP is sent to all instances of dhtdump. This is an intermediary
+# stage until we have an easy way to find the pid of a specific instance.
+
+/srv/dhtnode/dhtnode-*/dump/log/*.log
+{
+	rotate 10
+	missingok
+	notifempty
+	delaycompress
+	compress
+	size 500M
+	sharedscripts
+	postrotate
+		/usr/bin/killall -HUP dhtdump
+	endscript
+}

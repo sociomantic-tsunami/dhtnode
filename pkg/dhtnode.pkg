@@ -1,0 +1,17 @@
+from defaults import OPTS, ARGS
+
+bins = [ 'dhtnode', 'dhtdump' ]
+
+OPTS.update(
+    description = FUN.desc(OPTS, epilog='''\
+This package includes the dhtnode server and dhtdump daemon to regularly
+persist the DHT to disk.'''),
+    provides = 'dhtnode',
+    after_install = 'pkg/after_dhtnode_install.sh',
+    depends = FUN.autodeps(bins, path=VAR.bindir),
+    deb_recommends = 'dhtnode-common',
+)
+
+ARGS.extend(FUN.mapfiles(VAR.bindir, '/usr/sbin', bins))
+
+# vim: set ft=python et sw=4 sts=4 :
