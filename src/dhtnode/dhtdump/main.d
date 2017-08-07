@@ -80,10 +80,20 @@ static this ( )
 
 private int main ( istring[] cl_args )
 {
-    auto app = new DhtDump;
-    return app.main(cl_args);
+    try
+    {
+        auto app = new DhtDump;
+        auto ret = app.main(cl_args);
+        log.info("Exiting with return code {}", ret);
+        return ret;
+    }
+    catch ( Throwable e )
+    {
+        log.error("Caught exception in main: {} @ {}:{}",
+            getMsg(e), e.file, e.line);
+        throw e;
+    }
 }
-
 
 
 public class DhtDump : DaemonApp
