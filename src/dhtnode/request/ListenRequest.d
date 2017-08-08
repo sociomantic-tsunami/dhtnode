@@ -245,6 +245,10 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
                 this.finish_trigger = true;
                 break;
 
+            case Deletion:
+                // Not handled; ignore
+                break;
+
             case None:
             default:
                 assert(false);

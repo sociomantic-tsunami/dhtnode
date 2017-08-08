@@ -28,6 +28,7 @@ import ocean.transition;
 public class StorageEngineStepIterator
 {
     import dhtnode.storage.StorageEngine;
+    import Hash = swarm.util.Hash;
 
 
     /***************************************************************************
@@ -111,6 +112,24 @@ public class StorageEngineStepIterator
     public mstring key ( )
     {
         return this.current_key;
+    }
+
+
+    /***************************************************************************
+
+        Starts the iteration at the specified key (instead of from the
+        beginning).
+
+        Params:
+            key = hash representation of the key to set the iterator to
+
+    ***************************************************************************/
+
+    public void startFrom ( hash_t key )
+    {
+        this.current_key.length = Hash.HashDigits;
+        Hash.toHexString(key, this.current_key);
+        this.started = true;
     }
 
 
