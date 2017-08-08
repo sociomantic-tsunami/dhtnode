@@ -42,7 +42,10 @@ private class RealDhtTestRunner : DhtTestRunner
 
     override public CopyFileEntry[] copyFiles ( )
     {
-        return [CopyFileEntry("/test/dhttest/etc/config.ini", "etc/config.ini")];
+        return [
+            CopyFileEntry("test/dhttest/etc/config.ini", "etc/config.ini"),
+            CopyFileEntry("test/dhttest/etc/credentials", "etc/credentials")
+        ];
     }
 
 

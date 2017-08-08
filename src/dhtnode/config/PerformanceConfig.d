@@ -40,5 +40,14 @@ public class PerformanceConfig
     ***************************************************************************/
 
     double redist_memory_limit_mulitplier = 1.1;
+
+    /***************************************************************************
+
+        For neo connections: toggles Nagle's algorithm (true = disabled, false =
+        enabled) on the underlying socket.
+
+    ***************************************************************************/
+
+    bool no_delay;
 }
 
