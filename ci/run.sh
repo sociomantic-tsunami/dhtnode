@@ -13,4 +13,4 @@ if test "$DC" != dmd1; then
 fi
 
 make -r all
-make -r test
+make -r test V=2
