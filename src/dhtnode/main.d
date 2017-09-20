@@ -26,6 +26,8 @@ import ocean.util.app.DaemonApp;
 
 import ocean.util.log.Log;
 
+import core.memory;
+
 
 
 /*******************************************************************************
@@ -276,6 +278,13 @@ public class DhtNodeServer : DaemonApp
 
     public this ( )
     {
+        version ( D_Version2 ) { }
+        else
+        {
+            // GC collect hooks only available in D1
+            GC.monitor(&this.gcCollectStart, &this.gcCollectEnd);
+        }
+
         const app_name = "dhtnode";
         const app_desc = "dhtnode: DHT server node.";
 
@@ -661,6 +670,37 @@ public class DhtNodeServer : DaemonApp
         logger.trace("Finished SIGINT handler");
 
         this.node.state = DhtNode.State.ShutDown;
+    }
+
+    version ( D_Version2 ) { }
+    else
+    {
+        /***********************************************************************
+
+            Called (in D1 builds) when a GC collection starts.
+
+        ***********************************************************************/
+
+        private void gcCollectStart ( )
+        {
+            logger.trace("Starting GC collection");
+        }
+
+        /***********************************************************************
+
+            Called (in D1 builds) when a GC collection finishes.
+
+            Params:
+                freed = the number of bytes freed overall
+                pagebytes = the number of bytes freed within full pages
+
+        ***********************************************************************/
+
+        private void gcCollectEnd ( int freed, int pagebytes )
+        {
+            logger.trace("Finished GC collection: {} bytes freed, {} bytes freed within full pages",
+                freed, pagebytes);
+        }
     }
 }
 
