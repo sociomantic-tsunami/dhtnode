@@ -1,10 +1,10 @@
-from defaults import OPTS, ARGS
+import defaults
 
 bins = [ 'tcmcli', 'dhtperformance', 'dhtredist' ]
 
 OPTS.update(
     name = VAR.fullname,
-    description = FUN.desc(OPTS, 'utilities', epilog='''\
+    description = FUN.desc('utilities', epilog='''\
 This package includes the following DHT tools:
 {}.'''.format(', '.join(bins))),
     provides = VAR.shortname,

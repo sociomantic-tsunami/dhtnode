@@ -67,6 +67,7 @@ static this ( )
 
 *******************************************************************************/
 
+version (UnitTest) {} else
 private int main ( istring[] cl_args )
 {
     auto app = new DhtNodeServer;
@@ -284,7 +285,7 @@ public class DhtNodeServer : DaemonApp
 
         this.epoll = new EpollSelectDispatcher;
 
-        super(app_name, app_desc, versionInfo, optional);
+        super(app_name, app_desc, version_info, optional);
     }
 
 

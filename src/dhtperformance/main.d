@@ -69,6 +69,7 @@ import ocean.core.Array;
 
 *******************************************************************************/
 
+version (UnitTest) {} else
 int main ( istring[] cl_args )
 {
     auto app = new DhtPerformance;
@@ -505,7 +506,7 @@ private class DhtPerformance : CliApp
 
         this.epoll = new EpollSelectDispatcher(new TimerEventTimeoutManager);
         this.retry_delay = 2;
-        super(app_name, app_desc, versionInfo);
+        super(app_name, app_desc, version_info);
     }
 
 

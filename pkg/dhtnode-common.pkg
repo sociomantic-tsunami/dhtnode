@@ -1,8 +1,8 @@
-from defaults import OPTS
+import defaults
 
 OPTS.update(
     name = VAR.shortname,
-    description = FUN.desc(OPTS, 'common files'),
+    description = FUN.desc('common files'),
     architecture = 'all',
     depends = 'dhtnode',
     deb_upstart = [
@@ -13,10 +13,10 @@ OPTS.update(
     ],
 )
 
-ARGS = FUN.mapfiles('deploy/logrotate', '/etc/logrotate.d',
-        ('dhtnode-logs', 'dhtdump-logs'), append_suffix=False) + \
-    [
-        "README.rst=/usr/share/doc/" + VAR.shortname + "/README.rst",
-    ]
+# Replace existing args without rebinding
+ARGS[:] = FUN.mapfiles('deploy/logrotate', '/etc/logrotate.d',
+            ('dhtnode-logs', 'dhtdump-logs'), append_suffix=False) + [
+    "README.rst=/usr/share/doc/" + VAR.shortname + "/README.rst",
+]
 
 # vim: set ft=python et sw=4 sts=4 :

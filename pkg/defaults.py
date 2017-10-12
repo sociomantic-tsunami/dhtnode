@@ -1,4 +1,4 @@
-OPTS = dict(
+OPTS.update(
     name = VAR.fullname,
     url = 'https://github.com/sociomantic/dhtnode',
     maintainer = 'Sociomantic Labs GmbH <tsunami@sociomantic.com>',
@@ -13,6 +13,8 @@ Data in the dht node is stored in memory, in instances of the Tokyo Cabinet
 memory database, with a separate instance per data channel.''',
 )
 
-ARGS = [ "README.rst=/usr/share/doc/{}/".format(VAR.fullname) ]
+ARGS.extend([
+    "README.rst=/usr/share/doc/{}/".format(VAR.fullname),
+])
 
 # vim: set ft=python et sw=4 sts=4 :
