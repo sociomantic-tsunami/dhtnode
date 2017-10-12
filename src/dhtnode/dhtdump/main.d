@@ -78,6 +78,7 @@ static this ( )
 
 *******************************************************************************/
 
+version (UnitTest) {} else
 private int main ( istring[] cl_args )
 {
     auto app = new DhtDump;
@@ -170,7 +171,7 @@ public class DhtDump : DaemonApp
         const app_name = "dhtdump";
         const app_desc = "iterates over all channels in a dht node, dumping the"
             " data to disk";
-        super(app_name, app_desc, versionInfo);
+        super(app_name, app_desc, version_info);
 
         this.dht = new DumpCycle.ScopeDhtClient(this.epoll,
             new DhtClient.ScopeRequestsPlugin);

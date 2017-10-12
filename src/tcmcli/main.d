@@ -35,6 +35,7 @@ import ocean.util.app.CliApp;
 
 *******************************************************************************/
 
+version (UnitTest) {} else
 private int main ( istring[] cl_args )
 {
     auto app = new TcmCli;
@@ -74,7 +75,7 @@ private class TcmCli : CliApp
         const name = "tcmcli";
         const desc = "tcmcli: DHT dump file (TCM) command line tool";
 
-        super(name, desc, versionInfo);
+        super(name, desc, version_info);
     }
 
 
