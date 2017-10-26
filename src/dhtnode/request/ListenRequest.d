@@ -90,12 +90,6 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     private const HashBufferMaxLength = (1024 / hash_t.sizeof) * 256; // 256 Kb of hashes
 
-    /// Flag ensuring that the address of this request's FiberSelectEvent is
-    /// only written to the log once.
-    /// TODO: remove this when https://github.com/sociomantic/dhtnode/issues/741
-    /// is fixed.
-    private bool logged_event_addr;
-
     /***************************************************************************
 
         Adds this.resources and constructor to initialize it and forward
@@ -202,15 +196,6 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
         this.waiting_for_trigger = true;
         scope(exit) this.waiting_for_trigger = false;
-
-        if ( !this.logged_event_addr )
-        {
-            // TODO: remove this when
-            // https://github.com/sociomantic/dhtnode/issues/741 is fixed.
-            log.trace("Listen request on channel '{}' acquired FiberSelectEvent {}",
-                this.storage_channel.id, cast(void*)this.resources.event);
-            logged_event_addr = true;
-        }
 
         this.resources.event.wait;
     }
