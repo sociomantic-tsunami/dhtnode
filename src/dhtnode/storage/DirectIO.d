@@ -247,7 +247,7 @@ public class BufferedDirectWriteTempFile : BufferedDirectWriteFile
     {
         this.suffix = suffix;
         this.disable_direct_io = disable_direct_io;
-        super(path, new ubyte[buffer_blocks * BLOCK_SIZE]);
+        super(path, buffer_blocks);
     }
 
     /***************************************************************************
@@ -386,7 +386,7 @@ public class BufferedDirectReadFile : ocean.io.device.DirectIO.BufferedDirectRea
             bool disable_direct_io = false )
     {
         this.disable_direct_io = disable_direct_io;
-        super(path, new ubyte[buffer_blocks * BLOCK_SIZE]);
+        super(path, buffer_blocks);
     }
 
     /***************************************************************************
