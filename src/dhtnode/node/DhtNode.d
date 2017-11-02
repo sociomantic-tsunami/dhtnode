@@ -109,7 +109,7 @@ public class DhtNode :
         // Neo node / connection handler settings
         Options options;
         options.epoll = epoll;
-        options.cmd_handlers = request_handlers;
+        options.requests = requests;
         options.shared_resources = new Neo.SharedResources(channels, this, epoll);
         options.no_delay = no_delay;
         options.unix_socket_path = idup(server_config.unix_socket_path());

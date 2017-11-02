@@ -22,7 +22,7 @@ import ocean.transition;
 
 import Protocol = dhtproto.node.request.PutBatch;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 /*******************************************************************************
 

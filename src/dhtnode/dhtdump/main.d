@@ -47,7 +47,7 @@ import ocean.core.Thread;
 
 import ocean.time.StopWatch;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 import ocean.core.Time;
 

@@ -32,7 +32,7 @@ import swarm.node.storage.listeners.Listeners;
 
 import dhtnode.storage.StorageEngineStepIterator;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 
 
