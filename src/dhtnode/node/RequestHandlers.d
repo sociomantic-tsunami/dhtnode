@@ -34,10 +34,16 @@ public ConnectionHandler.CmdHandlers requests;
 
 static this ( )
 {
-    requests.add(RequestCode.GetHashRange, "GetHashRange", &GetHashRange.handle);
-    requests.add(RequestCode.Put, "Put", &Put.handle);
-    requests.add(RequestCode.Get, "Get", &Get.handle);
-    requests.add(RequestCode.Mirror, "Mirror", &Mirror.handle);
-    requests.add(RequestCode.GetAll, "GetAll", &GetAll.handle);
-    requests.add(RequestCode.GetChannels, "GetChannels", &GetChannels.handle);
+    requests.add(
+        RequestCode.GetHashRange, "GetHashRange", &GetHashRange.handle, false);
+    requests.add(
+        RequestCode.Put, "Put", &Put.handle, true);
+    requests.add(
+        RequestCode.Get, "Get", &Get.handle, true);
+    requests.add(
+        RequestCode.Mirror, "Mirror", &Mirror.handle, false);
+    requests.add(
+        RequestCode.GetAll, "GetAll", &GetAll.handle, false);
+    requests.add(
+        RequestCode.GetChannels, "GetChannels", &GetChannels.handle, false);
 }
