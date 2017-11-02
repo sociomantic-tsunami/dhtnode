@@ -54,7 +54,7 @@ import ocean.math.random.Random;
 import ocean.time.StopWatch;
 import ocean.time.WallClock;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 
 
