@@ -194,11 +194,12 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public typeof(this) put ( hash_t key, cstring value )
+    public typeof(this) put ( hash_t key, cstring value,
+        bool trigger_listeners = true )
     {
         char[hash_t.sizeof * 2] key_str;
         Hash.toHexString(key, key_str);
-        return this.put(key_str, value);
+        return this.put(key_str, value, trigger_listeners);
     }
 
 
