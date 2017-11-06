@@ -162,24 +162,31 @@ public scope class GetAllImpl_v0 : GetAllProtocol_v0
         Gets the next record in the iteration, if one exists.
 
         Params:
-            key = receives the key of the next record, if available
-            value = receives the value of the next record, if available
+            dg = called with the key and value of the next record, if available
 
         Returns:
-            true if a record was returned via the out arguments or false if the
-            iteration is finished
+            true if a record was passed to `dg` or false if the iteration is
+            finished
 
     ***************************************************************************/
 
-    override protected bool getNext ( out hash_t key, ref void[] value )
+    override protected bool getNext (
+        void delegate ( hash_t key, Const!(void)[] value ) dg )
     {
         this.iterator.next();
         if ( this.iterator.lastKey() )
             return false;
 
+        hash_t key;
         auto ok = toHashT(this.iterator.key, key);
         assert(ok);
-        value.copy(this.iterator.value);
+
+        this.iterator.value(
+            ( cstring value )
+            {
+                dg(key, value);
+            }
+        );
 
         return true;
     }
