@@ -29,7 +29,7 @@ module dhtnode.node.DhtHashRange;
 
 import dhtnode.config.HashRangeConfig;
 
-import swarm.neo.IPAddress;
+import swarm.neo.AddrPort;
 import swarm.util.Hash : HashRange;
 
 import ocean.transition;
@@ -184,7 +184,7 @@ public class DhtHashRange
 
     public void newNodeAdded ( NodeItem node_item, hash_t min, hash_t max )
     {
-        IPAddress addr;
+        AddrPort addr;
         addr.setAddress(node_item.Address);
         assert(node_item.Port <= ushort.max - 100);
         addr.port = cast(ushort)(node_item.Port + 100);
@@ -265,7 +265,7 @@ private final class HashRangeUpdates
 
     private struct UpdateQueue
     {
-        import swarm.neo.IPAddress;
+        import swarm.neo.AddrPort;
         import dhtproto.node.neo.request.GetHashRange : HashRangeUpdate;
         import ocean.core.array.Mutation : removeShift;
 
@@ -305,7 +305,7 @@ private final class HashRangeUpdates
 
         ***********************************************************************/
 
-        public void newNode ( IPAddress addr, hash_t min, hash_t max )
+        public void newNode ( AddrPort addr, hash_t min, hash_t max )
         {
             HashRangeUpdate update;
             update.addr = addr;
@@ -495,7 +495,7 @@ private final class HashRangeUpdates
 
     ***************************************************************************/
 
-    public void newNode ( IPAddress addr, hash_t min, hash_t max )
+    public void newNode ( AddrPort addr, hash_t min, hash_t max )
     {
         foreach ( listener, update_queue; this.listener_update_queues )
         {
