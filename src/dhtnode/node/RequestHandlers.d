@@ -20,6 +20,7 @@ import Put = dhtnode.request.neo.Put;
 import Get = dhtnode.request.neo.Get;
 import Mirror = dhtnode.request.neo.Mirror;
 import GetAll = dhtnode.request.neo.GetAll;
+import GetChannels = dhtnode.request.neo.GetChannels;
 
 /*******************************************************************************
 
@@ -38,4 +39,5 @@ static this ( )
     requests.add(RequestCode.Get, "Get", &Get.handle);
     requests.add(RequestCode.Mirror, "Mirror", &Mirror.handle);
     requests.add(RequestCode.GetAll, "GetAll", &GetAll.handle);
+    requests.add(RequestCode.GetChannels, "GetChannels", &GetChannels.handle);
 }

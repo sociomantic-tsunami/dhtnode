@@ -145,11 +145,29 @@ public class StorageEngineStepIterator
 
     public mstring value ( )
     {
-        assert(this.storage, typeof(this).stringof ~ ".next: storage not set");
+        assert(this.storage, typeof(this).stringof ~ ".value: storage not set");
 
         mstring value_slice;
         this.storage.get(this.current_key, this.value_buffer, value_slice);
         return value_slice;
+    }
+
+
+    /***************************************************************************
+
+        Gets the value of the current record the iterator is pointing
+        to, passing the value to the provided delegate.
+
+        Params:
+            value_dg = delegate to pass the current value to
+
+    ***************************************************************************/
+
+    public void value ( void delegate ( cstring ) value_dg )
+    {
+        assert(this.storage, typeof(this).stringof ~ ".value: storage not set");
+
+        this.storage.get(this.current_key, value_dg);
     }
 
 
