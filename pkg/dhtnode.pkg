@@ -1,9 +1,9 @@
-from defaults import OPTS, ARGS
+import defaults
 
 bins = [ 'dhtnode', 'dhtdump' ]
 
 OPTS.update(
-    description = FUN.desc(OPTS, epilog='''\
+    description = FUN.desc(epilog='''\
 This package includes the dhtnode server and dhtdump daemon to regularly
 persist the DHT to disk.'''),
     provides = 'dhtnode',

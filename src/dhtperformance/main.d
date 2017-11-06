@@ -33,7 +33,7 @@ private import ocean.io.select.timeout.TimerEventTimeoutManager;
 
 private import ocean.text.Arguments;
 
-private import ocean.text.convert.Layout_tango;
+private import ocean.text.convert.Formatter;
 
 private import ocean.util.app.Application;
 private import ocean.util.app.CliApp;
@@ -69,6 +69,7 @@ import ocean.core.Array;
 
 *******************************************************************************/
 
+version (UnitTest) {} else
 int main ( istring[] cl_args )
 {
     auto app = new DhtPerformance;
@@ -505,7 +506,7 @@ private class DhtPerformance : CliApp
 
         this.epoll = new EpollSelectDispatcher(new TimerEventTimeoutManager);
         this.retry_delay = 2;
-        super(app_name, app_desc, versionInfo);
+        super(app_name, app_desc, version_info);
     }
 
 
@@ -1166,7 +1167,7 @@ private class DhtPerformance : CliApp
         foreach ( node; nodes )
         {
             this.str_buf.length = 0;
-            Layout!(char).format(this.str_buf, "{}:{}", node.Address, node.Port);
+            sformat(this.str_buf, "{}:{}", node.Address, node.Port);
             this.cell_buf ~= Table.Cell.String(this.str_buf);
         }
 
@@ -1186,7 +1187,7 @@ private class DhtPerformance : CliApp
 
                 auto time = info.requests.percentValue(percentage);
 
-                Layout!(char).format(this.str_buf, "{,5:1}% <= {}μs",
+                sformat(this.str_buf, "{,5:1}% <= {}μs",
                     percentage * 100, time);
 
                 // only red the last row if this node is slow
@@ -1218,7 +1219,7 @@ private class DhtPerformance : CliApp
 
             this.str_buf.length = 0;
 
-            Layout!(char).format(this.str_buf, "{} ({,3:1}%) failed",
+            sformat(this.str_buf, "{} ({,3:1}%) failed",
                 info.error_count,
                 (cast(float)info.error_count / cast(float)info.requests.length) * 100.0);
 
@@ -1240,7 +1241,7 @@ private class DhtPerformance : CliApp
 
                 auto timed_out = info.requests.greaterThanCount(this.timeout);
 
-                Layout!(char).format(this.str_buf, "{} ({,3:1}%) > {}μs",
+                sformat(this.str_buf, "{} ({,3:1}%) > {}μs",
                         timed_out,
                         (cast(float)timed_out / cast(float)info.requests.length) * 100.0,
                         this.timeout);
@@ -1265,7 +1266,7 @@ private class DhtPerformance : CliApp
 
                 auto to_count = info.client_timeout_count;
 
-                Layout!(char).format(this.str_buf, "{} ({,3:1}%) timed out",
+                sformat(this.str_buf, "{} ({,3:1}%) timed out",
                     to_count,
                     (cast(float)to_count / cast(float)info.requests.length) * 100.0);
 
@@ -1482,4 +1483,3 @@ private class DhtPerformance : CliApp
         }
     }
 }
-

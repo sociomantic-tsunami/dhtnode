@@ -1,3 +1,0 @@
-FROM sociomantictsunami/dlang:xenial-v2
-COPY docker/build /
-RUN /build && rm /build

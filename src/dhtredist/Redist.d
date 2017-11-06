@@ -583,7 +583,7 @@ case, when adding new nodes to a dht, is as follows:
     2. Generate a nodes xml file containing the address/port of all nodes,
        including the new ones to be added to the dht.
     3. Run dhtredist, passing it the created xml file.`;
-        super(name, desc, versionInfo, options);
+        super(name, desc, version_info, options);
 
         this.epoll = new EpollSelectDispatcher;
     }
