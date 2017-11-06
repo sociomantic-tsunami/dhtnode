@@ -24,7 +24,7 @@ import ocean.transition;
 
 import ocean.util.app.DaemonApp;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 
 
@@ -120,8 +120,7 @@ public class DhtNodeServer : DaemonApp
     import core.sys.posix.sys.mman : mlockall, MCL_CURRENT, MCL_FUTURE;
     import core.stdc.errno : errno, EPERM, ENOMEM;
     import core.stdc.string : strerror;
-    import ocean.stdc.stringz : fromStringz;
-
+    import ocean.text.util.StringC;
 
     /***************************************************************************
 
@@ -427,7 +426,7 @@ public class DhtNodeServer : DaemonApp
     override protected void onStatsTimer ( )
     {
         this.dht_stats.log();
-        this.stats_ext.stats_log.add(Log.stats());
+        this.stats_ext.stats_log.add(.Log.stats());
 
         struct StompingPreventionStats
         {
@@ -532,7 +531,7 @@ public class DhtNodeServer : DaemonApp
             }
 
             auto error = strerror(errno);
-            auto errno_desc = fromStringz(error);
+            auto errno_desc = StringC.toDString(error);
 
             logger.fatal("Error when attempting to lock memory: {} "
                 "(errno={}, '{}')", msg, errno, errno_desc);

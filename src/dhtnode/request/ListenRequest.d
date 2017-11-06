@@ -22,7 +22,7 @@ import Protocol = dhtproto.node.request.Listen;
 
 import dhtnode.storage.StorageEngine;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 import ocean.transition;
 
 /*******************************************************************************
