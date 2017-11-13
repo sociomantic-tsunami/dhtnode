@@ -21,6 +21,7 @@ import Get = dhtnode.request.neo.Get;
 import Mirror = dhtnode.request.neo.Mirror;
 import GetAll = dhtnode.request.neo.GetAll;
 import GetChannels = dhtnode.request.neo.GetChannels;
+import RemoveChannel = dhtnode.request.neo.RemoveChannel;
 
 /*******************************************************************************
 
@@ -46,4 +47,6 @@ static this ( )
         RequestCode.GetAll, "GetAll", &GetAll.handle, false);
     requests.add(
         RequestCode.GetChannels, "GetChannels", &GetChannels.handle, false);
+    requests.add(
+        RequestCode.RemoveChannel, "RemoveChannel", &RemoveChannel.handle, false);
 }
