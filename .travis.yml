@@ -27,4 +27,19 @@ env:
 
 install: beaver dlang install
 
-script: beaver dlang make
+# Build packages too, this should be done by beaver:
+# https://github.com/sociomantic-tsunami/beaver/issues/34
+script: beaver dlang make && beaver dlang make pkg
+
+jobs:
+    include:
+        - stage: Upload Package
+          # We need to include the exclusion of D2 tags because this "if"
+          # replaces the global one
+          if: tag IS present
+          # Which package to deploy
+          env: DMD=dmd1 DIST=xenial F=production
+          # before_install: and install: are inherited and we don't need to
+          # override them.
+          script: beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
+                  build/last/pkg/*.deb
