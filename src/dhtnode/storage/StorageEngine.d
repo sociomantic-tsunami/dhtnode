@@ -590,8 +590,12 @@ public class StorageEngine : IStorageEngine
 
         Gets the key of the record following the specified key.
 
-        Note: "following" means the next key in the Memory storage, which is
-        *not* necessarily the next key in numerical order.
+        Notes:
+            * "following" means the next key in the TokyoCabinet storage, which
+              is *not* necessarily the next key in numerical order.
+            * If the last key has been removed, the iteration will be restarted
+              at the closest key. As above, the exact meaning of "closest" is
+              determined by TokyoCabinet.
 
         Params:
             last_key = key to iterate from
@@ -610,9 +614,6 @@ public class StorageEngine : IStorageEngine
     public typeof(this) getNextKey ( cstring last_key, ref mstring key_buffer,
         out mstring key )
     {
-        if ( !this.exists(last_key) )
-            return this;
-
         tcmdbiterinit2(this.db, last_key.ptr,
             castFrom!(size_t).to!(int)(last_key.length));
 
