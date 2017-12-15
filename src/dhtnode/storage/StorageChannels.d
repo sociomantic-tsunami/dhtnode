@@ -26,7 +26,7 @@ import swarm.node.storage.model.IStorageChannels;
 
 import dhtnode.storage.StorageEngine;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 
 
