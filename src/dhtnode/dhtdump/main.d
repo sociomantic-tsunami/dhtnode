@@ -43,11 +43,11 @@ import dhtproto.client.legacy.internal.helper.RetryHandshake;
 
 import ocean.math.random.Random;
 
-import ocean.core.Thread;
+import core.thread;
 
 import ocean.time.StopWatch;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 import ocean.core.Time;
 

@@ -32,7 +32,7 @@ import core.stdc.errno : errno, ENOENT;
 
 import ocean.stdc.posix.fcntl : open, O_DIRECT; // O_DIRECT is Linux only
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 
 

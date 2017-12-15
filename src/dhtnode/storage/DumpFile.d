@@ -32,7 +32,7 @@ import ocean.io.model.IConduit : InputStream;
 
 import ocean.io.device.File;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 import Integer = ocean.text.convert.Integer_tango;
 
