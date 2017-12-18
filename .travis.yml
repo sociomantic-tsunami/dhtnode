@@ -41,5 +41,5 @@ jobs:
           env: DMD=dmd1 DIST=xenial F=production
           # before_install: and install: are inherited and we don't need to
           # override them.
-          script: beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
+          script: beaver dlang make pkg && beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
                   build/last/pkg/*.deb
