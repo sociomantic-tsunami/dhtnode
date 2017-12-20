@@ -41,7 +41,7 @@ import ocean.util.log.StaticTrace;
 
 import ocean.time.StopWatch;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 import core.memory;
 

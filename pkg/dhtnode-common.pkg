@@ -15,8 +15,11 @@ OPTS.update(
 
 # Replace existing args without rebinding
 ARGS[:] = FUN.mapfiles('deploy/logrotate', '/etc/logrotate.d',
-            ('dhtnode-logs', 'dhtdump-logs'), append_suffix=False) + [
-    "README.rst=/usr/share/doc/" + VAR.shortname + "/README.rst",
-]
+        ('dhtnode-logs', 'dhtdump-logs'), append_suffix=False) + \
+    [
+        "README.rst=/usr/share/doc/" + VAR.shortname + "/README.rst",
+        "deploy/systemd/dht@.service=/lib/systemd/system/dht@.service",
+        "deploy/systemd/dhtdump@.service=/lib/systemd/system/dhtdump@.service"
+    ]
 
 # vim: set ft=python et sw=4 sts=4 :

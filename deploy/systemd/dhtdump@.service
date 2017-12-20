@@ -1,0 +1,29 @@
+# Runs a dhtdump instance
+
+[Unit]
+Description=DHT dump instance %I
+AssertPathExists=/srv/dhtnode/dhtnode-%i/dump/
+Requires=network-online.target local-fs.target
+After=network-online.target local-fs.target dht@%i.service
+#StartLimitIntervalSec=
+#StartLimitBurts=
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/dhtnode/dhtnode-%i/dump
+ExecStart=/usr/sbin/dhtdump -c /srv/dhtnode/dhtnode-%i/dump/etc/config.ini
+ExecReload=/bin/kill -HUP $MAINPID
+
+# SIGKILL only manually
+TimeoutStopSec=infinity
+SendSIGKILL=no
+Restart=on-failure
+User=dhtnode
+Group=core
+
+# Note infinity is used instead of unlimited
+LimitNOFILE=100000:100000
+LimitCORE=infinity:infinity
+
+[Install]
+WantedBy = multi-user.target

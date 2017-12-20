@@ -22,7 +22,7 @@ import Protocol = dhtproto.node.request.Listen;
 
 import dhtnode.storage.StorageEngine;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 import ocean.transition;
 
 /*******************************************************************************
@@ -228,11 +228,18 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
                 }
                 else
                 {
+                    cstring addr;
+                    ushort port;
+                    if ( this.reader.addr_port !is null )
+                    {
+                        addr = this.reader.addr_port.address;
+                        port = this.reader.addr_port.port;
+                    }
                     log.warn(
-                        "Listen request on channel '{}'," ~
+                        "Listen request on channel '{}', client {}:{}," ~
                             " hash buffer reached maximum length --" ~
                             " record discarded",
-                        *this.resources.channel_buffer
+                        *this.resources.channel_buffer, addr, port
                     );
                 }
                 break;

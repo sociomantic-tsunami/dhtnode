@@ -48,7 +48,7 @@ import ocean.io.device.File;
 
 import ocean.text.Util : locate, trim;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 
 

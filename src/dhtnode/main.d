@@ -24,7 +24,9 @@ import ocean.transition;
 
 import ocean.util.app.DaemonApp;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
+
+import core.memory;
 
 
 
@@ -121,7 +123,7 @@ public class DhtNodeServer : DaemonApp
     import core.sys.posix.sys.mman : mlockall, MCL_CURRENT, MCL_FUTURE;
     import core.stdc.errno : errno, EPERM, ENOMEM;
     import core.stdc.string : strerror;
-    import ocean.stdc.stringz : fromStringz;
+    import ocean.text.util.StringC;
 
 
     /***************************************************************************
@@ -277,6 +279,13 @@ public class DhtNodeServer : DaemonApp
 
     public this ( )
     {
+        version ( D_Version2 ) { }
+        else
+        {
+            // GC collect hooks only available in D1
+            GC.monitor(&this.gcCollectStart, &this.gcCollectEnd);
+        }
+
         const app_name = "dhtnode";
         const app_desc = "dhtnode: DHT server node.";
 
@@ -428,7 +437,7 @@ public class DhtNodeServer : DaemonApp
     override protected void onStatsTimer ( )
     {
         this.dht_stats.log();
-        this.stats_ext.stats_log.add(Log.stats());
+        this.stats_ext.stats_log.add(.Log.stats());
 
         struct StompingPreventionStats
         {
@@ -533,7 +542,7 @@ public class DhtNodeServer : DaemonApp
             }
 
             auto error = strerror(errno);
-            auto errno_desc = fromStringz(error);
+            auto errno_desc = StringC.toDString(error);
 
             logger.fatal("Error when attempting to lock memory: {} "
                 "(errno={}, '{}')", msg, errno, errno_desc);
@@ -662,6 +671,37 @@ public class DhtNodeServer : DaemonApp
         logger.trace("Finished SIGINT handler");
 
         this.node.state = DhtNode.State.ShutDown;
+    }
+
+    version ( D_Version2 ) { }
+    else
+    {
+        /***********************************************************************
+
+            Called (in D1 builds) when a GC collection starts.
+
+        ***********************************************************************/
+
+        private void gcCollectStart ( )
+        {
+            logger.trace("Starting GC collection");
+        }
+
+        /***********************************************************************
+
+            Called (in D1 builds) when a GC collection finishes.
+
+            Params:
+                freed = the number of bytes freed overall
+                pagebytes = the number of bytes freed within full pages
+
+        ***********************************************************************/
+
+        private void gcCollectEnd ( int freed, int pagebytes )
+        {
+            logger.trace("Finished GC collection: {} bytes freed, {} bytes freed within full pages",
+                freed, pagebytes);
+        }
     }
 }
 

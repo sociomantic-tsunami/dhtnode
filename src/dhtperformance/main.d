@@ -48,7 +48,7 @@ private import dhtproto.client.DhtClient;
 
 private import dhtproto.client.legacy.DhtConst;
 
-private import ocean.core.Thread;
+private import core.thread;
 
 private import ocean.time.StopWatch;
 
