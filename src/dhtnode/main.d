@@ -436,6 +436,7 @@ public class DhtNodeServer : DaemonApp
 
     override protected void onStatsTimer ( )
     {
+        this.reportSystemStats();
         this.dht_stats.log();
         this.stats_ext.stats_log.add(.Log.stats());
 
