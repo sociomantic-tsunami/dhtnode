@@ -1,0 +1,12 @@
+# start with `docker-compose up`
+version: '2'
+services:
+  dhtnode:
+    build:
+      context: .
+    ports:
+      - "10000:10000"
+    volumes:
+      - "dhtdata:/src/dhtnode/dhtnode-0/data"
+volumes:
+  dhtdata:
