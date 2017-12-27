@@ -23,9 +23,6 @@ env:
 # Do a shallow submodule fetch
 before_install: git submodule update --init
 
-# Create docker images and setup environment to build
-install: beaver dlang install
-
 # (Ab)use Travis cache to pass artifacts between stages.
 # As long as the environment variables of different stages match, travis will
 # pull the same "cache", so we can use this to actually pass artifacts between
@@ -41,15 +38,19 @@ jobs:
           stage: Test
           after_success: beaver dlang codecov
           script:
+              # can't set it in env section or it will be overwritten by actual
+              # test definition after anchor is injected - YAML doesn't support
+              # appending to anchored object keys and we need `env` section
+              # to be overriden in matrix for compiler versions
+              - export BEAVER_DOCKER_IMG=builder BEAVER_DOCKER_CONTEXT=docker/builder
+              - beaver dlang install
               - beaver dlang make
               # Build packages too, this should be done by beaver:
               # https://github.com/sociomantic-tsunami/beaver/issues/34
               - beaver dlang make pkg
-              # If this is a tag, save the packages in the cache directory so
-              # it's accessible in the Upload Package stage
-              - if test -n "$TRAVIS_TAG"; then
-                    cp -v build/last/pkg/*.deb "$ARTIFACTS_DIR/";
-                fi
+              # Save the packages in the cache directory so
+              # it's accessible in next stages
+              - cp -v build/last/pkg/*.deb "$ARTIFACTS_DIR/";
     include:
         # Test matrix
         - <<: *test-matrix
@@ -60,7 +61,14 @@ jobs:
           env: DMD=2.070.2.s* F=production
         - <<: *test-matrix
           env: DMD=2.070.2.s* F=devel
-
+        - stage: Generate deployment image
+          env: DMD=2.070.2.s* F=production
+          script:
+              # and here env section can't be used because that will confuse
+              # travis cache logic
+              - export BEAVER_DOCKER_IMG=sociomantictsunami/dhtnode BEAVER_DOCKER_CONTEXT=docker/runner
+              - cp "$ARTIFACTS_DIR"/*.deb $BEAVER_DOCKER_CONTEXT/
+              - beaver install
         - stage: Upload Package
           if: tag IS present
           env: DMD=1.081.* F=production

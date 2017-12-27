@@ -1,0 +1,7 @@
+FROM sociomantictsunami/dlang:xenial-v4
+COPY docker/runner/dhtnode-d*.deb /packages/
+RUN apt update && apt install libebtree6
+RUN mkdir -p /srv/dhtnode/dhtnode-0 && apt install -y /packages/*.deb
+COPY doc/etc/dht.config.ini /srv/dhtnode/dhtnode-0/etc/config.ini
+WORKDIR /srv/dhtnode/dhtnode-0
+CMD [ "/usr/sbin/dhtnode-d2", "-c", "/srv/dhtnode/dhtnode-0/etc/config.ini" ]
