@@ -37,17 +37,17 @@ jobs:
     include:
         # Test matrix
         - <<: *test-matrix
-          env: DMD=dmd1 F=production
+          env: DMD=1.081.* F=production
         - <<: *test-matrix
-          env: DMD=dmd1 F=devel
+          env: DMD=1.081.* F=devel
         - <<: *test-matrix
-          env: DMD=dmd-transitional F=production
+          env: DMD=2.070.*.s* F=production
         - <<: *test-matrix
-          env: DMD=dmd-transitional F=devel
+          env: DMD=2.070.2.s* F=devel
 
         - stage: Upload Package
           if: tag IS present
-          env: DMD=dmd1 F=production
+          env: DMD=1.081.* F=production
           script:
               - beaver dlang make pkg
               - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
