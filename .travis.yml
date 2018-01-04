@@ -47,7 +47,7 @@ jobs:
 
         - stage: Upload Package
           if: tag IS present
-          env: DMD=dmd1 F=production DIST=xenial PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
+          env: DMD=dmd1 F=production
           script:
               - beaver dlang make pkg
               - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
