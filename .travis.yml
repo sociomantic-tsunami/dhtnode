@@ -14,6 +14,7 @@ git:
 # Global environment variables
 env:
     global:
+        - ARTIFACTS_DIR=build/travis-artifacts
         - DIST=xenial
         # Make sure beaver is in the PATH
         - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
@@ -23,6 +24,14 @@ before_install: git submodule update --init
 
 # Create docker images and setup environment to build
 install: beaver dlang install
+
+# (Ab)use Travis cache to pass artifacts between stages.
+# As long as the environment variables of different stages match, travis will
+# pull the same "cache", so we can use this to actually pass artifacts between
+# stages.
+cache:
+    directories:
+        - $ARTIFACTS_DIR
 
 # Basic config is inherited from the global scope
 jobs:
@@ -34,6 +43,11 @@ jobs:
               # Build packages too, this should be done by beaver:
               # https://github.com/sociomantic-tsunami/beaver/issues/34
               - beaver dlang make pkg
+              # If this is a tag, save the packages in the cache directory so
+              # it's accessible in the Upload Package stage
+              - if test -n "$TRAVIS_TAG"; then
+                    cp -v build/last/pkg/*.deb "$ARTIFACTS_DIR/";
+                fi
     include:
         # Test matrix
         - <<: *test-matrix
@@ -49,6 +63,5 @@ jobs:
           if: tag IS present
           env: DMD=1.081.* F=production
           script:
-              - beaver dlang make pkg
               - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
-                build/last/pkg/*.deb
+                "$ARTIFACTS_DIR"/*.deb
