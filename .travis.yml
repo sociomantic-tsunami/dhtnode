@@ -16,6 +16,7 @@ env:
     global:
         - ARTIFACTS_DIR=build/travis-artifacts
         - DIST=xenial
+        - COV=1
         # Make sure beaver is in the PATH
         - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
 
@@ -38,6 +39,7 @@ jobs:
     templates:
         - &test-matrix
           stage: Test
+          after_success: beaver dlang codecov
           script:
               - beaver dlang make
               # Build packages too, this should be done by beaver:
