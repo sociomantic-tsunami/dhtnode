@@ -13,7 +13,6 @@ if [ "$1" = "configure" ]; then
     do
         mkdir -p $FOLDER/data $FOLDER/etc $FOLDER/log
 
-        # TODO: adapt this when the dhtnode runs as its own user
         chown dhtnode:core $FOLDER/data $FOLDER/etc $FOLDER/log
 
         # only dhtnode (not group!) should be able to write to the log dir,
