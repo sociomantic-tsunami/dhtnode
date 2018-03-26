@@ -5,6 +5,13 @@
 /srv/dhtnode/dhtnode-*/dump/log/*.log
 {
 	rotate 10
+ 
+	# Maximum age above which log files are rotated
+	weekly
+
+	# Maximum age above which logs are removed
+	maxage 60
+
 	missingok
 	notifempty
 	delaycompress
