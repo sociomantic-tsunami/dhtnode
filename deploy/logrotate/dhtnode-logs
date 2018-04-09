@@ -9,7 +9,7 @@
 	notifempty
 	delaycompress
 	compress
-	size 500M
+	maxsize 500M
 	sharedscripts
 	postrotate
 		/usr/bin/killall -HUP dhtnode
