@@ -301,6 +301,23 @@ public class StorageEngine : IStorageEngine
     }
 
 
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public typeof(this) get ( hash_t key, void delegate ( cstring ) value_dg )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        this.get(key_str, value_dg);
+
+        return this;
+    }
+
+
     /***********************************************************************
 
        Get record's size
