@@ -556,6 +556,7 @@ version ( UnitTest )
     import ocean.io.device.MemoryDevice;
     import ocean.core.ExceptionDefinitions : IOException;
     import dhtnode.config.HashRangeConfig;
+    import dhtnode.node.DhtHashRange;
     import ocean.io.serialize.SimpleStreamSerializer : EofException;
 
     private class DummyStorageEngine : StorageEngine
