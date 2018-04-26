@@ -27,7 +27,7 @@ import swarm.neo.client.requests.NotificationFormatter;
 class DhtTest : Task
 {
     import swarm.neo.authentication.HmacDef: Key;
-    import swarm.neo.IPAddress;
+    import swarm.neo.AddrPort;
 
     protected DhtClient dht;
 

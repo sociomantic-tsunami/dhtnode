@@ -22,47 +22,7 @@ import swarm.neo.request.Command;
 
 import ocean.transition;
 import ocean.core.TypeConvert : castFrom, downcast;
-
-/*******************************************************************************
-
-    The request handler for the table of handlers. When called, runs in a fiber
-    that can be controlled via `connection`.
-
-    Params:
-        shared_resources = an opaque object containing resources owned by the
-            node which are required by the request
-        connection  = performs connection socket I/O and manages the fiber
-        cmdver      = the version number of the Mirror request as specified by
-                      the client
-        msg_payload = the payload of the first message of this request
-
-*******************************************************************************/
-
-public void handle ( Object shared_resources, RequestOnConn connection,
-    Command.Version cmdver, Const!(void)[] msg_payload )
-{
-    auto dht_shared_resources = downcast!(SharedResources)(shared_resources);
-    assert(dht_shared_resources);
-
-    switch ( cmdver )
-    {
-        case 0:
-            scope rq_resources = dht_shared_resources.new RequestResources;
-            scope rq = new MirrorImpl_v0(rq_resources);
-            rq.handle(connection, msg_payload);
-            break;
-
-        default:
-            auto ed = connection.event_dispatcher;
-            ed.send(
-                ( ed.Payload payload )
-                {
-                    payload.addConstant(GlobalStatusCode.RequestVersionNotSupported);
-                }
-            );
-            break;
-    }
-}
+import ocean.core.Verify;
 
 /*******************************************************************************
 
@@ -76,30 +36,11 @@ public scope class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
     import ocean.core.array.Mutation : pop;
     import dhtnode.storage.StorageEngineStepIterator;
 
-    /// Request resources
-    private SharedResources.RequestResources resources;
-
     /// Storage channel being mirrored.
     private StorageEngine channel;
 
     /// Storage channel iterator.
     private StorageEngineStepIterator iterator;
-
-    /***************************************************************************
-
-        Constructor.
-
-        Params:
-            resources = shared resource acquirer
-
-    ***************************************************************************/
-
-    public this ( SharedResources.RequestResources resources )
-    {
-        super(resources);
-
-        this.resources = resources;
-    }
 
     /***************************************************************************
 
@@ -116,7 +57,11 @@ public scope class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
 
     override protected bool prepareChannel ( cstring channel_name )
     {
-        this.channel = this.resources.storage_channels.getCreate(channel_name);
+        auto resources_ =
+            downcast!(SharedResources.RequestResources)(this.resources);
+        verify(resources_ !is null);
+
+        this.channel = resources_.storage_channels.getCreate(channel_name);
         if (this.channel is null)
             return false;
 
@@ -195,7 +140,11 @@ public scope class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
 
     override protected void startIteration ( )
     {
-        this.iterator = this.resources.getIterator();
+        auto resources_ =
+            downcast!(SharedResources.RequestResources)(this.resources);
+        verify(resources_ !is null);
+
+        this.iterator = resources_.getIterator();
         this.iterator.setStorage(this.channel);
     }
 

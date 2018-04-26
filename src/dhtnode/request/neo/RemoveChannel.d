@@ -22,48 +22,7 @@ import swarm.neo.request.Command;
 
 import ocean.transition;
 import ocean.core.TypeConvert : castFrom, downcast;
-
-/*******************************************************************************
-
-    The request handler for the table of handlers. When called, runs in a fiber
-    that can be controlled via `connection`.
-
-    Params:
-        shared_resources = an opaque object containing resources owned by the
-            node which are required by the request
-        connection = performs connection socket I/O and manages the fiber
-        cmdver = the version number of the RemoveChannel request as specified by
-            the client
-        msg_payload = the payload of the first message of this request
-
-*******************************************************************************/
-
-public void handle ( Object shared_resources, RequestOnConn connection,
-    Command.Version cmdver, Const!(void)[] msg_payload )
-{
-    auto dht_shared_resources = downcast!(SharedResources)(shared_resources);
-    assert(dht_shared_resources);
-
-    switch ( cmdver )
-    {
-        case 0:
-            scope rq_resources = dht_shared_resources.new RequestResources;
-            scope rq = new RemoveChannelImpl_v0(rq_resources);
-            rq.handle(connection, msg_payload);
-            break;
-
-        default:
-            auto ed = connection.event_dispatcher;
-            ed.send(
-                ( ed.Payload payload )
-                {
-                    payload.addConstant(
-                        GlobalStatusCode.RequestVersionNotSupported);
-                }
-            );
-            break;
-    }
-}
+import ocean.core.Verify;
 
 /*******************************************************************************
 
@@ -73,25 +32,6 @@ public void handle ( Object shared_resources, RequestOnConn connection,
 
 public scope class RemoveChannelImpl_v0 : RemoveChannelProtocol_v0
 {
-    /// Request resources
-    private SharedResources.RequestResources resources;
-
-    /***************************************************************************
-
-        Constructor.
-
-        Params:
-            resources = shared resource acquirer
-
-    ***************************************************************************/
-
-    public this ( SharedResources.RequestResources resources )
-    {
-        super(resources);
-
-        this.resources = resources;
-    }
-
     /***************************************************************************
 
         Checks whether the specified client is permitted to remove channels.
@@ -124,20 +64,23 @@ public scope class RemoveChannelImpl_v0 : RemoveChannelProtocol_v0
 
     override protected bool removeChannel ( cstring channel_name )
     {
-        auto storage_channel = channel_name in this.resources.storage_channels;
+        auto resources_ = downcast!(SharedResources)(this.resources);
+        verify(resources_ !is null);
+
+        auto storage_channel = channel_name in resources_.storage_channels;
 
         if ( storage_channel !is null )
         {
             auto records = storage_channel.num_records;
             auto bytes = storage_channel.num_bytes;
-            this.resources.storage_channels.remove(channel_name);
+            resources_.storage_channels.remove(channel_name);
 
             // Note that the number of bytes reported as having been handled by
             // this action is not strictly correct: it includes not only the
             // size of the actual records, but also the size of the TokyoCabinet
             // map structures required to store those records. This is such a
             // rarely performed request that I don't think anyone will mind ;)
-            this.resources.node_info.record_action_counters
+            resources_.node_info.record_action_counters
                 .increment("deleted", bytes, records);
         }
 
