@@ -52,6 +52,7 @@ static this ( )
 public scope class RedistributeRequest : Protocol.Redistribute
 {
     import dhtproto.node.request.params.RedistributeNode;
+    import dhtproto.client.legacy.DhtConst;
 
     import dhtnode.connection.DhtClient;
     import dhtnode.node.RedistributionProcess : redistribution_process;
