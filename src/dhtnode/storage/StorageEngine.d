@@ -301,6 +301,23 @@ public class StorageEngine : IStorageEngine
     }
 
 
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public typeof(this) get ( hash_t key, void delegate ( cstring ) value_dg )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        this.get(key_str, value_dg);
+
+        return this;
+    }
+
+
     /***********************************************************************
 
        Get record's size
@@ -318,6 +335,21 @@ public class StorageEngine : IStorageEngine
         auto s = tcmdbvsiz(this.db,
             key.ptr, castFrom!(size_t).to!(int)(key.length));
         return s < 0 ? 0 : s;
+    }
+
+
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public size_t getSize ( hash_t key )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        return this.getSize(key_str);
     }
 
 
@@ -343,6 +375,21 @@ public class StorageEngine : IStorageEngine
     }
 
 
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public bool exists ( hash_t key )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        return this.exists(key_str);
+    }
+
+
     /***********************************************************************
 
         Remove record
@@ -362,6 +409,21 @@ public class StorageEngine : IStorageEngine
         this.listeners.trigger(Listeners.Listener.Code.Deletion, key);
 
         return this;
+    }
+
+
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public typeof(this) remove ( hash_t key )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        return this.remove(key_str);
     }
 
 
