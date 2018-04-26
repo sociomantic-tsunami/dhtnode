@@ -1,18 +1,18 @@
 /*******************************************************************************
 
-    Put request implementation.
+    Remove request implementation.
 
     copyright:
-        Copyright (c) 2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2018 sociomantic labs GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
 
 *******************************************************************************/
 
-module dhtnode.request.neo.Put;
+module dhtnode.request.neo.Remove;
 
-import dhtproto.node.neo.request.Put;
+import dhtproto.node.neo.request.Remove;
 
 import dhtnode.connection.neo.SharedResources;
 
@@ -27,11 +27,11 @@ import dhtnode.node.DhtHashRange;
 
 /*******************************************************************************
 
-    DHT node implementation of the v0 Put request protocol.
+    DHT node implementation of the v0 Remove request protocol.
 
 *******************************************************************************/
 
-public scope class PutImpl_v0 : PutProtocol_v0
+public scope class RemoveImpl_v0 : RemoveProtocol_v0
 {
     import swarm.util.Hash : isWithinNodeResponsibility;
 
@@ -60,19 +60,22 @@ public scope class PutImpl_v0 : PutProtocol_v0
 
     /***************************************************************************
 
-        Writes a single record to the storage engine.
+        Removes a single record from the storage engine.
 
         Params:
-            channel = channel to write to
-            key = key of record to write
-            value = record value to write
+            channel = channel to remove from
+            key = key of record to remove
+            existed = out value, set to true if the record was present and
+                removed or false if the record was not present
 
         Returns:
-            true if the record was written; false if an error occurred
+            true if the operation succeeded (the record was removed or did not
+            exist); false if an error occurred
 
     ***************************************************************************/
 
-    override protected bool put ( cstring channel, hash_t key, in void[] value )
+    override protected bool remove ( cstring channel, hash_t key,
+        out bool existed )
     {
         auto resources_ =
             downcast!(SharedResources.RequestResources)(this.resources);
@@ -82,10 +85,13 @@ public scope class PutImpl_v0 : PutProtocol_v0
         if (storage_channel is null)
             return false;
 
-        storage_channel.put(key, cast(cstring) value);
-
-        resources_.node_info.record_action_counters
-            .increment("written", value.length);
+        auto bytes = storage_channel.getSize(key);
+        if ( bytes > 0 )
+        {
+            existed = true;
+            storage_channel.remove(key);
+            resources_.node_info.record_action_counters.increment("deleted", bytes);
+        }
 
         return true;
     }

@@ -27,7 +27,7 @@ import swarm.neo.client.requests.NotificationFormatter;
 class DhtTest : Task
 {
     import swarm.neo.authentication.HmacDef: Key;
-    import swarm.neo.IPAddress;
+    import swarm.neo.AddrPort;
 
     protected DhtClient dht;
 
@@ -172,7 +172,7 @@ class GetAll : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.GetAll.Notification info,
-        DhtClient.Neo.GetAll.Args args )
+        Const!(DhtClient.Neo.GetAll.Args) args )
     {
         with ( info.Active ) switch ( info.active )
         {
@@ -207,7 +207,7 @@ class Mirror : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.Mirror.Notification info,
-        DhtClient.Neo.Mirror.Args args )
+        Const!(DhtClient.Neo.Mirror.Args) args )
     {
         mstring buf;
         //~ Stdout.formatln(formatNotification(info, buf));
@@ -255,7 +255,7 @@ class MirrorFill : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.Mirror.Notification info,
-        DhtClient.Neo.Mirror.Args args )
+        Const!(DhtClient.Neo.Mirror.Args) args )
     {
         mstring buf;
         Stdout.formatln(formatNotification(info, buf));
@@ -280,7 +280,7 @@ class MultiMirror : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.Mirror.Notification info,
-        DhtClient.Neo.Mirror.Args args )
+        Const!(DhtClient.Neo.Mirror.Args) args )
     {
         mstring buf;
         Stdout.formatln("{}: {}", args.channel, formatNotification(info, buf));

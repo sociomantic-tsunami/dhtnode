@@ -13,14 +13,18 @@
 module dhtnode.node.RequestHandlers;
 
 import swarm.neo.node.ConnectionHandler;
+import swarm.neo.request.Command;
 import dhtproto.common.RequestCodes;
 
-import GetHashRange = dhtnode.request.neo.GetHashRange;
-import Put = dhtnode.request.neo.Put;
-import Get = dhtnode.request.neo.Get;
-import Mirror = dhtnode.request.neo.Mirror;
-import GetAll = dhtnode.request.neo.GetAll;
-import GetChannels = dhtnode.request.neo.GetChannels;
+import dhtnode.request.neo.GetHashRange;
+import dhtnode.request.neo.Put;
+import dhtnode.request.neo.Exists;
+import dhtnode.request.neo.Get;
+import dhtnode.request.neo.Mirror;
+import dhtnode.request.neo.GetAll;
+import dhtnode.request.neo.GetChannels;
+import dhtnode.request.neo.Remove;
+import dhtnode.request.neo.RemoveChannel;
 
 /*******************************************************************************
 
@@ -30,20 +34,26 @@ import GetChannels = dhtnode.request.neo.GetChannels;
 
 *******************************************************************************/
 
-public ConnectionHandler.CmdHandlers requests;
+public ConnectionHandler.RequestMap requests;
 
 static this ( )
 {
-    requests.add(
-        RequestCode.GetHashRange, "GetHashRange", &GetHashRange.handle, false);
-    requests.add(
-        RequestCode.Put, "Put", &Put.handle, true);
-    requests.add(
-        RequestCode.Get, "Get", &Get.handle, true);
-    requests.add(
-        RequestCode.Mirror, "Mirror", &Mirror.handle, false);
-    requests.add(
-        RequestCode.GetAll, "GetAll", &GetAll.handle, false);
-    requests.add(
-        RequestCode.GetChannels, "GetChannels", &GetChannels.handle, false);
+    requests.add(Command(RequestCode.GetHashRange, 0), "GetHashRange",
+        GetHashRangeImpl_v0.classinfo, false);
+    requests.add(Command(RequestCode.Put, 0), "Put",
+        PutImpl_v0.classinfo, true);
+    requests.add(Command(RequestCode.Exists, 0), "Exists",
+        ExistsImpl_v0.classinfo, true);
+    requests.add(Command(RequestCode.Get, 0), "Get",
+        GetImpl_v0.classinfo, true);
+    requests.add(Command(RequestCode.Mirror, 0), "Mirror",
+        MirrorImpl_v0.classinfo, false);
+    requests.add(Command(RequestCode.GetAll, 0), "GetAll",
+        GetAllImpl_v0.classinfo, false);
+    requests.add(Command(RequestCode.GetChannels, 0), "GetChannels",
+        GetChannelsImpl_v0.classinfo, false);
+    requests.add(Command(RequestCode.Remove, 0), "Remove",
+        RemoveImpl_v0.classinfo, true);
+    requests.add(Command(RequestCode.RemoveChannel, 0), "RemoveChannel",
+        RemoveChannelImpl_v0.classinfo, false);
 }
