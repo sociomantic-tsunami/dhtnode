@@ -75,6 +75,10 @@ public class DhtNode :
     private DhtHashRange hash_range;
 
 
+    /// Shared resources.
+    private Neo.SharedResources shared_resources;
+
+
     /***************************************************************************
 
         Constructor.
@@ -98,6 +102,8 @@ public class DhtNode :
     {
         this.hash_range = hash_range;
 
+        this.shared_resources = new Neo.SharedResources(channels, this, epoll);
+
         // Classic connection handler settings
         auto conn_setup_params = new DhtConnectionSetupParams;
         conn_setup_params.node_info = this;
@@ -110,7 +116,7 @@ public class DhtNode :
         Options options;
         options.epoll = epoll;
         options.requests = requests;
-        options.shared_resources = new Neo.SharedResources(channels, this, epoll);
+        options.shared_resources = this.shared_resources;
         options.no_delay = no_delay;
         options.unix_socket_path = idup(server_config.unix_socket_path());
         options.credentials_filename = "etc/credentials";
@@ -207,5 +213,21 @@ public class DhtNode :
     {
         return ["written", "read", "forwarded", "iterated", "deleted"];
     }
-}
 
+    /***************************************************************************
+
+        Calls `callback` with a `RequestResources` object whose scope is limited
+        to the run-time of `callback`.
+
+        Params:
+            callback = a callback to call with a `RequestResources` object
+
+    ***************************************************************************/
+
+    override protected void getResourceAcquirer (
+        void delegate ( Object request_resources ) callback )
+    {
+        scope request_resources = this.shared_resources.new RequestResources;
+        callback(request_resources);
+    }
+}

@@ -214,6 +214,18 @@ public final class SharedResources
         /***********************************************************************
 
             Returns:
+                a shared LZO instance
+
+        ***********************************************************************/
+
+        public Lzo lzo ( )
+        {
+            return this.outer.lzo;
+        }
+
+        /***********************************************************************
+
+            Returns:
                 a new iterator storage channel instance. The user must call its
                 setStorage() method before use
 
@@ -284,25 +296,6 @@ public final class SharedResources
                 new RecordBatcher(this.outer.lzo));
             batcher.clear();
             return batcher;
-        }
-
-        /***********************************************************************
-
-            Returns:
-                pointer to singleton (one per request) RequestEventDispatcher
-                instance
-
-        ***********************************************************************/
-
-        override public RequestEventDispatcher* request_event_dispatcher ( )
-        {
-            return this.acquired_request_event_dispatcher.acquire(
-                new RequestEventDispatcher,
-                ( RequestEventDispatcher* dispatcher )
-                {
-                    dispatcher.reset();
-                }
-            );
         }
 
         /***********************************************************************
