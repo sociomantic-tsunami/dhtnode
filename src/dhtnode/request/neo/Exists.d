@@ -1,18 +1,18 @@
 /*******************************************************************************
 
-    Put request implementation.
+    Exists request implementation.
 
     copyright:
-        Copyright (c) 2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2018 sociomantic labs GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
 
 *******************************************************************************/
 
-module dhtnode.request.neo.Put;
+module dhtnode.request.neo.Exists;
 
-import dhtproto.node.neo.request.Put;
+import dhtproto.node.neo.request.Exists;
 
 import dhtnode.connection.neo.SharedResources;
 
@@ -27,11 +27,11 @@ import dhtnode.node.DhtHashRange;
 
 /*******************************************************************************
 
-    DHT node implementation of the v0 Put request protocol.
+    DHT node implementation of the v0 Exists request protocol.
 
 *******************************************************************************/
 
-public scope class PutImpl_v0 : PutProtocol_v0
+public scope class ExistsImpl_v0 : ExistsProtocol_v0
 {
     import swarm.util.Hash : isWithinNodeResponsibility;
 
@@ -60,19 +60,19 @@ public scope class PutImpl_v0 : PutProtocol_v0
 
     /***************************************************************************
 
-        Writes a single record to the storage engine.
+        Checks whether a single record exists in the storage engine.
 
         Params:
-            channel = channel to write to
-            key = key of record to write
-            value = record value to write
+            channel = channel to check in
+            key = key of record to check
+            found = out value, set to true if the record exists
 
         Returns:
-            true if the record was written; false if an error occurred
+            true if the operation succeeded; false if an error occurred
 
     ***************************************************************************/
 
-    override protected bool put ( cstring channel, hash_t key, in void[] value )
+    override protected bool exists ( cstring channel, hash_t key, out bool found )
     {
         auto resources_ =
             downcast!(SharedResources.RequestResources)(this.resources);
@@ -82,11 +82,7 @@ public scope class PutImpl_v0 : PutProtocol_v0
         if (storage_channel is null)
             return false;
 
-        storage_channel.put(key, cast(cstring) value);
-
-        resources_.node_info.record_action_counters
-            .increment("written", value.length);
-
+        found = storage_channel.exists(key);
         return true;
     }
 }
