@@ -39,6 +39,7 @@ class DhtTest : Task
             &this.connNotifier);
         this.dht.neo.enableSocketNoDelay();
         this.dht.neo.addNode("127.0.0.1", 10_100);
+        this.dht.neo.addNode("127.0.0.1", 10_110);
     }
 
     override public void run ( )
@@ -108,6 +109,8 @@ class Fill : DhtTest
             this.channels = ["test".dup];
         else
             this.channels = channels;
+
+        Stdout.formatln("Fill: {} records, channels: {}", this.max, this.channels);
     }
 
     override protected void go ( )
@@ -156,6 +159,66 @@ class Get : DhtTest
         auto res = this.dht.blocking.get("test".dup, 0, buf);
         assert(res.succeeded);
         Stdout.formatln("Get succeeded, value: {}", cast(mstring)res.value);
+    }
+}
+
+import core.thread;
+class Update : DhtTest
+{
+    import ocean.core.array.Mutation : copy;
+
+    bool pause;
+
+    override protected void go ( )
+    {
+        this.dht.neo.update("test".dup, 0, &this.notifier);
+        this.suspend();
+    }
+
+    private void notifier ( DhtClient.Neo.Update.Notification info,
+        Const!(DhtClient.Neo.Update.Args) args )
+    {
+        formatNotification(info, this.dht.msg_buf);
+        Stdout.formatln("{}", this.dht.msg_buf);
+
+        with ( info.Active ) final switch ( info.active )
+        {
+            case received:
+                auto received_record = info.received.value;
+                (*info.received.updated_value).copy(received_record);
+                (*info.received.updated_value) ~= [cast(ubyte)'X'];
+
+                if ( this.pause )
+                {
+                    Stdout.formatln("Pausing 5s");
+                    Thread.sleep(5);
+                    Stdout.formatln("Continuing");
+                }
+                break;
+
+            case conflict: // Another client updated the same record. Try again.
+                Stdout.formatln("Finished: conflict");
+                this.resume();
+                break;
+
+            case succeeded: // Updated successfully.
+            case no_record: // Record not in DHT. Use Put to write a new record.
+                Stdout.formatln("Finished: OK");
+                this.resume();
+                break;
+
+            case error:
+            case no_node:
+            case node_disconnected:
+            case node_error:
+            case wrong_node:
+            case unsupported:
+                Stdout.formatln("Finished: error");
+                this.resume();
+                break;
+
+            mixin(typeof(info).handleInvalidCases);
+        }
     }
 }
 
@@ -304,49 +367,62 @@ void main ( cstring[] args )
     initScheduler(config);
 
     auto cmd = args[1];
+    auto params = args[2..$];
     switch ( cmd )
     {
         case "put":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new Put);
             break;
 
         case "get":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new Get);
             break;
 
+        case "update":
+            assert(params.length == 0);
+            theScheduler.schedule(new Update);
+            break;
+
+        case "update_pause":
+            assert(params.length == 0);
+            auto update = new Update;
+            update.pause = true;
+            theScheduler.schedule(update);
+            break;
+
         case "getall":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new GetAll);
             break;
 
         case "mirror":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new Mirror);
             break;
 
         case "mirrorfill":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new MirrorFill);
             break;
 
         case "multimirror":
-            assert(args.length >= 3);
-            theScheduler.schedule(new MultiMirror(args[2..$]));
+            assert(params.length >= 1);
+            theScheduler.schedule(new MultiMirror(params));
             break;
 
         case "fill":
-            assert(args.length >= 3);
+            assert(params.length >= 1);
             hash_t max;
             toInteger(args[2], max);
-            theScheduler.schedule(new Fill(max, args[3..$]));
+            theScheduler.schedule(new Fill(max, params[1..$]));
             break;
 
         case "fetch":
-            assert(args.length == 3);
+            assert(params.length == 1);
             hash_t max;
-            toInteger(args[2], max);
+            toInteger(params[0], max);
             theScheduler.schedule(new Fetch(max));
             break;
 
