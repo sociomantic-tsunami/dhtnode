@@ -60,6 +60,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     import Hash = swarm.util.Hash;
     import swarm.Const : NodeItem;
+    import dhtproto.client.legacy.DhtConst;
     import dhtproto.client.legacy.common.NodeRecordBatcher;
     import dhtproto.client.legacy.internal.registry.model.IDhtNodeRegistryInfo;
     import dhtproto.client.legacy.internal.connection.model.IDhtNodeConnectionPoolInfo;
