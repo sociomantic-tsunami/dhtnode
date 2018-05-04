@@ -69,6 +69,7 @@ public class StorageEngine : IStorageEngine
 
     import Hash = swarm.util.Hash;
 
+    import ocean.core.Verify;
     import ocean.core.TypeConvert;
     import core.stdc.stdlib : free;
 
@@ -179,7 +180,9 @@ public class StorageEngine : IStorageEngine
     public typeof(this) put ( cstring key, cstring value,
         bool trigger_listeners = true )
     {
-        tcmdbput(this.db, key.ptr, castFrom!(size_t).to!(int)(key.length),
+        auto hash = Hash.straightToHash(key);
+
+        tcmdbput(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof),
             value.ptr, castFrom!(size_t).to!(int)(value.length));
 
         if ( trigger_listeners )
@@ -210,12 +213,14 @@ public class StorageEngine : IStorageEngine
     public typeof(this) get ( cstring key, ref mstring value_buffer,
         out mstring value )
     {
+        auto hash = Hash.straightToHash(key);
+
         int len;
 
         void* value_;
 
-        value_ = cast(void*)tcmdbget(this.db, key.ptr,
-            castFrom!(size_t).to!(int)(key.length), &len);
+        value_ = cast(void*)tcmdbget(this.db, &hash,
+            castFrom!(size_t).to!(int)(hash.sizeof), &len);
 
         bool found = value_ !is null;
 
@@ -248,8 +253,10 @@ public class StorageEngine : IStorageEngine
 
     public size_t getSize ( cstring key )
     {
+        auto hash = Hash.straightToHash(key);
+
         auto s = tcmdbvsiz(this.db,
-            key.ptr, castFrom!(size_t).to!(int)(key.length));
+            &hash, castFrom!(size_t).to!(int)(hash.sizeof));
         return s < 0 ? 0 : s;
     }
 
@@ -268,9 +275,11 @@ public class StorageEngine : IStorageEngine
 
     public bool exists ( cstring key )
     {
+        auto hash = Hash.straightToHash(key);
+
         int size;
 
-        size = tcmdbvsiz(this.db, key.ptr, castFrom!(size_t).to!(int)(key.length));
+        size = tcmdbvsiz(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
 
         return size >= 0;
     }
@@ -290,7 +299,9 @@ public class StorageEngine : IStorageEngine
 
     public typeof(this) remove ( cstring key )
     {
-        tcmdbout(this.db, key.ptr, castFrom!(size_t).to!(int)(key.length));
+        auto hash = Hash.straightToHash(key);
+
+        tcmdbout(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
 
         return this;
     }
@@ -614,8 +625,9 @@ public class StorageEngine : IStorageEngine
     public typeof(this) getNextKey ( cstring last_key, ref mstring key_buffer,
         out mstring key )
     {
-        tcmdbiterinit2(this.db, last_key.ptr,
-            castFrom!(size_t).to!(int)(last_key.length));
+        auto hash = Hash.straightToHash(last_key);
+
+        tcmdbiterinit2(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
 
         if ( !this.iterateNextKey(key_buffer, key) )
             return this;
@@ -647,20 +659,21 @@ public class StorageEngine : IStorageEngine
     private bool iterateNextKey ( ref char[] key_buffer, out mstring key )
     {
         int len;
-
-        void* key_;
-
-        key_ = cast(void*)tcmdbiternext(this.db, &len);
+        hash_t* key_;
+        key_ = cast(hash_t*)tcmdbiternext(this.db, &len);
 
         bool found = key_ !is null;
 
         if (found)
         {
-            if ( key_buffer.length < len )
-                key_buffer.length = len;
+            verify(len == hash_t.sizeof);
+            auto str_len = hash_t.sizeof * 2;
 
-            key_buffer[0..len] = (cast(char*)key_)[0..len];
-            key = key_buffer[0..len];
+            if ( key_buffer.length < str_len )
+                key_buffer.length = str_len;
+
+            Hash.toHexString(*key_, key_buffer[0..str_len]);
+            key = key_buffer[0..str_len];
 
             free(key_);
         }

@@ -226,7 +226,7 @@ unittest
     // Add records until the reported size of the storage engine increases
     do
     {
-        storage.put("key", "value");
+        storage.put("0000000000000000", "value");
     }
     while ( storage.num_bytes == initial_size );
 
