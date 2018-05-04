@@ -49,6 +49,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     import Hash = swarm.util.Hash;
 
+    import ocean.core.Verify;
     import ocean.core.Enforce;
     import ocean.core.TypeConvert : downcast;
     import ocean.core.Array : pop;
@@ -216,7 +217,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     public void trigger ( Code code, cstring key )
     {
-        switch (code) with (Code)
+        final switch (code) with (Code)
         {
             case DataReady:
                 if ( (*this.resources.hash_buffer).length < HashBufferMaxLength )
@@ -253,9 +254,18 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
                 this.finish_trigger = true;
                 break;
 
+            case Deletion:
+                // Not relevant to this request.
+                break;
+
             case None:
-            default:
-                assert(false);
+                verify(false);
+                break;
+
+            version (D_Version2){} else
+            {
+                default: assert(false);
+            }
         }
 
         if (this.waiting_for_trigger)

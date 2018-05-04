@@ -199,7 +199,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
                     auto result = this.forwardRecord(client, channel,
                         this.resources.iterator.key,
                         this.resources.iterator.value, node);
-                    with ( ForwardResult ) switch ( result )
+                    with ( ForwardResult ) final switch ( result )
                     {
                         case SentSingle:
                         case Invalid:
@@ -213,8 +213,13 @@ public scope class RedistributeRequest : Protocol.Redistribute
                         case SendError:
                             error_during_iteration = true;
                             break;
-                        default:
-                            assert(false);
+                        case None:
+                            verify(false);
+                            break;
+                        version (D_Version2){} else
+                        {
+                            default: assert(false);
+                        }
                     }
                 }
 

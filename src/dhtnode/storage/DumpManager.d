@@ -488,7 +488,8 @@ public class DumpManager
         }
         else
         {
-            with ( OutOfRangeHandling.Mode ) switch ( out_of_range_handling.mode )
+            with ( OutOfRangeHandling.Mode )
+            final switch ( out_of_range_handling.mode )
             {
                 case Load:
                     log.trace("Encountered out-of-range key in channel '{}': "
@@ -511,8 +512,11 @@ public class DumpManager
                     out_of_range++;
                     return;
 
-                default:
-                    assert(false);
+                version (D_Version2){} else
+                {
+                    default:
+                        assert(false);
+                }
             }
         }
     }
