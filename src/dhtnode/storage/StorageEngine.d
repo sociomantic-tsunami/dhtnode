@@ -217,7 +217,7 @@ public class StorageEngine : IStorageEngine
         value_ = cast(void*)tcmdbget(this.db, key.ptr,
             castFrom!(size_t).to!(int)(key.length), &len);
 
-        bool found = !!value_;
+        bool found = value_ !is null;
 
         if (found)
         {
@@ -652,7 +652,7 @@ public class StorageEngine : IStorageEngine
 
         key_ = cast(void*)tcmdbiternext(this.db, &len);
 
-        bool found = !!key_;
+        bool found = key_ !is null;
 
         if (found)
         {
