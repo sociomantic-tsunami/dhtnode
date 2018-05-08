@@ -152,7 +152,6 @@ public class HashRangeConfig
     public void clear ( )
     {
         HashRange empty;
-        assert(empty.is_empty);
         this.modify(empty);
     }
 
