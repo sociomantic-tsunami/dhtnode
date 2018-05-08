@@ -216,15 +216,8 @@ public class StorageEngine : IStorageEngine
         auto hash = Hash.straightToHash(key);
 
         int len;
-
-        void* value_;
-
-        value_ = cast(void*)tcmdbget(this.db, &hash,
-            castFrom!(size_t).to!(int)(hash.sizeof), &len);
-
-        bool found = value_ !is null;
-
-        if (found)
+        if ( auto value_ = cast(void*)tcmdbget(this.db, &hash,
+            castFrom!(size_t).to!(int)(hash.sizeof), &len) )
         {
             if ( value_buffer.length < len )
                 value_buffer.length = len;
@@ -659,12 +652,7 @@ public class StorageEngine : IStorageEngine
     private bool iterateNextKey ( ref char[] key_buffer, out mstring key )
     {
         int len;
-        hash_t* key_;
-        key_ = cast(hash_t*)tcmdbiternext(this.db, &len);
-
-        bool found = key_ !is null;
-
-        if (found)
+        if ( auto key_ = cast(hash_t*)tcmdbiternext(this.db, &len) )
         {
             verify(len == hash_t.sizeof);
             auto str_len = hash_t.sizeof * 2;
@@ -676,8 +664,10 @@ public class StorageEngine : IStorageEngine
             key = key_buffer[0..str_len];
 
             free(key_);
-        }
 
-        return found;
+            return true;
+        }
+        else
+            return false;
     }
 }
