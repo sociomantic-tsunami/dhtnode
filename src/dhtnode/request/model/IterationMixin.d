@@ -44,6 +44,7 @@ public template ChannelIteration ( alias resources, IterationKind kind,
     import dhtnode.storage.StorageEngine;
     import dhtnode.storage.StorageEngineStepIterator;
     import ocean.core.Tuple;
+    import ocean.core.Verify;
     import ocean.transition;
 
     /***************************************************************************
@@ -93,7 +94,7 @@ public template ChannelIteration ( alias resources, IterationKind kind,
         {
             resources.iterator.setStorage(*storage_channel);
             this.iterator = resources.iterator;
-            assert (iterator);
+            verify(this.iterator !is null);
         }
 
         // even missing channel is ok, response must return empty record

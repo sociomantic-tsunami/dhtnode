@@ -33,6 +33,7 @@ public scope class ExistsRequest : Protocol.Exists
     import dhtnode.request.model.ConstructorMixin;
     import dhtnode.storage.StorageEngine;
 
+    import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
 
     /***************************************************************************
@@ -65,7 +66,7 @@ public scope class ExistsRequest : Protocol.Exists
         if (storage_channel is null)
             return false;
         auto dht_channel = downcast!(StorageEngine)(*storage_channel);
-        assert(dht_channel);
+        verify(dht_channel !is null);
         return dht_channel.exists(key);
     }
 }

@@ -246,6 +246,8 @@ public class ChannelDumper
 
 abstract public class ChannelLoaderBase
 {
+    import ocean.core.Enforce;
+
     /***************************************************************************
 
         Base class encapsulating the file-format-neutral process of reading
@@ -492,7 +494,7 @@ abstract public class ChannelLoaderBase
                     use_reader(v0_reader);
                     break;
                 default:
-                    assert(false);
+                    enforce(false);
             }
         }
 

@@ -33,6 +33,7 @@ import Hash = swarm.util.Hash;
 
 import dhtproto.client.legacy.DhtConst;
 
+import ocean.core.Verify;
 import ocean.core.Array : copy, startsWith;
 
 import ocean.io.FilePath;
@@ -340,7 +341,7 @@ public class DumpManager
 
                 auto channel = new_channel(this.dst_path.name.dup);
                 auto dht_channel = cast(StorageEngine)channel;
-                assert(dht_channel);
+                verify(dht_channel !is null);
 
                 this.loadChannel(dht_channel, this.input, this.out_of_range_handling);
 
