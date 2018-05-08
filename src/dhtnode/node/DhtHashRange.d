@@ -37,6 +37,7 @@ import dhtnode.config.HashRangeConfig;
 import swarm.util.Hash : HashRange;
 
 import ocean.core.Enforce;
+import ocean.core.Verify;
 
 
 
@@ -75,12 +76,8 @@ public class DhtHashRange
     ***************************************************************************/
 
     public this ( hash_t min, hash_t max, HashRangeConfig config_file )
-    in
     {
-        assert(config_file);
-    }
-    body
-    {
+        verify(config_file !is null);
         this.config_file = config_file;
 
         enforce(HashRange.isValid(min, max), "Invalid hash range");

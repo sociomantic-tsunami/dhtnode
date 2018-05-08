@@ -101,6 +101,7 @@ public class DhtNodeServer : DaemonApp
 
     import ocean.core.MessageFiber;
     import ocean.core.Enforce;
+    import ocean.core.Verify;
 
     import ocean.io.select.protocol.generic.ErrnoIOException : IOWarning;
     import ocean.io.select.selector.EpollException;
@@ -194,7 +195,7 @@ public class DhtNodeServer : DaemonApp
                     out_of_range_handling.mode =  Ignore;
                     break;
                 default:
-                    assert(false);
+                    verify(false);
             }
 
             return out_of_range_handling;

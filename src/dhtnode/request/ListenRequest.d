@@ -49,6 +49,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     import Hash = swarm.util.Hash;
 
+    import ocean.core.Enforce;
     import ocean.core.TypeConvert : downcast;
     import ocean.core.Array : pop;
 
@@ -145,7 +146,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
     final override protected bool getNextRecord ( cstring channel_name,
         mstring key, out Const!(void)[] value )
     {
-        assert (key.length == Hash.HashDigits);
+        enforce(key.length == Hash.HashDigits);
 
         hash_t hash;
 

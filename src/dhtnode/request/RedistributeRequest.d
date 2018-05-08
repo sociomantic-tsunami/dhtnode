@@ -65,6 +65,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
     import dhtproto.client.legacy.internal.connection.model.IDhtNodeConnectionPoolInfo;
 
     import ocean.core.Array : copy;
+    import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
     import ocean.time.StopWatch;
 
@@ -130,7 +131,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
         foreach ( channel; this.resources.storage_channels )
         {
             auto dht_channel = downcast!(StorageEngine)(channel);
-            assert(dht_channel);
+            verify(dht_channel !is null);
             try
             {
                 this.handleChannel(client, dht_channel);
@@ -375,11 +376,11 @@ public scope class RedistributeRequest : Protocol.Redistribute
                 // retry the whole iteration.
                 batch.clear();
 
-                assert(batch.fits(key, value));
+                verify(batch.fits(key, value));
             }
 
             auto add_result = batch.add(key, value);
-            assert(add_result == add_result.Added);
+            verify(add_result == add_result.Added);
 
             return result;
         }

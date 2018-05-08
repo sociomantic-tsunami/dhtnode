@@ -62,6 +62,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
     import Hash = swarm.util.Hash;
 
+    import ocean.core.Verify;
     import ocean.sys.Environment;
     import ocean.time.StopWatch;
 
@@ -270,7 +271,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
         foreach ( channel; this )
         {
             auto dht_channel = cast(StorageEngine)channel;
-            assert(dht_channel);
+            verify(dht_channel !is null);
             this.dump_manager.dump(dht_channel);
         }
 
