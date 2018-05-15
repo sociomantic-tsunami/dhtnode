@@ -2,6 +2,10 @@ export ASSERT_ON_STOMPING_PREVENTION=1
 
 ifneq ($(DVER),1)
     DC := dmd-transitional
+
+	ifeq ($F, production)
+		override DFLAGS += -release
+	endif
 endif
 
 override LDFLAGS += -llzo2
