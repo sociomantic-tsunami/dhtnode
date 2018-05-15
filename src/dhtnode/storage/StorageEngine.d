@@ -550,7 +550,7 @@ public class StorageEngine : IStorageEngine
     /***********************************************************************
 
         Returns:
-            number of records stored
+            number of bytes stored
 
     ***********************************************************************/
 
