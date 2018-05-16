@@ -17,6 +17,9 @@ env:
         - ARTIFACTS_DIR=build/travis-artifacts
         - DIST=xenial
         - COV=1
+        # Default beaver image names. May be overriden in specific stages
+        - BEAVER_DOCKER_IMG=builder
+        - BEAVER_DOCKER_CONTEXT=docker/builder
         # Make sure beaver is in the PATH
         - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
 
@@ -38,11 +41,6 @@ jobs:
           stage: Test
           after_success: beaver dlang codecov
           script:
-              # can't set it in env section or it will be overwritten by actual
-              # test definition after anchor is injected - YAML doesn't support
-              # appending to anchored object keys and we need `env` section
-              # to be overriden in matrix for compiler versions
-              - export BEAVER_DOCKER_IMG=builder BEAVER_DOCKER_CONTEXT=docker/builder
               - beaver dlang install
               - beaver dlang make
               # Build packages too, this should be done by beaver:
@@ -64,7 +62,7 @@ jobs:
         - stage: Generate deployment image
           env: DMD=2.070.2.s* F=production
           script:
-              # and here env section can't be used because that will confuse
+              # env section can't be used because that will confuse
               # travis cache logic
               - export BEAVER_DOCKER_IMG=sociomantictsunami/dhtnode BEAVER_DOCKER_CONTEXT=docker/runner
               - cp "$ARTIFACTS_DIR"/*.deb $BEAVER_DOCKER_CONTEXT/
