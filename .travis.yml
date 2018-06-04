@@ -71,5 +71,6 @@ jobs:
           if: tag IS present
           env: DMD=1.081.* F=production
           script:
+              - beaver install
               - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
                 "$ARTIFACTS_DIR"/*.deb
