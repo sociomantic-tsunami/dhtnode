@@ -25,6 +25,7 @@ import dhtnode.request.neo.GetAll;
 import dhtnode.request.neo.GetChannels;
 import dhtnode.request.neo.Remove;
 import dhtnode.request.neo.RemoveChannel;
+import dhtnode.request.neo.Update;
 
 /*******************************************************************************
 
@@ -46,6 +47,8 @@ static this ( )
         ExistsImpl_v0.classinfo, true);
     requests.add(Command(RequestCode.Get, 0), "Get",
         GetImpl_v0.classinfo, true);
+    requests.add(Command(RequestCode.Update, 0), "Update",
+        UpdateImpl_v0.classinfo, true);
     requests.add(Command(RequestCode.Mirror, 0), "Mirror",
         MirrorImpl_v0.classinfo, false);
     requests.add(Command(RequestCode.GetAll, 0), "GetAll",
