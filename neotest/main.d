@@ -304,49 +304,50 @@ void main ( cstring[] args )
     initScheduler(config);
 
     auto cmd = args[1];
+    auto params = args[2..$];
     switch ( cmd )
     {
         case "put":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new Put);
             break;
 
         case "get":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new Get);
             break;
 
         case "getall":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new GetAll);
             break;
 
         case "mirror":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new Mirror);
             break;
 
         case "mirrorfill":
-            assert(args.length == 2);
+            assert(params.length == 0);
             theScheduler.schedule(new MirrorFill);
             break;
 
         case "multimirror":
-            assert(args.length >= 3);
-            theScheduler.schedule(new MultiMirror(args[2..$]));
+            assert(params.length >= 1);
+            theScheduler.schedule(new MultiMirror(params));
             break;
 
         case "fill":
-            assert(args.length >= 3);
+            assert(params.length >= 1);
             hash_t max;
             toInteger(args[2], max);
-            theScheduler.schedule(new Fill(max, args[3..$]));
+            theScheduler.schedule(new Fill(max, params[1..$]));
             break;
 
         case "fetch":
-            assert(args.length == 3);
+            assert(params.length == 1);
             hash_t max;
-            toInteger(args[2], max);
+            toInteger(params[0], max);
             theScheduler.schedule(new Fetch(max));
             break;
 
