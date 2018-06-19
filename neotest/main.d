@@ -159,6 +159,67 @@ class Get : DhtTest
     }
 }
 
+class Update : DhtTest
+{
+    import core.thread : Thread;
+    import ocean.core.Time;
+    import ocean.core.array.Mutation : copy;
+
+    /// When the record has been received, pause 5s before sending back the
+    /// updated value. (This is useful for testing what happens when 2 clients
+    /// update the same record at once.)
+    bool pause;
+
+    override protected void go ( )
+    {
+        this.dht.neo.update("test".dup, 0, &this.notifier);
+        this.suspend();
+    }
+
+    private void notifier ( DhtClient.Neo.Update.Notification info,
+        Const!(DhtClient.Neo.Update.Args) args )
+    {
+        with ( info.Active ) final switch ( info.active )
+        {
+            case received:
+                auto received_record = info.received.value;
+                (*info.received.updated_value).copy(received_record);
+                (*info.received.updated_value) ~= [cast(ubyte)'X'];
+
+                if ( this.pause )
+                {
+                    Stdout.formatln("Pausing 5s");
+                    Thread.sleep(seconds(5));
+                    Stdout.formatln("Continuing");
+                }
+                break;
+
+            case conflict: // Another client updated the same record. Try again.
+                Stdout.formatln("Finished: conflict");
+                this.resume();
+                break;
+
+            case succeeded: // Updated successfully.
+            case no_record: // Record not in DHT. Use Put to write a new record.
+                Stdout.formatln("Finished: OK");
+                this.resume();
+                break;
+
+            case error:
+            case no_node:
+            case node_disconnected:
+            case node_error:
+            case wrong_node:
+            case unsupported:
+                Stdout.formatln("Finished: error");
+                this.resume();
+                break;
+
+            mixin(typeof(info).handleInvalidCases);
+        }
+    }
+}
+
 class GetAll : DhtTest
 {
     uint c;
@@ -315,6 +376,18 @@ void main ( cstring[] args )
         case "get":
             assert(params.length == 0);
             theScheduler.schedule(new Get);
+            break;
+
+        case "update":
+            assert(params.length == 0);
+            theScheduler.schedule(new Update);
+            break;
+
+        case "update_pause":
+            assert(params.length == 0);
+            auto update = new Update;
+            update.pause = true;
+            theScheduler.schedule(update);
             break;
 
         case "getall":
