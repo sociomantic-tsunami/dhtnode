@@ -5,11 +5,18 @@
 /srv/dhtnode/dhtnode-*/log/*.log
 {
 	rotate 10
+
+	# Maximum age above which log files are rotated
+	weekly
+
+	# Maximum age above which logs are removed
+	maxage 60
+
 	missingok
 	notifempty
 	delaycompress
 	compress
-	size 500M
+	maxsize 500M
 	sharedscripts
 	postrotate
 		/usr/bin/killall -HUP dhtnode

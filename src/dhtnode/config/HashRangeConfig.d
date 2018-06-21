@@ -39,6 +39,7 @@ import swarm.util.Hash : HashRange;
 
 import ocean.core.Array : startsWith;
 import ocean.core.Enforce;
+import ocean.core.Verify;
 
 import Hash = ocean.text.convert.Hash;
 
@@ -50,6 +51,10 @@ import ocean.text.Util : locate, trim;
 
 import ocean.util.log.Logger;
 
+version ( UnitTest )
+{
+    import ocean.core.Test;
+}
 
 
 public class HashRangeConfig
@@ -152,7 +157,6 @@ public class HashRangeConfig
     public void clear ( )
     {
         HashRange empty;
-        assert(empty.is_empty);
         this.modify(empty);
     }
 
@@ -167,12 +171,9 @@ public class HashRangeConfig
     ***************************************************************************/
 
     private void modify ( HashRange range )
-    in
     {
-        assert(range.is_valid);
-    }
-    body
-    {
+        verify(range.is_valid);
+
         foreach ( filename; this.config_files )
         {
             scope file = new File(filename, File.ReadWriteExisting);
@@ -269,14 +270,14 @@ public class HashRangeConfig
 
     unittest
     {
-        void test ( cstring original, cstring section, cstring key, cstring new_val,
-            cstring expected )
+        void testConfig ( cstring original, cstring section, cstring key,
+            cstring new_val, cstring expected )
         {
             mstring[] slices;
             auto file = original.dup;
             HashRangeConfig.updateConfigValue(file, section, key, new_val, slices);
 
-            assert(file == expected,
+            test!("==")(file, expected,
                 "updated config does not match expected content");
         }
 
@@ -284,14 +285,14 @@ public class HashRangeConfig
             "[Server]\nminval = 0x0000000000000000\nmaxval = 0xffffffffffffffff";
 
         // Non-changes
-        test(original, "ServerX", "minval", "1234567812345678", original);
-        test(original, "Server", "minvalX", "1234567812345678", original);
-        test(original, "Server", "minval", "1234567812345678X", original);
+        testConfig(original, "ServerX", "minval", "1234567812345678", original);
+        testConfig(original, "Server", "minvalX", "1234567812345678", original);
+        testConfig(original, "Server", "minval", "1234567812345678X", original);
 
         // Successful changes
-        test(original, "Server", "minval", "1234567812345678",
+        testConfig(original, "Server", "minval", "1234567812345678",
             "[Server]\nminval = 0x1234567812345678\nmaxval = 0xffffffffffffffff");
-        test(original, "Server", "maxval", "8765432187654321",
+        testConfig(original, "Server", "maxval", "8765432187654321",
             "[Server]\nminval = 0x0000000000000000\nmaxval = 0x8765432187654321");
     }
 }

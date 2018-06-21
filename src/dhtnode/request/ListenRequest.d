@@ -49,6 +49,8 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     import Hash = swarm.util.Hash;
 
+    import ocean.core.Verify;
+    import ocean.core.Enforce;
     import ocean.core.TypeConvert : downcast;
     import ocean.core.Array : pop;
 
@@ -145,7 +147,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
     final override protected bool getNextRecord ( cstring channel_name,
         mstring key, out Const!(void)[] value )
     {
-        assert (key.length == Hash.HashDigits);
+        enforce(key.length == Hash.HashDigits);
 
         hash_t hash;
 
@@ -215,7 +217,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     public void trigger ( Code code, cstring key )
     {
-        switch (code) with (Code)
+        final switch (code) with (Code)
         {
             case DataReady:
                 if ( (*this.resources.hash_buffer).length < HashBufferMaxLength )
@@ -228,11 +230,18 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
                 }
                 else
                 {
+                    cstring addr;
+                    ushort port;
+                    if ( this.reader.addr_port !is null )
+                    {
+                        addr = this.reader.addr_port.address;
+                        port = this.reader.addr_port.port;
+                    }
                     log.warn(
-                        "Listen request on channel '{}'," ~
+                        "Listen request on channel '{}', client {}:{}," ~
                             " hash buffer reached maximum length --" ~
                             " record discarded",
-                        *this.resources.channel_buffer
+                        *this.resources.channel_buffer, addr, port
                     );
                 }
                 break;
@@ -246,12 +255,17 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
                 break;
 
             case Deletion:
-                // Not handled; ignore
+                // Not relevant to this request.
                 break;
 
             case None:
-            default:
-                assert(false);
+                verify(false);
+                break;
+
+            version (D_Version2){} else
+            {
+                default: assert(false);
+            }
         }
 
         if (this.waiting_for_trigger)

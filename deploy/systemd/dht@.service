@@ -1,0 +1,35 @@
+# Runs a dhtnode instance
+
+[Unit]
+Description=Distributed Hash Table instance %I
+AssertPathExists=/srv/dhtnode/dhtnode-%i
+Requires=network-online.target local-fs.target
+After=network-online.target local-fs.target
+#StartLimitIntervalSec=
+#StartLimitBurts=
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/dhtnode/dhtnode-%i/
+ExecStart=/usr/sbin/dhtnode -c /srv/dhtnode/dhtnode-%i/etc/config.ini
+ExecReload=/bin/kill -HUP $MAINPID
+
+# SIGKILL only manually
+TimeoutStopSec=infinity
+SendSIGKILL=no
+Restart=on-failure
+User=dhtnode
+Group=core
+
+# Could be even 1000 (to disable oom killing),
+# but set to -950 for the OOM killer to be able to kill an instance
+# of DHT node if the server is about to die.
+OOMScoreAdjust=-950
+
+# Note infinity is used instead of unlimited
+LimitNOFILE=100000:100000
+LimitMEMLOCK=infinity:infinity
+LimitCORE=infinity:infinity
+
+[Install]
+WantedBy = multi-user.target

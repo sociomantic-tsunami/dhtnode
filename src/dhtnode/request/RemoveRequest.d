@@ -33,6 +33,7 @@ public scope class RemoveRequest : Protocol.Remove
     import dhtnode.request.model.ConstructorMixin;
     import dhtnode.storage.StorageEngine;
 
+    import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
 
     /***************************************************************************
@@ -79,7 +80,7 @@ public scope class RemoveRequest : Protocol.Remove
         if ( storage_channel !is null )
         {
             auto dht_channel = downcast!(StorageEngine)(*storage_channel);
-            assert(dht_channel);
+            verify(dht_channel !is null);
             auto bytes = dht_channel.getSize(key);
             dht_channel.remove(key);
             this.resources.node_info.record_action_counters

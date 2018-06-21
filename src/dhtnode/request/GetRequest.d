@@ -33,6 +33,7 @@ public scope class GetRequest : Protocol.Get
     import dhtnode.request.model.ConstructorMixin;
     import dhtnode.storage.StorageEngine;
 
+    import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
 
     /***************************************************************************
@@ -65,7 +66,7 @@ public scope class GetRequest : Protocol.Get
         if (storage_channel !is null)
         {
             auto dht_channel = downcast!(StorageEngine)(*storage_channel);
-            assert(dht_channel);
+            verify(dht_channel !is null);
             mstring value_slice;
             dht_channel.get(key, *this.resources.value_buffer, value_slice);
             this.resources.node_info.record_action_counters

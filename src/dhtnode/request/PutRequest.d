@@ -33,6 +33,7 @@ public scope class PutRequest : Protocol.Put
     import dhtnode.request.model.ConstructorMixin;
     import dhtnode.storage.StorageEngine;
 
+    import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
 
     /***************************************************************************
@@ -103,7 +104,7 @@ public scope class PutRequest : Protocol.Put
             return false;
 
         auto dht_channel = downcast!(StorageEngine)(storage_channel);
-        assert(dht_channel);
+        verify(dht_channel !is null);
         dht_channel.put(key, cast(cstring) value);
 
         return true;

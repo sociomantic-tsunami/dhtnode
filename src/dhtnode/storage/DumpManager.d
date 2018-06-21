@@ -33,6 +33,7 @@ import Hash = swarm.util.Hash;
 
 import dhtproto.client.legacy.DhtConst;
 
+import ocean.core.Verify;
 import ocean.core.Array : copy, startsWith;
 
 import ocean.io.FilePath;
@@ -340,7 +341,7 @@ public class DumpManager
 
                 auto channel = new_channel(this.dst_path.name.dup);
                 auto dht_channel = cast(StorageEngine)channel;
-                assert(dht_channel);
+                verify(dht_channel !is null);
 
                 this.loadChannel(dht_channel, this.input, this.out_of_range_handling);
 
@@ -487,7 +488,8 @@ public class DumpManager
         }
         else
         {
-            with ( OutOfRangeHandling.Mode ) switch ( out_of_range_handling.mode )
+            with ( OutOfRangeHandling.Mode )
+            final switch ( out_of_range_handling.mode )
             {
                 case Load:
                     log.trace("Encountered out-of-range key in channel '{}': "
@@ -510,8 +512,11 @@ public class DumpManager
                     out_of_range++;
                     return;
 
-                default:
-                    assert(false);
+                version (D_Version2){} else
+                {
+                    default:
+                        assert(false);
+                }
             }
         }
     }

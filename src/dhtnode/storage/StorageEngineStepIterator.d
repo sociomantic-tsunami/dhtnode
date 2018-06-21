@@ -27,6 +27,7 @@ import ocean.transition;
 
 public class StorageEngineStepIterator
 {
+    import ocean.core.Verify;
     import dhtnode.storage.StorageEngine;
     import Hash = swarm.util.Hash;
 
@@ -145,7 +146,8 @@ public class StorageEngineStepIterator
 
     public mstring value ( )
     {
-        assert(this.storage, typeof(this).stringof ~ ".value: storage not set");
+        verify(this.storage !is null,
+            typeof(this).stringof ~ ".next: storage not set");
 
         mstring value_slice;
         this.storage.get(this.current_key, this.value_buffer, value_slice);
@@ -180,7 +182,8 @@ public class StorageEngineStepIterator
 
     public void next ( )
     {
-        assert(this.storage, typeof(this).stringof ~ ".next: storage not set");
+        verify(this.storage !is null,
+            typeof(this).stringof ~ ".next: storage not set");
 
         if (this.started)
             this.storage.getNextKey(this.current_key, this.key_buffer,

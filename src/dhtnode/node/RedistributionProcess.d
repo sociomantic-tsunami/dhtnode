@@ -57,6 +57,7 @@ public RedistributionProcess redistribution_process;
 
 public class RedistributionProcess
 {
+    import ocean.core.Verify;
     import dhtnode.storage.StorageChannels : StorageChannels;
 
     /***************************************************************************
@@ -109,8 +110,8 @@ public class RedistributionProcess
 
     public this ( StorageChannels channels, double redist_memory_limit_mulitplier )
     {
-        assert(channels);
-        assert(redist_memory_limit_mulitplier > 0);
+        verify(channels !is null);
+        verify(redist_memory_limit_mulitplier > 0);
         this.channels = channels;
         this.redist_memory_limit_mulitplier = redist_memory_limit_mulitplier;
     }
@@ -124,7 +125,7 @@ public class RedistributionProcess
 
     public void starting ( )
     {
-        assert(!this.in_progress);
+        verify(!this.in_progress);
         this.in_progress = true;
 
         auto current_bytes = this.bytesInStorage();
@@ -172,7 +173,7 @@ public class RedistributionProcess
 
     public void finishing ( )
     {
-        assert(this.in_progress);
+        verify(this.in_progress);
         this.in_progress = false;
 
         log.info("Finishing redistribution.");
@@ -226,7 +227,7 @@ unittest
     // Add records until the reported size of the storage engine increases
     do
     {
-        storage.put("key", "value");
+        storage.put("0000000000000000", "value");
     }
     while ( storage.num_bytes == initial_size );
 

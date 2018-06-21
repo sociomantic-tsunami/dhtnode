@@ -61,11 +61,13 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     import Hash = swarm.util.Hash;
     import swarm.Const : NodeItem;
+    import dhtproto.client.legacy.DhtConst;
     import dhtproto.client.legacy.common.NodeRecordBatcher;
     import dhtproto.client.legacy.internal.registry.model.IDhtNodeRegistryInfo;
     import dhtproto.client.legacy.internal.connection.model.IDhtNodeConnectionPoolInfo;
 
     import ocean.core.Array : copy;
+    import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
     import ocean.time.StopWatch;
 
@@ -138,7 +140,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
         foreach ( channel; this.resources.storage_channels )
         {
             auto dht_channel = downcast!(StorageEngine)(channel);
-            assert(dht_channel);
+            verify(dht_channel !is null);
             try
             {
                 this.handleChannel(client, dht_channel);
@@ -206,7 +208,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
                     auto result = this.forwardRecord(client, channel,
                         this.resources.iterator.key,
                         this.resources.iterator.value, node);
-                    with ( ForwardResult ) switch ( result )
+                    with ( ForwardResult ) final switch ( result )
                     {
                         case SentSingle:
                         case Invalid:
@@ -220,8 +222,13 @@ public scope class RedistributeRequest : Protocol.Redistribute
                         case SendError:
                             error_during_iteration = true;
                             break;
-                        default:
-                            assert(false);
+                        case None:
+                            verify(false);
+                            break;
+                        version (D_Version2){} else
+                        {
+                            default: assert(false);
+                        }
                     }
                 }
 
@@ -383,11 +390,11 @@ public scope class RedistributeRequest : Protocol.Redistribute
                 // retry the whole iteration.
                 batch.clear();
 
-                assert(batch.fits(key, value));
+                verify(batch.fits(key, value));
             }
 
             auto add_result = batch.add(key, value);
-            assert(add_result == add_result.Added);
+            verify(add_result == add_result.Added);
 
             return result;
         }
