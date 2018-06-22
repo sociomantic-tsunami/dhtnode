@@ -47,8 +47,6 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 {
     import dhtnode.request.model.ConstructorMixin;
 
-    import Hash = swarm.util.Hash;
-
     import ocean.core.Verify;
     import ocean.core.Enforce;
     import ocean.core.TypeConvert : downcast;
@@ -215,7 +213,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     ***************************************************************************/
 
-    public void trigger ( Code code, cstring key )
+    public void trigger ( Code code, hash_t key )
     {
         final switch (code) with (Code)
         {
@@ -226,7 +224,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
                     //several times. Since the buffer is flushed often and
                     //checking the value before adding it could be a to heavy
                     //cost there's no need to do a check before adding the key.
-                    (*this.resources.hash_buffer) ~= Hash.straightToHash(key);
+                    (*this.resources.hash_buffer) ~= key;
                 }
                 else
                 {
