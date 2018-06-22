@@ -181,14 +181,7 @@ public class StorageEngine : IStorageEngine
         bool trigger_listeners = true )
     {
         auto hash = Hash.straightToHash(key);
-
-        tcmdbput(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof),
-            value.ptr, castFrom!(size_t).to!(int)(value.length));
-
-        if ( trigger_listeners )
-            this.listeners.trigger(Listeners.Listener.Code.DataReady, hash);
-
-        return this;
+        return this.put(hash, value, trigger_listeners);
     }
 
 
@@ -201,9 +194,13 @@ public class StorageEngine : IStorageEngine
     public typeof(this) put ( hash_t key, cstring value,
         bool trigger_listeners = true )
     {
-        char[hash_t.sizeof * 2] key_str;
-        Hash.toHexString(key, key_str);
-        return this.put(key_str, value, trigger_listeners);
+        tcmdbput(this.db, &key, castFrom!(size_t).to!(int)(key.sizeof),
+            value.ptr, castFrom!(size_t).to!(int)(value.length));
+
+        if ( trigger_listeners )
+            this.listeners.trigger(Listeners.Listener.Code.DataReady, key);
+
+        return this;
     }
 
 
@@ -229,21 +226,7 @@ public class StorageEngine : IStorageEngine
         out mstring value )
     {
         auto hash = Hash.straightToHash(key);
-
-        int len;
-        if ( auto value_ = cast(void*)tcmdbget(this.db, &hash,
-            castFrom!(size_t).to!(int)(hash.sizeof), &len) )
-        {
-            if ( value_buffer.length < len )
-                value_buffer.length = len;
-
-            value_buffer[0..len] = (cast(char*)value_)[0..len];
-            value = value_buffer[0..len];
-
-            free(value_);
-        }
-
-        return this;
+        return this.get(hash, value_buffer, value);
     }
 
 
@@ -256,10 +239,18 @@ public class StorageEngine : IStorageEngine
     public typeof(this) get ( hash_t key, ref mstring value_buffer,
         out mstring value )
     {
-        char[hash_t.sizeof * 2] key_str;
-        Hash.toHexString(key, key_str);
+        int len;
+        if ( auto value_ = cast(void*)tcmdbget(this.db, &key,
+            castFrom!(size_t).to!(int)(key.sizeof), &len) )
+        {
+            if ( value_buffer.length < len )
+                value_buffer.length = len;
 
-        this.get(key_str, value_buffer, value);
+            value_buffer[0..len] = (cast(char*)value_)[0..len];
+            value = value_buffer[0..len];
+
+            free(value_);
+        }
 
         return this;
     }
@@ -286,18 +277,7 @@ public class StorageEngine : IStorageEngine
     public typeof(this) get ( cstring key, void delegate ( cstring ) value_dg )
     {
         auto hash = Hash.straightToHash(key);
-        int len;
-        void* value = cast(void*)tcmdbget(this.db, &hash,
-            castFrom!(size_t).to!(int)(hash.sizeof), &len);
-
-        if ( value !is null )
-        {
-            auto value_str = (cast(char*)value)[0..len];
-            value_dg(value_str);
-            free(value);
-        }
-
-        return this;
+        return this.get(hash, value_dg);
     }
 
 
@@ -309,10 +289,16 @@ public class StorageEngine : IStorageEngine
 
     public typeof(this) get ( hash_t key, void delegate ( cstring ) value_dg )
     {
-        char[hash_t.sizeof * 2] key_str;
-        Hash.toHexString(key, key_str);
+        int len;
+        void* value = cast(void*)tcmdbget(this.db, &key,
+            castFrom!(size_t).to!(int)(key.sizeof), &len);
 
-        this.get(key_str, value_dg);
+        if ( value !is null )
+        {
+            auto value_str = (cast(char*)value)[0..len];
+            value_dg(value_str);
+            free(value);
+        }
 
         return this;
     }
@@ -333,10 +319,7 @@ public class StorageEngine : IStorageEngine
     public size_t getSize ( cstring key )
     {
         auto hash = Hash.straightToHash(key);
-
-        auto s = tcmdbvsiz(this.db,
-            &hash, castFrom!(size_t).to!(int)(hash.sizeof));
-        return s < 0 ? 0 : s;
+        return this.getSize(hash);
     }
 
 
@@ -348,10 +331,9 @@ public class StorageEngine : IStorageEngine
 
     public size_t getSize ( hash_t key )
     {
-        char[hash_t.sizeof * 2] key_str;
-        Hash.toHexString(key, key_str);
-
-        return this.getSize(key_str);
+        auto s = tcmdbvsiz(this.db,
+            &key, castFrom!(size_t).to!(int)(key.sizeof));
+        return s < 0 ? 0 : s;
     }
 
 
@@ -370,12 +352,7 @@ public class StorageEngine : IStorageEngine
     public bool exists ( cstring key )
     {
         auto hash = Hash.straightToHash(key);
-
-        int size;
-
-        size = tcmdbvsiz(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
-
-        return size >= 0;
+        return this.exists(hash);
     }
 
 
@@ -387,10 +364,9 @@ public class StorageEngine : IStorageEngine
 
     public bool exists ( hash_t key )
     {
-        char[hash_t.sizeof * 2] key_str;
-        Hash.toHexString(key, key_str);
-
-        return this.exists(key_str);
+        int size;
+        size = tcmdbvsiz(this.db, &key, castFrom!(size_t).to!(int)(key.sizeof));
+        return size >= 0;
     }
 
 
@@ -409,10 +385,7 @@ public class StorageEngine : IStorageEngine
     public typeof(this) remove ( cstring key )
     {
         auto hash = Hash.straightToHash(key);
-
-        tcmdbout(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
-
-        return this;
+        return this.remove(hash);
     }
 
 
@@ -424,10 +397,8 @@ public class StorageEngine : IStorageEngine
 
     public typeof(this) remove ( hash_t key )
     {
-        char[hash_t.sizeof * 2] key_str;
-        Hash.toHexString(key, key_str);
-
-        return this.remove(key_str);
+        tcmdbout(this.db, &key, castFrom!(size_t).to!(int)(key.sizeof));
+        return this;
     }
 
 
