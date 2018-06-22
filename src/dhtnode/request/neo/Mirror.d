@@ -182,25 +182,16 @@ public scope class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
 
     ***************************************************************************/
 
-    public void trigger ( Code code, cstring key )
+    public void trigger ( Code code, hash_t key )
     {
-        void update ( UpdateType type, cstring key )
-        {
-            hash_t hash_key;
-            auto ok = toHashT(key, hash_key);
-            assert(ok);
-
-            this.updated(Update(type, hash_key));
-        }
-
         with ( Code ) switch ( code )
         {
             case DataReady:
-                update(UpdateType.Change, key);
+                this.updated(Update(UpdateType.Change, key));
                 break;
 
             case Deletion:
-                update(UpdateType.Deletion, key);
+                this.updated(Update(UpdateType.Deletion, key));
                 break;
 
             case Finish:

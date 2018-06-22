@@ -95,7 +95,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    protected alias IListeners!(cstring) Listeners;
+    protected alias IListeners!(hash_t) Listeners;
 
     protected Listeners listeners;
 
@@ -185,7 +185,7 @@ public class StorageEngine : IStorageEngine
             value.ptr, castFrom!(size_t).to!(int)(value.length));
 
         if ( trigger_listeners )
-            this.listeners.trigger(Listeners.Listener.Code.DataReady, key);
+            this.listeners.trigger(Listeners.Listener.Code.DataReady, hash);
 
         return this;
     }
@@ -411,7 +411,7 @@ public class StorageEngine : IStorageEngine
 
         tcmdbout(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
 
-        this.listeners.trigger(Listeners.Listener.Code.Deletion, key);
+        this.listeners.trigger(Listeners.Listener.Code.Deletion, hash);
 
         return this;
     }
@@ -571,7 +571,7 @@ public class StorageEngine : IStorageEngine
 
     public override void reset ( )
     {
-        this.listeners.trigger(IListener.Code.Finish, "");
+        this.listeners.trigger(IListener.Code.Finish, 0);
     }
 
 
@@ -583,7 +583,7 @@ public class StorageEngine : IStorageEngine
 
     public override void flush ( )
     {
-        this.listeners.trigger(IListener.Code.Flush, "");
+        this.listeners.trigger(IListener.Code.Flush, 0);
     }
 
 
