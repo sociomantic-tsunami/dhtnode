@@ -617,10 +617,6 @@ public class DhtNodeServer : DaemonApp
             // Don't log these exception types, which only occur on the normal
             // disconnection of a client.
         }
-        else if ( cast(OutOfMemoryException)exception )
-        {
-            logger.error("OutOfMemoryException caught in eventLoop");
-        }
         else
         {
             this.conn_error_buf.length = 0;
