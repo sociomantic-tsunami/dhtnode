@@ -140,7 +140,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
             catch ( Exception e )
             {
                 log.error("Exception thrown while redistributing channel '{}': "
-                    "'{}' @ {}:{}", channel.id, getMsg(e), e.file, e.line);
+                    "'{}' @ {}:{}", channel.id, e.message, e.file, e.line);
                 throw e;
             }
         }

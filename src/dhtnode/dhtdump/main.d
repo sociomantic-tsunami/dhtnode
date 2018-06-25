@@ -91,7 +91,7 @@ private int main ( istring[] cl_args )
     catch ( Throwable e )
     {
         log.error("Caught exception in main: {} @ {}:{}",
-            getMsg(e), e.file, e.line);
+            e.message, e.file, e.line);
         throw e;
     }
 }
