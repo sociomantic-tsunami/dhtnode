@@ -482,7 +482,7 @@ public class DhtNodeServer : DaemonApp
         catch ( Exception exception )
         {
             logger.error("Exception caught in writer flush timer handler: {} @ {}:{}",
-                getMsg(exception), exception.file, exception.line);
+                exception.message, exception.file, exception.line);
         }
 
         return true;
@@ -623,7 +623,7 @@ public class DhtNodeServer : DaemonApp
             enableStomping(this.conn_error_buf);
             conn.formatInfo(this.conn_error_buf);
             logger.error("Exception caught in eventLoop: '{}' @ {}:{} on {}",
-                getMsg(exception), exception.file, exception.line,
+                exception.message, exception.file, exception.line,
                 this.conn_error_buf);
         }
     }

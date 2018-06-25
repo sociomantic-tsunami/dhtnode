@@ -325,7 +325,7 @@ public class DumpCycle : SelectFiber
                 catch ( Exception e )
                 {
                     log.error("Exception thrown while dumping channel '{}': '{}' @ {}:{}",
-                        channel, getMsg(e), e.file, e.line);
+                        channel, e.message, e.file, e.line);
                     throw e;
                 }
             }
@@ -337,7 +337,7 @@ public class DumpCycle : SelectFiber
         catch ( Exception e )
         {
             log.error("Exception thrown in dump cycle: '{}' @ {}:{}",
-                getMsg(e), e.file, e.line);
+                e.message, e.file, e.line);
             throw e;
         }
     }
@@ -496,7 +496,7 @@ public class DumpCycle : SelectFiber
         catch ( Exception e )
         {
             log.error("Failed to dump channel to file '{}': {} @ {} : {}",
-                this.file.path, getMsg(e), e.file, e.line);
+                this.file.path, e.message, e.file, e.line);
         }
     }
 
