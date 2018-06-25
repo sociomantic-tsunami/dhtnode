@@ -132,18 +132,18 @@ public template ChannelIteration ( alias resources, IterationKind kind,
 
             static if (kind == IterationKind.Key)
             {
-                args[0] = iterator.key();
+                args[0] = this.iterator.key();
             }
             else
             {
-                args[0] = iterator.key();
-                args[1] = iterator.value();
+                args[0] = this.iterator.key();
+                args[1] = this.iterator.value();
             }
 
             if (predicate(args))
             {
                 this.resources.node_info.record_action_counters
-                    .increment("iterated", iterator.value.length);
+                    .increment("iterated", this.iterator.value.length);
                 return true;
             }
         }
