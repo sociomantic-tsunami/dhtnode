@@ -232,6 +232,42 @@ public class StorageEngine : IStorageEngine
     }
 
 
+    /***************************************************************************
+
+        Gets the value associated with the specified key and passes it to the
+        provided delegate. If the record does not exist, the delegate is not
+        called.
+
+        Note: passing the value to the caller via a delegate, like this, is an
+        optimisation: it requires one less buffer copy.
+
+        Params:
+            key = key to look up
+            value_dg = delegate to pass the record value to, if it exists
+
+        Returns:
+            this instance
+
+    ***************************************************************************/
+
+    public typeof(this) get ( cstring key, void delegate ( cstring ) value_dg )
+    {
+        auto hash = Hash.straightToHash(key);
+        int len;
+        void* value = cast(void*)tcmdbget(this.db, &hash,
+            castFrom!(size_t).to!(int)(hash.sizeof), &len);
+
+        if ( value !is null )
+        {
+            auto value_str = (cast(char*)value)[0..len];
+            value_dg(value_str);
+            free(value);
+        }
+
+        return this;
+    }
+
+
     /***********************************************************************
 
        Get record's size
