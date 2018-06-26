@@ -29,6 +29,7 @@ public class StorageEngineStepIterator
 {
     import ocean.core.Verify;
     import dhtnode.storage.StorageEngine;
+    import Hash = swarm.util.Hash;
 
 
     /***************************************************************************
@@ -42,19 +43,27 @@ public class StorageEngineStepIterator
 
     /***************************************************************************
 
-        Indicates if iteration has already started. If next() is called when
-        this value is false, the iteration will be started.
+        Indicates if iteration has already started or finished. Determines what
+        happens when next() is called.
 
     ***************************************************************************/
 
-    private bool started;
+    private enum State
+    {
+        Init,
+        Started,
+        Finished
+    }
+
+    /// ditto
+    private State state;
 
 
     /***************************************************************************
 
-        Buffer to receive record keys. The length of this buffer is never
+        Buffer to render record keys. The length of this buffer is never
         decreased, only increased (if necessary). This is an optimization, as
-        keys are fetched extremely frequently and array length resetting is not
+        keys are rendered extremely frequently and array length resetting is not
         free (especially in D2 builds, where assumeSafeAppend must be called).
 
     ***************************************************************************/
@@ -64,11 +73,11 @@ public class StorageEngineStepIterator
 
     /***************************************************************************
 
-        Key of current record (slice of this.key_buffer).
+        Key of current record.
 
     ***************************************************************************/
 
-    private mstring current_key;
+    private hash_t current_key;
 
 
     /***************************************************************************
@@ -96,7 +105,7 @@ public class StorageEngineStepIterator
     public void setStorage ( StorageEngine storage )
     {
         this.storage = storage;
-        this.started = false;
+        this.state = State.Init;
     }
 
 
@@ -109,9 +118,29 @@ public class StorageEngineStepIterator
 
     ***************************************************************************/
 
-    public mstring key ( )
+    public hash_t key ( )
     {
         return this.current_key;
+    }
+
+
+    /***************************************************************************
+
+        Gets the key of the current record the iterator is pointing to, rendered
+        as a hex string.
+
+        Returns:
+            current key rendered as a string
+
+    ***************************************************************************/
+
+    public mstring key_as_string ( )
+    {
+        if ( this.key_buffer.length < hash_t.sizeof * 2 )
+            this.key_buffer.length = hash_t.sizeof * 2;
+
+        Hash.toHexString(this.current_key, this.key_buffer);
+        return this.key_buffer;
     }
 
 
@@ -139,7 +168,7 @@ public class StorageEngineStepIterator
     /***************************************************************************
 
         Advances the iterator to the next record or to the first record in the
-        storage engine, if this.started is false.
+        storage engine, if this.state is Init.
 
     ***************************************************************************/
 
@@ -148,14 +177,25 @@ public class StorageEngineStepIterator
         verify(this.storage !is null,
             typeof(this).stringof ~ ".next: storage not set");
 
-        if (this.started)
-            this.storage.getNextKey(this.current_key, this.key_buffer,
-                this.current_key);
-        else
+        bool more;
+        with ( State ) switch ( this.state )
         {
-            this.started = true;
-            this.storage.getFirstKey(this.key_buffer, this.current_key);
+            case Init:
+                this.state = Started;
+                more = this.storage.getFirstKey(this.current_key);
+                break;
+            case Started:
+                more = this.storage.getNextKey(this.current_key,
+                    this.current_key);
+                break;
+            case Finished:
+                break;
+            default:
+                verify(false);
         }
+
+        if ( !more )
+            this.state = State.Finished;
     }
 
 
@@ -174,6 +214,6 @@ public class StorageEngineStepIterator
 
     public bool lastKey ( )
     {
-        return this.key.length == 0;
+        return this.state == State.Finished;
     }
 }
