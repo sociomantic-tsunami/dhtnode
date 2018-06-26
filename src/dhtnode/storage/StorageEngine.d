@@ -192,6 +192,21 @@ public class StorageEngine : IStorageEngine
     }
 
 
+    /***************************************************************************
+
+        Ditto
+
+    ***************************************************************************/
+
+    public typeof(this) put ( hash_t key, cstring value,
+        bool trigger_listeners = true )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+        return this.put(key_str, value, trigger_listeners);
+    }
+
+
     /***********************************************************************
 
        Get record
@@ -234,6 +249,24 @@ public class StorageEngine : IStorageEngine
 
     /***************************************************************************
 
+        Ditto
+
+    ***************************************************************************/
+
+    public typeof(this) get ( hash_t key, ref mstring value_buffer,
+        out mstring value )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        this.get(key_str, value_buffer, value);
+
+        return this;
+    }
+
+
+    /***************************************************************************
+
         Gets the value associated with the specified key and passes it to the
         provided delegate. If the record does not exist, the delegate is not
         called.
@@ -268,6 +301,23 @@ public class StorageEngine : IStorageEngine
     }
 
 
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public typeof(this) get ( hash_t key, void delegate ( cstring ) value_dg )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        this.get(key_str, value_dg);
+
+        return this;
+    }
+
+
     /***********************************************************************
 
        Get record's size
@@ -287,6 +337,21 @@ public class StorageEngine : IStorageEngine
         auto s = tcmdbvsiz(this.db,
             &hash, castFrom!(size_t).to!(int)(hash.sizeof));
         return s < 0 ? 0 : s;
+    }
+
+
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public size_t getSize ( hash_t key )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        return this.getSize(key_str);
     }
 
 
@@ -314,6 +379,21 @@ public class StorageEngine : IStorageEngine
     }
 
 
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public bool exists ( hash_t key )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        return this.exists(key_str);
+    }
+
+
     /***********************************************************************
 
         Remove record
@@ -333,6 +413,21 @@ public class StorageEngine : IStorageEngine
         tcmdbout(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
 
         return this;
+    }
+
+
+    /***************************************************************************
+
+        Ditto.
+
+    ***************************************************************************/
+
+    public typeof(this) remove ( hash_t key )
+    {
+        char[hash_t.sizeof * 2] key_str;
+        Hash.toHexString(key, key_str);
+
+        return this.remove(key_str);
     }
 
 
