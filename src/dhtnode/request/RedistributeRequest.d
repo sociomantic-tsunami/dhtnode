@@ -479,12 +479,9 @@ public scope class RedistributeRequest : Protocol.Redistribute
         // Remove successfully sent records from channel
         if ( !error )
         {
-            this.resources.key_buffer.length = Hash.HexDigest.length;
-            enableStomping(*this.resources.key_buffer);
             foreach ( hash; batch.batched_hashes )
             {
-                Hash.toHexString(hash, *this.resources.key_buffer);
-                channel.remove(*this.resources.key_buffer);
+                channel.remove(hash);
             }
         }
 
@@ -563,16 +560,17 @@ public scope class RedistributeRequest : Protocol.Redistribute
     private void advanceIteration ( StorageEngineStepIterator iterator,
         bool remove_record, StorageEngine channel )
     {
+        hash_t key;
         if ( remove_record )
         {
-            (*this.resources.key_buffer).copy(iterator.key_as_string);
+            key = iterator.key();
         }
 
         iterator.next();
 
         if ( remove_record )
         {
-            channel.remove(*this.resources.key_buffer);
+            channel.remove(key);
         }
     }
 }
