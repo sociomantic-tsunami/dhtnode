@@ -132,11 +132,11 @@ public template ChannelIteration ( alias resources, IterationKind kind,
 
             static if (kind == IterationKind.Key)
             {
-                args[0] = this.iterator.key();
+                args[0] = this.iterator.key_as_string();
             }
             else
             {
-                args[0] = this.iterator.key();
+                args[0] = this.iterator.key_as_string();
                 args[1] = this.iterator.value();
             }
 

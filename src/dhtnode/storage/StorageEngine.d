@@ -700,24 +700,17 @@ public class StorageEngine : IStorageEngine
         Gets the first key in the database.
 
         Params:
-            key_buffer = buffer to receive record key output. The length of
-                this buffer is never decreased, only increased (if necessary).
-                This is an optimization, as this method is called extremely
-                frequently and array length resetting is not free (especially in
-                D2 builds, where assumeSafeAppend must be called).
-            key = record key output (slice of key_buffer)
+            key = record key output
 
         Returns:
-            this instance
+            true on success; false if there are no more keys to iterate
 
     ***********************************************************************/
 
-    public typeof(this) getFirstKey ( ref mstring key_buffer, out mstring key )
+    public bool getFirstKey ( out hash_t key )
     {
         tcmdbiterinit(this.db);
-        this.iterateNextKey(key_buffer, key);
-
-        return this;
+        return this.iterateNextKey(key);
     }
 
 
@@ -734,31 +727,22 @@ public class StorageEngine : IStorageEngine
 
         Params:
             last_key = key to iterate from
-            key_buffer = buffer to receive record key output. The length of
-                this buffer is never decreased, only increased (if necessary).
-                This is an optimization, as this method is called extremely
-                frequently and array length resetting is not free (especially in
-                D2 builds, where assumeSafeAppend must be called).
-            key = record key output (slice of key_buffer)
+            key = record key output
 
         Returns:
-            this instance
+            true on success; false if there are no more keys to iterate
 
     ***********************************************************************/
 
-    public typeof(this) getNextKey ( cstring last_key, ref mstring key_buffer,
-        out mstring key )
+    public bool getNextKey ( hash_t last_key, out hash_t key )
     {
-        auto hash = Hash.straightToHash(last_key);
+        tcmdbiterinit2(this.db, &last_key,
+            castFrom!(size_t).to!(int)(last_key.sizeof));
 
-        tcmdbiterinit2(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
+        if ( !this.iterateNextKey(key) )
+            return false;
 
-        if ( !this.iterateNextKey(key_buffer, key) )
-            return this;
-
-        this.iterateNextKey(key_buffer, key);
-
-        return this;
+        return this.iterateNextKey(key);
     }
 
 
@@ -768,19 +752,14 @@ public class StorageEngine : IStorageEngine
         record in the database.
 
         Params:
-            key_buffer = buffer to receive record key output. The length of
-                this buffer is never decreased, only increased (if necessary).
-                This is an optimization, as this method is called extremely
-                frequently and array length resetting is not free (especially in
-                D2 builds, where assumeSafeAppend must be called).
-            key = record key output (slice of key_buffer)
+            key = record key output
 
         Returns
-            true on success or false if record not existing
+            true on success; false if there are no more keys to iterate
 
     ***************************************************************************/
 
-    private bool iterateNextKey ( ref char[] key_buffer, out mstring key )
+    private bool iterateNextKey ( out hash_t key )
     {
         int len;
         if ( auto key_ = cast(hash_t*)tcmdbiternext(this.db, &len) )
@@ -788,11 +767,7 @@ public class StorageEngine : IStorageEngine
             verify(len == hash_t.sizeof);
             auto str_len = hash_t.sizeof * 2;
 
-            if ( key_buffer.length < str_len )
-                key_buffer.length = str_len;
-
-            Hash.toHexString(*key_, key_buffer[0..str_len]);
-            key = key_buffer[0..str_len];
+            key = *key_;
 
             free(key_);
 

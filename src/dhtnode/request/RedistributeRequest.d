@@ -194,11 +194,11 @@ public scope class RedistributeRequest : Protocol.Redistribute
                 bool remove_record;
                 NodeItem node;
 
-                if ( this.recordShouldBeForwarded(this.resources.iterator.key,
-                    client, node) )
+                if ( this.recordShouldBeForwarded(
+                    this.resources.iterator.key_as_string, client, node) )
                 {
                     auto result = this.forwardRecord(client, channel,
-                        this.resources.iterator.key,
+                        this.resources.iterator.key_as_string,
                         this.resources.iterator.value, node);
                     with ( ForwardResult ) final switch ( result )
                     {
@@ -565,7 +565,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
     {
         if ( remove_record )
         {
-            (*this.resources.key_buffer).copy(iterator.key);
+            (*this.resources.key_buffer).copy(iterator.key_as_string);
         }
 
         iterator.next();
