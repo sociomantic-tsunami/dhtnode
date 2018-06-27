@@ -79,6 +79,17 @@ jobs:
           if: tag IS present
           env: DMD=1.081.* F=production $ID
           script:
+              # For debugging - print what packages are passed as artifacts
+              - ls -lah "$ARTIFACTS_DIR"
+              - beaver install
+              - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
+                "$ARTIFACTS_DIR"/*.deb
+        - stage: Upload Package
+          if: tag IS present
+          env: DMD=2.070.* F=production $ID
+          script:
+              # For debugging - print what packages are passed as artifacts
+              - ls -lah "$ARTIFACTS_DIR"
               - beaver install
               - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
                 "$ARTIFACTS_DIR"/*.deb
