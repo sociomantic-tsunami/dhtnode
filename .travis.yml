@@ -86,7 +86,7 @@ jobs:
                 "$ARTIFACTS_DIR"/*.deb
         - stage: Upload Package
           if: tag IS present
-          env: DMD=2.070.* F=production $ID
+          env: DMD=2.070.2.* F=production $ID
           script:
               # For debugging - print what packages are passed as artifacts
               - ls -lah "$ARTIFACTS_DIR"
