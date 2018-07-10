@@ -463,7 +463,17 @@ public class DumpManager
         ref ulong out_of_range, ref ulong invalid, ref ulong too_big,
         ref ulong empty )
     {
-        if ( !Hash.isHash(key) )
+        // TODO: this support for reading hash_t keys from the dump file is a
+        // hack to work around an error. It can be removed in the next release
+        // (or the dump format adapted fully to write keys as hash_t.)
+        char[hash_t.sizeof * 2] key_str;
+        if ( key.length == hash_t.sizeof )
+        {
+            auto hash_key = *(cast(hash_t*)key.ptr);
+            Hash.toHexString(hash_key, key_str);
+            key = key_str;
+        }
+        else if ( !Hash.isHash(key) )
         {
             log.error("Encountered invalid non-hexadecimal key in channel '{}': "
                 "{} -- ignored", storage.id, key);
