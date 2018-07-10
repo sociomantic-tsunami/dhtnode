@@ -276,11 +276,16 @@ public class DumpManager
                 storage.id, storage.num_records);
 
         // Write records
-        foreach ( key, value; storage )
+        foreach ( hash_key, value; storage )
         {
-            // TODO: handle case where out of disk space
-            output.write(key, value);
+            // Render hash to a hex-string for dumping.
+            char[hash_t.sizeof * 2] key_str;
+            Hash.toHexString(hash_key, key_str);
+
+            output.write(key_str, value);
             progress_manager.progress(1);
+
+            // TODO: handle case where out of disk space
         }
 
         log.info("Finished dumping channel '{}' to disk, took {}s, "
