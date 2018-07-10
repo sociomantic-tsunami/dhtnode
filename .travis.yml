@@ -41,6 +41,7 @@ jobs:
           script:
               - set -e # Do not continue on failure
               - beaver dlang install
+              - beaver dlang make
               - beaver dlang make pkg
               - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode build/production/pkg/*.deb
 
