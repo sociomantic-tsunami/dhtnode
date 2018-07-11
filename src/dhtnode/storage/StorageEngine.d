@@ -330,7 +330,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public alias int delegate ( ref char[] key, ref char[] value ) IterDg;
+    public alias int delegate ( ref hash_t key, ref char[] value ) IterDg;
 
 
     /***************************************************************************
@@ -382,7 +382,7 @@ public class StorageEngine : IStorageEngine
     extern ( C ) private static bool db_iter ( void* key_ptr, int key_len,
         void* val_ptr, int val_len, void* context_ )
     {
-        auto key = (cast(char*)key_ptr)[0..key_len];
+        auto key = *(cast(hash_t*)key_ptr);
         auto val = (cast(char*)val_ptr)[0..val_len];
         auto context = cast(IterContext*)context_;
 
