@@ -748,3 +748,79 @@ public class StorageEngine : IStorageEngine
             return false;
     }
 }
+
+version ( UnitTest )
+{
+    import ocean.core.Test;
+    import Hash = swarm.util.Hash;
+}
+
+unittest
+{
+    auto storage = new StorageEngine("dummy", null, 1024, null);
+
+    hash_t key1 = 0x0123456789abcdef;
+    hash_t key2 = 0xfedcba9876543210;
+    char[hash_t.sizeof * 2] key_str1, key_str2;
+    Hash.toHexString(key1, key_str1);
+    Hash.toHexString(key2, key_str2);
+    cstring val1 = "value";
+    cstring val2 = "another value";
+
+    mstring buf, value;
+
+    // Operations on a non-existent record.
+    test(!storage.exists(key1));
+    test!("==")(storage.getSize(key1), 0);
+    test!("==")(storage.num_records(), 0);
+
+    // Basic put / get.
+    storage.put(key1, val1);
+    storage.get(key1, buf, value);
+    test!("==")(value, val1);
+
+    // Basic get / put with string keys.
+    storage.put(key_str1, val2);
+    storage.get(key_str1, buf, value);
+    test!("==")(value, val2);
+
+    // Exists.
+    test(storage.exists(key1));
+    test(storage.exists(key_str1));
+
+    // Num records.
+    test!("==")(storage.num_records(), 1);
+
+    // Remove.
+    storage.remove(key1);
+    test(!storage.exists(key1));
+    test!("==")(storage.getSize(key1), 0);
+
+    // Put then remove with string keys.
+    storage.put(key_str1, val1);
+    test(storage.exists(key1));
+    storage.remove(key_str1);
+    test(!storage.exists(key1));
+    test!("==")(storage.getSize(key1), 0);
+
+    // Put two records.
+    storage.put(key1, val1);
+    storage.put(key2, val2);
+    test!("==")(storage.num_records(), 2);
+
+    // Iteration.
+    mstring[hash_t] iterated;
+    foreach ( k, v; storage )
+        iterated[k] = v.dup;
+    test!("==")(iterated.length, 2);
+    foreach ( k, v; iterated )
+    {
+        if ( k == key1 )
+            test!("==")(v, val1);
+        else
+        {
+            test!("==")(k, key2);
+            test!("==")(v, val2);
+        }
+    }
+}
