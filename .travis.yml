@@ -48,22 +48,22 @@ jobs:
     include:
         # Test matrix
         - <<: *test-matrix
-          env: DMD=1.081.* F=production
+          env: DMD=1.082.* F=production
         - <<: *test-matrix
-          env: DMD=1.081.* F=devel
+          env: DMD=1.082.* F=devel
         - <<: *test-matrix
-          env: DMD=2.070.2.s* F=production
+          env: DMD=2.071.2.s* F=production
         - <<: *test-matrix
-          env: DMD=2.070.2.s* F=devel
+          env: DMD=2.071.2.s* F=devel
 
         # Test deployment docker image generation
         - stage: Test
           script:
-              - docker build --build-arg DMD=2.070.2.s* --build-arg DIST=xenial
+              - docker build --build-arg DMD=2.071.2.s* --build-arg DIST=xenial
                 -t dhtnode -f docker/Dockerfile.dhtnode .
 
         # Package matrix
         - <<: *package-matrix
-          env: DMD=1.081.* F=production
+          env: DMD=1.082.* F=production
         - <<: *package-matrix
-          env: DMD=2.070.2.s* F=production
+          env: DMD=2.071.2.s* F=production
