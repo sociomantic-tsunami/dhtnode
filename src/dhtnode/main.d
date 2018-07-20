@@ -22,7 +22,7 @@ module dhtnode.main;
 
 import ocean.transition;
 
-import ocean.util.app.DaemonApp;
+import ocean.application.Daemon;
 
 import ocean.util.log.Logger;
 
@@ -73,7 +73,7 @@ version (UnitTest) {} else
 private int main ( istring[] cl_args )
 {
     auto app = new DhtNodeServer;
-    return app.main(cl_args);
+    return app.run(cl_args);
 }
 
 
@@ -84,7 +84,7 @@ private int main ( istring[] cl_args )
 
 *******************************************************************************/
 
-public class DhtNodeServer : DaemonApp
+public class DhtNodeServer : Daemon
 {
     import Version;
 
@@ -222,7 +222,7 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private EpollSelectDispatcher epoll;
+    // private EpollSelectDispatcher epoll;
 
 
     /***************************************************************************
@@ -287,15 +287,16 @@ public class DhtNodeServer : DaemonApp
             GC.monitor(&this.gcCollectStart, &this.gcCollectEnd);
         }
 
-        const app_name = "dhtnode";
-        const app_desc = "dhtnode: DHT server node.";
+        Daemon.Settings settings;
+        settings.name = "dhtnode";
+        settings.desc = "dhtnode: DHT server node.";
+        settings.signals = [SIGINT, SIGTERM, SIGQUIT];
+        settings.ver = version_info;
 
-        DaemonApp.OptionalSettings optional;
-        optional.signals = [SIGINT, SIGTERM, SIGQUIT];
+        // this.epoll = new EpollSelectDispatcher;
 
-        this.epoll = new EpollSelectDispatcher;
-
-        super(app_name, app_desc, version_info, optional);
+        super(settings);
+        this.hooks.pre_handle_args ~= &this.setupArgs;
     }
 
 
@@ -304,18 +305,12 @@ public class DhtNodeServer : DaemonApp
         Override default DaemonApp arguments parsing, specifying that --config
         is required.
 
-        Params:
-            app = application instance
-            args = arguments parser instance
-
     ***************************************************************************/
 
-    override public void setupArgs ( IApplication app, Arguments args )
+    private void setupArgs ( )
     {
-        super.setupArgs(app, args);
-
-        args("config").deefalts = null;
-        args("config").required;
+        this.args("config").deefalts = null;
+        this.args("config").required;
     }
 
 
@@ -329,18 +324,21 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    public override void onSignal ( int signum )
+    protected override void onSignal ( int[] signals )
     {
-        switch ( signum )
+        foreach ( signal; signals )
         {
-            case SIGINT:
-            case SIGTERM:
-            case SIGQUIT:
-                this.sigintHandler();
-                break;
+            switch ( signal )
+            {
+                case SIGINT:
+                case SIGTERM:
+                case SIGQUIT:
+                    this.sigintHandler();
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -349,17 +347,13 @@ public class DhtNodeServer : DaemonApp
 
         Get values from the configuration file.
 
-        Params:
-            app = application instance
-            config = config parser instance
-
     ***************************************************************************/
 
-    public override void processConfig ( IApplication app, ConfigParser config )
+    private void processConfig ( )
     {
-        ConfigReader.fill("Server", this.server_config, config);
-        ConfigReader.fill("Performance", this.performance_config, config);
-        ConfigReader.fill("Options_Memory", this.memory_config, config);
+        ConfigReader.fill("Server", this.server_config, this.config);
+        ConfigReader.fill("Performance", this.performance_config, this.config);
+        ConfigReader.fill("Options_Memory", this.memory_config, this.config);
 
         hash_t min, max;
 
@@ -372,25 +366,24 @@ public class DhtNodeServer : DaemonApp
             "a full-length hash is expected");
 
         this.hash_range = new DhtHashRange(min, max,
-            new HashRangeConfig(this.config_ext.default_configs));
+            new HashRangeConfig(this.settings.config_files));
     }
 
 
     /***************************************************************************
 
-        Do the actual application work. Called by the super class.
-
-        Params:
-            args = command line arguments
-            config = parser instance with the parsed configuration
+        Do the actual application work. Called by the super class in the main
+        Task.
 
         Returns:
             status code to return to the OS
 
     ***************************************************************************/
 
-    override protected int run ( Arguments args, ConfigParser config )
+    protected override int mainAppLogic ( )
     {
+        this.processConfig();
+
         if ( this.memory_config.lock_memory )
         {
             if ( !this.lockMemory() )
@@ -404,26 +397,20 @@ public class DhtNodeServer : DaemonApp
             storage, this.performance_config.redist_memory_limit_mulitplier);
 
         this.node = new DhtNode(this.node_item,
-            storage, this.hash_range, this.epoll,
+            storage, this.hash_range, theScheduler.epoll,
             server_config.backlog, this.per_request_stats);
         this.dht_stats =
-            new ChannelsNodeStats(this.node, this.stats_ext.stats_log);
+            new ChannelsNodeStats(this.node, this.stats_log);
 
         this.node.error_callback = &this.nodeError;
         this.node.connection_limit = server_config.connection_limit;
 
         logger.info("Starting DHT node --------------------------------");
 
-        this.startEventHandling(this.epoll);
-
-        this.timer_ext.register(&this.onWriterFlush,
+        this.timers.register(&this.onWriterFlush,
             cast(double)this.performance_config.write_flush_ms / 1000.0);
 
-        this.node.register(this.epoll);
-
-        logger.info("Starting event loop");
-        this.epoll.eventLoop();
-        logger.info("Event loop exited");
+        this.node.register(theScheduler.epoll);
 
         return 0;
     }
@@ -435,11 +422,10 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    override protected void onStatsTimer ( )
+    protected override void onStatsTimer ( )
     {
-        this.reportSystemStats();
         this.dht_stats.log();
-        this.stats_ext.stats_log.add(.Log.stats());
+        this.stats_log.add(.Log.stats());
 
         struct StompingPreventionStats
         {
@@ -459,8 +445,8 @@ public class DhtNodeServer : DaemonApp
             `);
         }
 
-        this.stats_ext.stats_log.add(stomping_stats);
-        this.stats_ext.stats_log.flush();
+        this.stats_log.add(stomping_stats);
+        this.stats_log.flush();
     }
 
 
@@ -651,11 +637,11 @@ public class DhtNodeServer : DaemonApp
         logger.info("SIGINT handler. Shutting down.");
 
         logger.trace("SIGINT handler: shutting down periodics");
-        this.timer_ext.clear();
+        this.timers.clear();
         logger.trace("SIGINT handler: shutting down periodics finished");
 
         logger.trace("SIGINT handler: stopping node listener");
-        this.node.stopListener(this.epoll);
+        this.node.stopListener(theScheduler.epoll);
         logger.trace("SIGINT handler: stopping node listener finished");
 
         logger.trace("SIGINT handler: shutting down node");
@@ -663,7 +649,7 @@ public class DhtNodeServer : DaemonApp
         logger.trace("SIGINT handler: shutting down node finished");
 
         logger.trace("SIGINT handler: shutting down epoll");
-        this.epoll.shutdown();
+        theScheduler.shutdown();
         logger.trace("SIGINT handler: shutting down epoll finished");
 
         logger.trace("Finished SIGINT handler");
