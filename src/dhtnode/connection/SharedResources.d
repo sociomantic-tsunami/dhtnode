@@ -13,8 +13,6 @@
 
 module dhtnode.connection.SharedResources;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -47,8 +45,6 @@ public import dhtproto.client.legacy.common.NodeRecordBatcher : NodeRecordBatche
 
 public import dhtproto.node.request.params.RedistributeNode;
 
-
-
 /*******************************************************************************
 
     Struct whose fields define the set of shared resources which can be acquired
@@ -76,8 +72,6 @@ public struct ConnectionResources
     DhtClient dht_client;
 }
 
-
-
 /*******************************************************************************
 
     Mix in a class called SharedResources which contains a free list for each of
@@ -88,4 +82,3 @@ public struct ConnectionResources
 *******************************************************************************/
 
 mixin SharedResources_T!(ConnectionResources);
-

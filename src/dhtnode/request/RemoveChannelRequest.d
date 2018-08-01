@@ -51,11 +51,11 @@ public scope class RemoveChannelRequest : Protocol.RemoveChannel
 
     ***************************************************************************/
 
-    final override protected void removeChannel ( cstring channel_name )
+    final override protected void removeChannel (cstring channel_name)
     {
         auto storage_channel = channel_name in this.resources.storage_channels;
 
-        if ( storage_channel !is null )
+        if (storage_channel !is null)
         {
             auto records = storage_channel.num_records;
             auto bytes = storage_channel.num_bytes;
@@ -66,8 +66,8 @@ public scope class RemoveChannelRequest : Protocol.RemoveChannel
             // size of the actual records, but also the size of the TokyoCabinet
             // map structures required to store those records. This is such a
             // rarely performed request that I don't think anyone will mind ;)
-            this.resources.node_info.record_action_counters
-                .increment("deleted", bytes, records);
+            this.resources.node_info.record_action_counters.increment("deleted", bytes,
+                    records);
         }
     }
 }

@@ -22,7 +22,6 @@ import Protocol = dhtproto.node.request.GetChannels;
 
 import ocean.transition;
 
-
 /*******************************************************************************
 
     Request handler
@@ -51,7 +50,7 @@ public scope class GetChannelsRequest : Protocol.GetChannels
 
     ***************************************************************************/
 
-    final override protected cstring[] getChannelsIds ( )
+    final override protected cstring[] getChannelsIds ()
     {
         auto list = this.resources.channel_list_buffer;
 

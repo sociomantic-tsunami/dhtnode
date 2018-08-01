@@ -17,8 +17,6 @@
 
 module dhtnode.request.model.RequestResources;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -35,8 +33,6 @@ import dhtnode.node.IDhtNodeInfo;
 
 import dhtproto.node.request.model.DhtCommand;
 
-
-
 /*******************************************************************************
 
     Mix in an interface called IRequestResources which contains a getter method
@@ -46,8 +42,6 @@ import dhtproto.node.request.model.DhtCommand;
 *******************************************************************************/
 
 mixin IRequestResources_T!(SharedResources);
-
-
 
 /*******************************************************************************
 
@@ -65,11 +59,10 @@ public interface IDhtRequestResources : IRequestResources, DhtCommand.Resources
 
     ***************************************************************************/
 
-    alias .FiberSelectEvent FiberSelectEvent;
-    alias .LoopCeder LoopCeder;
-    alias .StorageChannels StorageChannels;
-    alias .IDhtNodeInfo IDhtNodeInfo;
-
+    alias.FiberSelectEvent FiberSelectEvent;
+    alias.LoopCeder LoopCeder;
+    alias.StorageChannels StorageChannels;
+    alias.IDhtNodeInfo IDhtNodeInfo;
 
     /***************************************************************************
 
@@ -77,8 +70,7 @@ public interface IDhtRequestResources : IRequestResources, DhtCommand.Resources
 
     ***************************************************************************/
 
-    StorageChannels storage_channels ( );
-
+    StorageChannels storage_channels ();
 
     /***************************************************************************
 
@@ -86,10 +78,8 @@ public interface IDhtRequestResources : IRequestResources, DhtCommand.Resources
 
     ***************************************************************************/
 
-    IDhtNodeInfo node_info ( );
+    IDhtNodeInfo node_info ();
 }
-
-
 
 /*******************************************************************************
 
@@ -101,4 +91,3 @@ public interface IDhtRequestResources : IRequestResources, DhtCommand.Resources
 *******************************************************************************/
 
 mixin RequestResources_T!(SharedResources);
-

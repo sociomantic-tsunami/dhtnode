@@ -14,8 +14,6 @@
 
 module dhtnode.connection.DhtClient;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -51,8 +49,6 @@ import dhtproto.client.legacy.internal.connection.DhtNodeConnectionPool;
 
 import ocean.core.Enforce;
 
-
-
 /*******************************************************************************
 
     Custom DhtNodeRegistry with the following modifications from the base dht
@@ -83,13 +79,12 @@ public class DhtNodeRegistry : Swarm.DhtNodeRegistry
 
     ***************************************************************************/
 
-    public this ( EpollSelectDispatcher epoll, ClientSettings settings,
-        IRequestOverflow request_overflow,
-        INodeConnectionPoolErrorReporter error_reporter )
+    public this (EpollSelectDispatcher epoll, ClientSettings settings,
+            IRequestOverflow request_overflow,
+            INodeConnectionPoolErrorReporter error_reporter)
     {
         super(epoll, settings, request_overflow, error_reporter);
     }
-
 
     /***************************************************************************
 
@@ -97,13 +92,12 @@ public class DhtNodeRegistry : Swarm.DhtNodeRegistry
 
     ***************************************************************************/
 
-    public void clear ( )
+    public void clear ()
     {
         this.nodes.list.length = 0;
         enableStomping(this.nodes.list);
         this.nodes.map.clear();
     }
-
 
     /***************************************************************************
 
@@ -117,22 +111,22 @@ public class DhtNodeRegistry : Swarm.DhtNodeRegistry
 
     ***************************************************************************/
 
-    override protected NodeConnectionPool getResponsiblePool ( IRequestParams params )
+    override protected NodeConnectionPool getResponsiblePool (IRequestParams params)
     {
-        if ( params.node.set() )
+        if (params.node.set())
         {
             auto pool = super.inRegistry(params.node.Address, params.node.Port);
             return pool is null ? null : *pool;
         }
 
-        auto dht_params = cast(RequestParams)params;
+        auto dht_params = cast(RequestParams) params;
         auto hash = dht_params.hash;
 
-        foreach ( connpool; this.nodes.list )
+        foreach (connpool; this.nodes.list)
         {
-            auto dht_pool = cast(DhtNodeConnectionPool)connpool;
+            auto dht_pool = cast(DhtNodeConnectionPool) connpool;
 
-            if ( dht_pool.isResponsibleFor(hash) )
+            if (dht_pool.isResponsibleFor(hash))
             {
                 return dht_pool;
             }
@@ -141,8 +135,6 @@ public class DhtNodeRegistry : Swarm.DhtNodeRegistry
         return null;
     }
 }
-
-
 
 /*******************************************************************************
 
@@ -168,17 +160,15 @@ public class DhtClient : IClient
 
     mixin ExtensibleClass!(ScopeRequestsPlugin);
 
-
     /***************************************************************************
 
         Local alias definitions
 
     ***************************************************************************/
 
-    public alias .IRequestNotification RequestNotification;
+    public alias.IRequestNotification RequestNotification;
 
-    public alias .RequestParams RequestParams;
-
+    public alias.RequestParams RequestParams;
 
     /***************************************************************************
 
@@ -187,7 +177,6 @@ public class DhtClient : IClient
     ***************************************************************************/
 
     private BadChannelNameException bad_channel_exception;
-
 
     /***************************************************************************
 
@@ -202,10 +191,10 @@ public class DhtClient : IClient
 
     ***************************************************************************/
 
-    public this ( EpollSelectDispatcher epoll,
-        size_t conn_limit = IClient.Config.default_connection_limit,
-        size_t queue_size = IClient.Config.default_queue_size,
-        size_t fiber_stack_size = IClient.default_fiber_stack_size )
+    public this (EpollSelectDispatcher epoll,
+            size_t conn_limit = IClient.Config.default_connection_limit,
+            size_t queue_size = IClient.Config.default_queue_size,
+            size_t fiber_stack_size = IClient.default_fiber_stack_size)
     {
         ClientSettings settings;
         settings.conn_limit = conn_limit;
@@ -213,7 +202,7 @@ public class DhtClient : IClient
         settings.fiber_stack_size = fiber_stack_size;
 
         auto node_registry = new DhtNodeRegistry(epoll, settings,
-            this.requestOverflow, this.errorReporter);
+                this.requestOverflow, this.errorReporter);
         super(epoll, node_registry);
 
         this.bad_channel_exception = new BadChannelNameException;
@@ -221,19 +210,17 @@ public class DhtClient : IClient
         this.setPlugins(new ScopeRequestsPlugin);
     }
 
-
     /***************************************************************************
 
         Removes all nodes from the registry.
 
     ***************************************************************************/
 
-    public void clearNodes ( )
+    public void clearNodes ()
     {
-        auto dht_registry = cast(DhtNodeRegistry)this.registry;
+        auto dht_registry = cast(DhtNodeRegistry) this.registry;
         dht_registry.clear();
     }
-
 
     /***************************************************************************
 
@@ -246,16 +233,15 @@ public class DhtClient : IClient
 
     ***************************************************************************/
 
-    public void addNode ( NodeItem node, HashRange range )
+    public void addNode (NodeItem node, HashRange range)
     {
-        auto dht_registry = cast(DhtNodeRegistry)this.registry;
+        auto dht_registry = cast(DhtNodeRegistry) this.registry;
         dht_registry.add(node.Address, node.Port);
-        dht_registry.setNodeResponsibleRange(node.Address, node.Port,
-            range.min, range.max);
-        dht_registry.setNodeAPIVersion(node.Address, node.Port,
-            DhtConst.ApiVersion);
+        dht_registry.setNodeResponsibleRange(node.Address, node.Port, range.min, range
+                .max);
+        dht_registry.setNodeAPIVersion(node.Address, node.Port, DhtConst
+                .ApiVersion);
     }
-
 
     /***************************************************************************
 
@@ -282,20 +268,19 @@ public class DhtClient : IClient
     private struct Put
     {
         mixin RequestBase;
-        mixin IODelegate;       // io(T) method
-        mixin Channel;          // channel(char[]) method
-        mixin Key;              // key ( K ) (K) method
+        mixin IODelegate; // io(T) method
+        mixin Channel; // channel(char[]) method
+        mixin Key; // key ( K ) (K) method
 
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public Put put ( Key ) ( cstring channel, Key key, RequestParams.PutValueDg input,
-                             RequestNotification.Callback notifier )
+    public Put put (Key)(cstring channel, Key key, RequestParams.PutValueDg input,
+            RequestNotification.Callback notifier)
     {
         return *Put(DhtConst.Command.E.Put, notifier).channel(channel).key(key)
             .io(input).contextFromKey();
     }
-
 
     /***************************************************************************
 
@@ -321,20 +306,19 @@ public class DhtClient : IClient
     private struct PutBatch
     {
         mixin RequestBase;
-        mixin IODelegate;       // io(T) method
-        mixin Channel;          // channel(char[]) method
-        mixin Node;             // node(NodeItem) method
+        mixin IODelegate; // io(T) method
+        mixin Channel; // channel(char[]) method
+        mixin Node; // node(NodeItem) method
 
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public PutBatch putBatch ( mstring addr, ushort port, cstring channel,
-        RequestParams.PutBatchDg input, RequestNotification.Callback notifier )
+    public PutBatch putBatch (mstring addr, ushort port, cstring channel,
+            RequestParams.PutBatchDg input, RequestNotification.Callback notifier)
     {
-        return *PutBatch(DhtConst.Command.E.PutBatch, notifier)
-            .node(NodeItem(addr, port)).channel(channel).io(input);
+        return *PutBatch(DhtConst.Command.E.PutBatch, notifier).node(
+                NodeItem(addr, port)).channel(channel).io(input);
     }
-
 
     /***************************************************************************
 
@@ -351,13 +335,11 @@ public class DhtClient : IClient
 
     ***************************************************************************/
 
-    override protected void scopeRequestParams (
-        void delegate ( IRequestParams params ) dg )
+    override protected void scopeRequestParams (void delegate(IRequestParams params) dg)
     {
         scope params = new RequestParams;
         dg(params);
     }
-
 
     /***************************************************************************
 
@@ -379,21 +361,20 @@ public class DhtClient : IClient
 
     ***************************************************************************/
 
-    override protected void validateRequestParams_ ( IRequestParams params )
+    override protected void validateRequestParams_ (IRequestParams params)
     {
-        auto dht_params = cast(RequestParams)params;
+        auto dht_params = cast(RequestParams) params;
 
         // Validate channel name, for commands which use it
-        with ( DhtConst.Command.E ) switch ( params.command )
+        with (DhtConst.Command.E) switch (params.command)
         {
-            case PutBatch:
-                enforce(this.bad_channel_exception,
-                    .validateChannelName(dht_params.channel));
-                break;
-            default:
+        case PutBatch:
+            enforce(this.bad_channel_exception, .validateChannelName(dht_params
+                    .channel));
+            break;
+        default:
         }
     }
-
 
     /***************************************************************************
 
@@ -415,15 +396,12 @@ public class DhtClient : IClient
 
     ***************************************************************************/
 
-    private void assign ( T ) ( T request )
+    private void assign (T)(T request)
     {
-        this.scopeRequestParams(
-            ( IRequestParams params )
-            {
-                request.setup(params);
+        this.scopeRequestParams((IRequestParams params) {
+            request.setup(params);
 
-                this.assignParams(params);
-            });
+            this.assignParams(params);
+        });
     }
 }
-

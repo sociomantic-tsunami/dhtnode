@@ -59,7 +59,7 @@ public scope class GetRequest : Protocol.Get
 
     ***************************************************************************/
 
-    final override protected void[] getValue ( cstring channel_name, cstring key )
+    final override protected void[] getValue (cstring channel_name, cstring key)
     {
         auto storage_channel = channel_name in this.resources.storage_channels;
 
@@ -69,8 +69,8 @@ public scope class GetRequest : Protocol.Get
             verify(dht_channel !is null);
             mstring value_slice;
             dht_channel.get(key, *this.resources.value_buffer, value_slice);
-            this.resources.node_info.record_action_counters
-                .increment("read", value_slice.length);
+            this.resources.node_info.record_action_counters.increment("read", value_slice
+                    .length);
             return value_slice;
         }
 

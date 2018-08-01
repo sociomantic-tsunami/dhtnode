@@ -12,8 +12,6 @@
 
 module dhtnode.config.ServerConfig;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -23,8 +21,6 @@ module dhtnode.config.ServerConfig;
 import ocean.transition;
 
 import ConfigReader = ocean.util.config.ConfigFiller;
-
-
 
 /*******************************************************************************
 
@@ -48,4 +44,3 @@ public class ServerConfig
 
     uint backlog = 2048;
 }
-

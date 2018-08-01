@@ -16,8 +16,6 @@
 
 module dhtnode.storage.DumpManager;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -53,12 +51,10 @@ import core.memory;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this ()
 {
     log = Log.lookup("dhtnode.storage.DumpManager");
 }
-
-
 
 /*******************************************************************************
 
@@ -85,9 +81,9 @@ public class DumpManager
         /// Enum defining behaviour on encountering an out-of-range record.
         public enum Mode
         {
-            Load,   // out-of-range records loaded (logged as trace)
-            Fatal,  // quit on finding an out-of-range record (logged as fatal)
-            Ignore  // out-of-range records not loaded (logged as warn)
+            Load, // out-of-range records loaded (logged as trace)
+            Fatal, // quit on finding an out-of-range record (logged as fatal)
+            Ignore // out-of-range records not loaded (logged as warn)
         }
 
         /// Desried behaviour on encountering an out-of-range record.
@@ -100,7 +96,6 @@ public class DumpManager
         public uint abort_after_all_out_of_range = 10_000;
     }
 
-
     /***************************************************************************
 
         Callback type used to create a new storage engine instance.
@@ -110,8 +105,7 @@ public class DumpManager
 
     ***************************************************************************/
 
-    public alias StorageEngine delegate ( cstring id ) NewChannelCb;
-
+    public alias StorageEngine delegate(cstring id) NewChannelCb;
 
     /***************************************************************************
 
@@ -121,7 +115,6 @@ public class DumpManager
 
     private ChannelDumper output;
 
-
     /***************************************************************************
 
         Input buffered direct I/O file, used to load the channel dumps.
@@ -129,7 +122,6 @@ public class DumpManager
     ***************************************************************************/
 
     private ChannelLoader input;
-
 
     /***************************************************************************
 
@@ -141,7 +133,6 @@ public class DumpManager
 
     private FilePath dst_path;
 
-
     /***************************************************************************
 
         Root directory used to look for files and write dump files.
@@ -149,7 +140,6 @@ public class DumpManager
     ***************************************************************************/
 
     private FilePath root_dir;
-
 
     /***************************************************************************
 
@@ -160,7 +150,6 @@ public class DumpManager
 
     private FilePath delete_dir;
 
-
     /***************************************************************************
 
        Strings used for db iteration during load of a dump file.
@@ -168,7 +157,6 @@ public class DumpManager
     ***************************************************************************/
 
     private mstring load_key, load_value;
-
 
     /***************************************************************************
 
@@ -178,7 +166,6 @@ public class DumpManager
     ***************************************************************************/
 
     private OutOfRangeHandling out_of_range_handling;
-
 
     /***************************************************************************
 
@@ -196,15 +183,15 @@ public class DumpManager
 
     ***************************************************************************/
 
-    public this ( FilePath root_dir, OutOfRangeHandling out_of_range_handling,
-        bool disable_direct_io )
+    public this (FilePath root_dir, OutOfRangeHandling out_of_range_handling,
+            bool disable_direct_io)
     {
         this.root_dir = new FilePath(root_dir.toString());
         this.delete_dir = new FilePath(root_dir.toString());
         this.delete_dir.append("deleted");
 
         // ensure 'deleted' folder exists
-        if ( !this.delete_dir.exists )
+        if (!this.delete_dir.exists)
         {
             this.delete_dir.create();
         }
@@ -213,13 +200,11 @@ public class DumpManager
         this.dst_path = new FilePath;
 
         auto buffer = cast(ubyte[]) GC.malloc(IOBufferSize)[0 .. IOBufferSize];
-        this.output = new ChannelDumper(buffer, NewFileSuffix,
-                disable_direct_io);
+        this.output = new ChannelDumper(buffer, NewFileSuffix, disable_direct_io);
         this.input = new ChannelLoader(buffer, disable_direct_io);
 
         this.out_of_range_handling = out_of_range_handling;
     }
-
 
     /***************************************************************************
 
@@ -238,25 +223,25 @@ public class DumpManager
 
     ***************************************************************************/
 
-    public void dump ( StorageEngine storage )
+    public void dump (StorageEngine storage)
     {
         // Make the dump and close the file after leaving this scope
         {
             buildFilePath(this.root_dir, this.path, storage.id).cat(".");
             this.output.open(this.path.toString());
-            scope (exit) this.output.close();
+            scope (exit)
+                this.output.close();
 
             this.dumpChannel(storage, this.output);
         }
 
         // Atomically move dump.new -> dump
-        rotateDumpFile(this.output.path, storage.id, this.root_dir, this.path,
-            this.dst_path);
+        rotateDumpFile(this.output.path, storage.id, this.root_dir, this.path, this
+                .dst_path);
 
         log.info("Finished channel dump, {} bytes written",
-            buildFilePath(this.root_dir, this.path, storage.id).fileSize());
+                buildFilePath(this.root_dir, this.path, storage.id).fileSize());
     }
-
 
     /***************************************************************************
 
@@ -268,7 +253,7 @@ public class DumpManager
 
     ***************************************************************************/
 
-    private void dumpChannel ( StorageEngine storage, ChannelDumper output )
+    private void dumpChannel (StorageEngine storage, ChannelDumper output)
     {
         log.info("Dumping channel '{}' to disk", storage.id);
 
@@ -276,7 +261,7 @@ public class DumpManager
                 storage.id, storage.num_records);
 
         // Write records
-        foreach ( hash_key, value; storage )
+        foreach (hash_key, value; storage)
         {
             // Render hash to a hex-string for dumping.
             char[hash_t.sizeof * 2] key_str;
@@ -288,12 +273,10 @@ public class DumpManager
             // TODO: handle case where out of disk space
         }
 
-        log.info("Finished dumping channel '{}' to disk, took {}s, "
-            "wrote {} records, {} records in channel",
-            storage.id, progress_manager.elapsed, progress_manager.current,
-            storage.num_records);
+        log.info("Finished dumping channel '{}' to disk, took {}s, " "wrote {} records, {} records in channel",
+                storage.id, progress_manager.elapsed,
+                progress_manager.current, storage.num_records);
     }
-
 
     /***************************************************************************
 
@@ -308,17 +291,17 @@ public class DumpManager
 
     ***************************************************************************/
 
-    public void loadChannels ( NewChannelCb new_channel )
+    public void loadChannels (NewChannelCb new_channel)
     {
-        foreach ( info; this.root_dir )
+        foreach (info; this.root_dir)
         {
             this.path.set(this.root_dir);
             this.path.append(info.name);
 
-            if ( info.folder )
+            if (info.folder)
             {
                 // Having the delete_dir there is, of course, fine
-                if ( this.path == this.delete_dir )
+                if (this.path == this.delete_dir)
                     continue;
 
                 log.warn("Ignoring subdirectory '{}' in data directory {}",
@@ -326,47 +309,44 @@ public class DumpManager
                 continue;
             }
 
-            if ( this.path.suffix() == DumpFileSuffix )
+            if (this.path.suffix() == DumpFileSuffix)
             {
                 // We don't reuse this.path for the complete path to avoid
                 // conflicts between buffers
                 buildFilePath(this.root_dir, this.dst_path, this.path.name);
 
                 this.input.open(this.dst_path.toString());
-                scope (exit) this.input.close();
+                scope (exit)
+                    this.input.close();
 
-                if ( !this.input.supported_file_format_version )
+                if (!this.input.supported_file_format_version)
                 {
-                    log.warn("{}: Dump file with unsupported version ({}) found "
-                        "while scanning directory '{}'. Ignoring file.",
-                        this.path.file, this.input.file_format_version,
-                        this.root_dir.toString);
+                    log.warn("{}: Dump file with unsupported version ({}) found " "while scanning directory '{}'. Ignoring file.",
+                            this.path.file, this.input.file_format_version,
+                            this.root_dir.toString);
                     continue;
                 }
 
                 auto channel = new_channel(this.dst_path.name.dup);
-                auto dht_channel = cast(StorageEngine)channel;
+                auto dht_channel = cast(StorageEngine) channel;
                 verify(dht_channel !is null);
 
-                this.loadChannel(dht_channel, this.input, this.out_of_range_handling);
+                this.loadChannel(dht_channel, this.input, this
+                        .out_of_range_handling);
 
             }
-            else if ( this.path.suffix() == NewFileSuffix )
+            else if (this.path.suffix() == NewFileSuffix)
             {
-                log.warn("{}: Unfinished dump file found while scanning "
-                        "directory '{}', the program was probably "
-                        "restarted uncleanly and data might be old",
+                log.warn("{}: Unfinished dump file found while scanning " "directory '{}', the program was probably " "restarted uncleanly and data might be old",
                         this.path.file, this.root_dir.toString);
             }
             else
             {
-                log.warn("{}: Ignoring file while scanning directory '{}' "
-                        "(no '{}' suffix)", this.path.file,
-                        this.root_dir.toString, DumpFileSuffix);
+                log.warn("{}: Ignoring file while scanning directory '{}' " "(no '{}' suffix)",
+                        this.path.file, this.root_dir.toString, DumpFileSuffix);
             }
         }
     }
-
 
     /***************************************************************************
 
@@ -383,42 +363,41 @@ public class DumpManager
 
     ***************************************************************************/
 
-    static private void loadChannel ( StorageEngine storage,
-        ChannelLoaderBase input, OutOfRangeHandling out_of_range_handling )
+    static private void loadChannel (StorageEngine storage,
+            ChannelLoaderBase input, OutOfRangeHandling out_of_range_handling)
     {
         log.info("Loading channel '{}' from disk", storage.id);
 
-        scope progress_manager = new ProgressManager("Loaded channel",
-                    storage.id, input.length);
+        scope progress_manager = new ProgressManager("Loaded channel", storage.id,
+                input.length);
 
         ulong records_read, invalid, out_of_range, too_big, empty;
-        foreach ( k, v; input )
+        foreach (k, v; input)
         {
             records_read++;
 
             progress_manager.progress(k.length + v.length + (size_t.sizeof * 2));
 
-            loadRecord(storage, k, v, out_of_range_handling,
-                out_of_range, invalid, too_big, empty);
+            loadRecord(storage, k, v, out_of_range_handling, out_of_range,
+                    invalid, too_big, empty);
 
-            if ( out_of_range_handling.abort_after_all_out_of_range > 0 &&
-                records_read == out_of_range && out_of_range >
-                out_of_range_handling.abort_after_all_out_of_range )
+            if (out_of_range_handling.abort_after_all_out_of_range > 0
+                    && records_read == out_of_range
+                    && out_of_range > out_of_range_handling
+                    .abort_after_all_out_of_range)
             {
                 log.fatal("All records appear to be out-of-range. Aborting.");
-                throw new Exception(
-                    "All records appear to be out-of-range. Aborting.");
+                throw new Exception("All records appear to be out-of-range. Aborting.");
             }
         }
 
-        void reportBadRecordCount ( ulong bad, cstring desc )
+        void reportBadRecordCount (ulong bad, cstring desc)
         {
-            if ( bad )
+            if (bad)
             {
-                auto percent_bad =
-                    (cast(float)bad / cast(float)records_read) * 100.0;
-                log.warn("Found {} {} ({}%) in channel '{}'", bad, desc,
-                    percent_bad, storage.id);
+                auto percent_bad = (cast(float) bad / cast(float) records_read) * 100.0;
+                log.warn("Found {} {} ({}%) in channel '{}'", bad, desc, percent_bad,
+                        storage.id);
             }
         }
 
@@ -427,13 +406,11 @@ public class DumpManager
         reportBadRecordCount(too_big, "too large values");
         reportBadRecordCount(empty, "empty values");
 
-        log.info("Finished loading channel '{}' from disk, took {}s, "
-            "read {} bytes (file size including padding is {} bytes), "
-            "{} records in channel", storage.id, progress_manager.elapsed,
-            progress_manager.current, progress_manager.maximum,
-            storage.num_records);
+        log.info("Finished loading channel '{}' from disk, took {}s, " "read {} bytes (file size including padding is {} bytes), " "{} records in channel",
+                storage.id, progress_manager.elapsed,
+                progress_manager.current,
+                progress_manager.maximum, storage.num_records);
     }
-
 
     /***************************************************************************
 
@@ -458,84 +435,85 @@ public class DumpManager
 
     ***************************************************************************/
 
-    static private void loadRecord ( StorageEngine storage, cstring key,
-        cstring val, OutOfRangeHandling out_of_range_handling,
-        ref ulong out_of_range, ref ulong invalid, ref ulong too_big,
-        ref ulong empty )
+    static private void loadRecord (StorageEngine storage, cstring key,
+            cstring val,
+            OutOfRangeHandling out_of_range_handling,
+            ref ulong out_of_range, ref ulong invalid, ref ulong too_big, ref ulong empty)
     {
         // TODO: this support for reading hash_t keys from the dump file is a
         // hack to work around an error. It can be removed in the next release
         // (or the dump format adapted fully to write keys as hash_t.)
         char[hash_t.sizeof * 2] key_str;
-        if ( key.length == hash_t.sizeof )
+        if (key.length == hash_t.sizeof)
         {
-            auto hash_key = *(cast(hash_t*)key.ptr);
+            auto hash_key = *(cast(hash_t*) key.ptr);
             Hash.toHexString(hash_key, key_str);
             key = key_str;
         }
-        else if ( !Hash.isHash(key) )
+        else if (!Hash.isHash(key))
         {
-            log.error("Encountered invalid non-hexadecimal key in channel '{}': "
-                "{} -- ignored", storage.id, key);
+            log.error("Encountered invalid non-hexadecimal key in channel '{}': " "{} -- ignored",
+                    storage.id, key);
             invalid++;
             return;
         }
 
-        if ( val.length == 0 )
+        if (val.length == 0)
         {
-            log.warn("Encountered empty record in channel '{}': {} -- discarded",
-                storage.id, key);
+            log.warn("Encountered empty record in channel '{}': {} -- discarded", storage
+                    .id, key);
             empty++;
             return;
         }
 
-        if ( val.length > DhtConst.RecordSizeLimit )
+        if (val.length > DhtConst.RecordSizeLimit)
         {
-            log.warn("Encountered large record ({} bytes) in channel '{}': "
-                "{} -- ignored", val.length, storage.id, key);
+            log.warn("Encountered large record ({} bytes) in channel '{}': " "{} -- ignored",
+                    val.length, storage.id, key);
             too_big++;
             return;
         }
 
-        if ( storage.responsibleForKey(key) )
+        if (storage.responsibleForKey(key))
         {
             storage.put(key, val);
         }
         else
         {
-            with ( OutOfRangeHandling.Mode )
-            final switch ( out_of_range_handling.mode )
+            with (OutOfRangeHandling.Mode) final switch (out_of_range_handling
+                        .mode)
             {
-                case Load:
-                    log.trace("Encountered out-of-range key in channel '{}': "
-                        "{} -- loaded", storage.id, key);
-                    storage.put(key, val);
-                    out_of_range++;
-                    return;
+            case Load:
+                log.trace("Encountered out-of-range key in channel '{}': " "{} -- loaded",
+                        storage.id, key);
+                storage.put(key, val);
+                out_of_range++;
+                return;
 
-                case Fatal:
-                    log.fatal("Encountered out-of-range key in channel '{}': "
-                    "{} -- rejected", storage.id, key);
-                    throw new Exception(
+            case Fatal:
+                log.fatal("Encountered out-of-range key in channel '{}': " "{} -- rejected",
+                        storage.id, key);
+                throw new Exception(
                         cast(istring)("Encountered out-of-range key in channel '"
-                            ~ storage.id ~ "': " ~ key)
-                    );
+                        ~ storage.id ~ "': " ~ key));
 
-                case Ignore:
-                    log.warn("Encountered out-of-range key in channel '{}': "
-                        "{} -- ignored", storage.id, key);
-                    out_of_range++;
-                    return;
+            case Ignore:
+                log.warn("Encountered out-of-range key in channel '{}': " "{} -- ignored",
+                        storage.id, key);
+                out_of_range++;
+                return;
 
-                version (D_Version2){} else
+                version (D_Version2)
                 {
-                    default:
-                        assert(false);
+                }
+                else
+                {
+            default:
+                    assert(false);
                 }
             }
         }
     }
-
 
     /***************************************************************************
 
@@ -550,10 +528,10 @@ public class DumpManager
 
     ***************************************************************************/
 
-    public void deleteChannel ( cstring id )
+    public void deleteChannel (cstring id)
     {
         buildFilePath(this.root_dir, this.path, id);
-        if ( this.path.exists )
+        if (this.path.exists)
         {
             buildFilePath(this.delete_dir, this.dst_path, id);
             // file -> deleted/file
@@ -562,15 +540,13 @@ public class DumpManager
     }
 }
 
-
-
 /*******************************************************************************
 
     Unittest for DumpManager.loadChannel()
 
 *******************************************************************************/
 
-version ( UnitTest )
+version (UnitTest)
 {
     import ocean.core.Test : test, testThrown;
     import ocean.io.device.MemoryDevice;
@@ -583,23 +559,28 @@ version ( UnitTest )
     {
         private uint count;
 
-        this ( hash_t min = hash_t.min, hash_t max = hash_t.max )
+        this (hash_t min = hash_t.min, hash_t max = hash_t.max)
         {
-            super("test", new DhtHashRange(min, max, new HashRangeConfig([])),
-                200, null);
+            super("test", new DhtHashRange(min, max, new HashRangeConfig([])), 200,
+                    null);
         }
-        override typeof(this) put ( cstring key, cstring value, bool trigger )
+
+        override typeof(this) put (cstring key, cstring value, bool trigger)
         {
             this.count++;
             return this;
         }
-        override ulong num_records ( ) { return this.count; }
+
+        override ulong num_records ()
+        {
+            return this.count;
+        }
     }
 
     private class DummyChannelLoader : ChannelLoaderBase
     {
         size_t len;
-        this ( ubyte[] data )
+        this (ubyte[] data)
         {
             this.len = data.length;
             auto mem = new MemoryDevice;
@@ -607,9 +588,12 @@ version ( UnitTest )
             mem.seek(0);
             super(mem);
         }
-        override protected ulong length_ ( ) { return this.len; }
-    }
 
+        override protected ulong length_ ()
+        {
+            return this.len;
+        }
+    }
 
     /***************************************************************************
 
@@ -626,9 +610,10 @@ version ( UnitTest )
 
     ***************************************************************************/
 
-    ulong testData ( ubyte[] data, DumpManager.OutOfRangeHandling.Mode
-        out_of_range_handling_mode = DumpManager.OutOfRangeHandling.Mode.Load,
-        hash_t min = hash_t.min, hash_t max = hash_t.max )
+    ulong testData (ubyte[] data,
+            DumpManager.OutOfRangeHandling.Mode out_of_range_handling_mode
+            = DumpManager.OutOfRangeHandling.Mode.Load,
+            hash_t min = hash_t.min, hash_t max = hash_t.max)
     {
         auto storage = new DummyStorageEngine(min, max);
         auto input = new DummyChannelLoader(data);
@@ -643,7 +628,6 @@ version ( UnitTest )
 
 }
 
-
 /*******************************************************************************
 
     Tests for handling file version and extra bytes at the end of the file.
@@ -654,23 +638,25 @@ version ( UnitTest )
 
 unittest
 {
-    ubyte[] version0 = [0,0,0,0,0,0,0,0]; // version 0 (supported)
-    ubyte[] version1 = [1,0,0,0,0,0,0,0]; // version 1 (unsupported)
-    ubyte[] data = [
-        16,0,0,0,0,0,0,0, // key 1 len
-        49,50,51,52,53,54,55,56,49,50,51,52,53,54,55,56, // key 1
-        4,0,0,0,0,0,0,0, // value 1 len
-        1,2,3,4, // value 1
-        16,0,0,0,0,0,0,0, // key 2 len
-        49,50,51,52,53,54,55,56,49,50,51,52,53,54,55,56, // key 2
-        4,0,0,0,0,0,0,0, // value 2 len
-        1,2,3,4, // value 2
-        16,0,0,0,0,0,0,0, // key 3 len
-        49,50,51,52,53,54,55,56,49,50,51,52,53,54,55,56, // key 3
-        4,0,0,0,0,0,0,0, // value 3 len
-        1,2,3,4 // value 3
-    ];
-    ubyte[] extra = [0,0,0,0,0,0,0,0];
+    ubyte[] version0 = [0, 0, 0, 0, 0, 0, 0, 0]; // version 0 (supported)
+    ubyte[] version1 = [1, 0, 0, 0, 0, 0, 0, 0]; // version 1 (unsupported)
+    ubyte[] data = [16, 0, 0, 0, 0, 0, 0, 0, // key 1 len
+        49, 50, 51, 52, 53, 54, 55, 56, 49,
+        50, 51, 52, 53, 54, 55, 56, // key 1
+        4, 0, 0, 0, 0, 0, 0, 0, // value 1 len
+        1, 2, 3, 4, // value 1
+        16, 0, 0, 0, 0, 0, 0, 0, // key 2 len
+        49, 50, 51, 52, 53, 54, 55, 56, 49, 50, 51, 52, 53, 54, 55, 56, // key 2
+        4, 0,
+        0, 0, 0, 0, 0, 0, // value 2 len
+        1, 2, 3, 4, // value 2
+        16, 0, 0, 0, 0, 0, 0, 0, // key 3 len
+        49, 50, 51, 52, 53, 54, 55, 56, 49, 50, 51, 52, 53, 54, 55, 56, // key 3
+        4, 0,
+        0, 0, 0, 0, 0, 0, // value 3 len
+        1, 2, 3, 4 // value 3
+        ];
+    ubyte[] extra = [0, 0, 0, 0, 0, 0, 0, 0];
 
     // version 1 file with no extra bytes at end
     testThrown!(Exception)(testData(version1 ~ data));
@@ -685,7 +671,6 @@ unittest
     test!("==")(testData(version0 ~ data ~ extra), 3);
 }
 
-
 /*******************************************************************************
 
     Tests for out-of-range record handling.
@@ -694,43 +679,41 @@ unittest
 
 unittest
 {
-    ubyte[] data = [
-        0,0,0,0,0,0,0,0, // version number
-        16,0,0,0,0,0,0,0, // key 1 len
-        48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,49, // key 1 (..001)
-        4,0,0,0,0,0,0,0, // value 1 len
-        1,2,3,4, // value 1
-        16,0,0,0,0,0,0,0, // key 2 len
-        48,48,48,48,48,48,48,48,49,48,48,48,48,48,48,48, // key 2 (..010..)
-        4,0,0,0,0,0,0,0, // value 2 len
-        1,2,3,4, // value 2
-        16,0,0,0,0,0,0,0, // key 3 len
-        49,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48, // key 3 (100..)
-        4,0,0,0,0,0,0,0, // value 3 len
-        1,2,3,4, // value 3
-        0,0,0,0,0,0,0,0 // EOF
-    ];
+    ubyte[] data = [0, 0, 0, 0, 0, 0, 0, 0, // version number
+        16, 0, 0, 0, 0, 0, 0, 0, // key 1 len
+        48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, // key 1 (..001)
+        4, 0,
+        0, 0, 0, 0, 0, 0, // value 1 len
+        1, 2, 3, 4, // value 1
+        16, 0, 0, 0, 0, 0, 0, 0, // key 2 len
+        48, 48, 48, 48, 48, 48, 48, 48, 49, 48, 48, 48, 48, 48, 48, 48, // key 2 (..010..)
+        4, 0,
+        0, 0, 0, 0, 0, 0, // value 2 len
+        1, 2, 3, 4, // value 2
+        16, 0, 0, 0, 0, 0, 0, 0, // key 3 len
+        49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, // key 3 (100..)
+        4, 0,
+        0, 0, 0, 0, 0, 0, // value 3 len
+        1, 2, 3, 4, // value 3
+        0, 0, 0, 0, 0, 0, 0, 0 // EOF
+        ];
 
     // no out-of-range records
     test!("==")(testData(data, DumpManager.OutOfRangeHandling.Mode.Ignore,
-        hash_t.min, hash_t.max), 3);
+            hash_t.min, hash_t.max), 3);
 
     // load out-of-range records
-    test!("==")(testData(data, DumpManager.OutOfRangeHandling.Mode.Load, 0, 1),
-        3);
+    test!("==")(testData(data, DumpManager.OutOfRangeHandling.Mode.Load, 0, 1), 3);
 
     // ignore out-of-range records
+    test!("==")(testData(data, DumpManager.OutOfRangeHandling.Mode.Ignore, 0, 1), 0);
     test!("==")(testData(data, DumpManager.OutOfRangeHandling.Mode.Ignore,
-        0, 1), 0);
-    test!("==")(testData(data, DumpManager.OutOfRangeHandling.Mode.Ignore,
-        0x0000000100000000, hash_t.max), 2);
+            0x0000000100000000, hash_t.max), 2);
 
     // fatal upon out-of-range record
-    testThrown!(Exception)(testData(data,
-        DumpManager.OutOfRangeHandling.Mode.Fatal, 0, 1));
+    testThrown!(Exception)(testData(data, DumpManager.OutOfRangeHandling.Mode
+            .Fatal, 0, 1));
 }
-
-
 
 /*******************************************************************************
 
@@ -740,47 +723,45 @@ unittest
 
 unittest
 {
-    ubyte[] data_header = [ 0,0,0,0,0,0,0,0 ]; // version number
-    ubyte[] data_footer = [ 0,0,0,0,0,0,0,0 ]; // EOF
+    ubyte[] data_header = [0, 0, 0, 0, 0, 0, 0, 0]; // version number
+    ubyte[] data_footer = [0, 0, 0, 0, 0, 0, 0, 0]; // EOF
 
     // load good record
-    ubyte[] good = [
-        16,0,0,0,0,0,0,0, // key len
-        48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,49, // good key
-        4,0,0,0,0,0,0,0, // value len
-        1,2,3,4 // value
-    ];
+    ubyte[] good = [16, 0, 0, 0, 0, 0, 0, 0, // key len
+        48, 48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 49, // good key
+        4, 0, 0, 0, 0, 0, 0, 0, // value len
+        1, 2, 3, 4 // value
+        ];
     test!("==")(testData(data_header ~ good ~ data_footer), 1);
 
     // ignore record with short key
-    ubyte[] short_key = [
-        15,0,0,0,0,0,0,0, // key len
-        48,48,48,48,48,48,48,48,48,48,48,48,48,48,49, // short key
-        4,0,0,0,0,0,0,0, // value len
-        1,2,3,4 // value
-    ];
+    ubyte[] short_key = [15, 0, 0, 0, 0, 0, 0, 0, // key len
+        48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 49, // short key
+        4, 0, 0, 0, 0, 0, 0, 0, // value len
+        1, 2, 3, 4 // value
+        ];
     test!("==")(testData(data_header ~ short_key ~ data_footer), 0);
 
     // ignore record with long key
-    ubyte[] long_key = [
-        17,0,0,0,0,0,0,0, // key len
-        48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,49, // short key
-        4,0,0,0,0,0,0,0, // value len
-        1,2,3,4 // value
-    ];
+    ubyte[] long_key = [17, 0, 0, 0, 0, 0, 0, 0, // key len
+        48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 48, 49, // short key
+        4, 0, 0, 0, 0, 0, 0, 0, // value len
+        1, 2, 3, 4 // value
+        ];
     test!("==")(testData(data_header ~ long_key ~ data_footer), 0);
 
     // ignore record with non-hexadecimal key
-    ubyte[] bad_key = [
-        16,0,0,0,0,0,0,0, // key len
-        47,48,48,48,48,48,48,48,48,48,48,48,48,48,48,49, // bad key
-        4,0,0,0,0,0,0,0, // value len
-        1,2,3,4 // value
-    ];
+    ubyte[] bad_key = [16, 0, 0, 0, 0, 0, 0, 0, // key len
+        47, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 48, 49, // bad key
+        4, 0, 0, 0, 0, 0, 0, 0, // value len
+        1, 2, 3, 4 // value
+        ];
     test!("==")(testData(data_header ~ bad_key ~ data_footer), 0);
 }
-
-
 
 /*******************************************************************************
 
@@ -800,8 +781,8 @@ unittest
 
     ***************************************************************************/
 
-    ubyte[] recordValue ( size_t len )
-    out ( v )
+    ubyte[] recordValue (size_t len)
+    out (v)
     {
         assert(v.length == len + size_t.sizeof);
     }
@@ -809,16 +790,16 @@ unittest
     {
         ubyte[] value;
         value.length = size_t.sizeof + len;
-        *(cast(ulong*)value.ptr) = len;
+        *(cast(ulong*) value.ptr) = len;
         return value;
     }
 
-    ubyte[] data_header = [ 0,0,0,0,0,0,0,0 ]; // version number
-    ubyte[] data_footer = [ 0,0,0,0,0,0,0,0 ]; // EOF
-    ubyte[] key = [
-        16,0,0,0,0,0,0,0, // key len
-        48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,49 // key
-    ];
+    ubyte[] data_header = [0, 0, 0, 0, 0, 0, 0, 0]; // version number
+    ubyte[] data_footer = [0, 0, 0, 0, 0, 0, 0, 0]; // EOF
+    ubyte[] key = [16, 0, 0, 0, 0, 0, 0, 0, // key len
+        48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 49 // key
+        ];
 
     // load small record
     auto small_val = recordValue(4);
@@ -833,8 +814,6 @@ unittest
     test!("==")(testData(data_header ~ key ~ over_large_val ~ data_footer), 0);
 }
 
-
-
 /*******************************************************************************
 
     Tests for empty record handling.
@@ -843,35 +822,28 @@ unittest
 
 unittest
 {
-    ubyte[] data_header = [ 0,0,0,0,0,0,0,0 ]; // version number
-    ubyte[] data_footer = [ 0,0,0,0,0,0,0,0 ]; // EOF
-    ubyte[] key = [
-        16,0,0,0,0,0,0,0, // key len
-        48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,49 // key
-    ];
+    ubyte[] data_header = [0, 0, 0, 0, 0, 0, 0, 0]; // version number
+    ubyte[] data_footer = [0, 0, 0, 0, 0, 0, 0, 0]; // EOF
+    ubyte[] key = [16, 0, 0, 0, 0, 0, 0, 0, // key len
+        48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 49 // key
+        ];
 
     // load normal record
-    ubyte[] good = [
-        4,0,0,0,0,0,0,0, // value len
-        1,2,3,4 // value
-    ];
+    ubyte[] good = [4, 0, 0, 0, 0, 0, 0, 0, // value len
+        1, 2, 3, 4 // value
+        ];
     test!("==")(testData(data_header ~ key ~ good ~ data_footer), 1);
 
     // discard empty record
-    ubyte[] empty = [
-        0,0,0,0,0,0,0,0 // value len
+    ubyte[] empty = [0, 0, 0, 0, 0, 0, 0, 0 // value len
     ];
     test!("==")(testData(data_header ~ key ~ empty ~ data_footer), 0);
 
     // discard empty record mixed among normal records
-    test!("==")(testData(data_header
-        ~ key ~ good
-        ~ key ~ empty
-        ~ key ~ good
-        ~ data_footer), 2);
+    test!("==")(testData(data_header ~ key ~ good ~ key ~ empty ~ key ~ good ~ data_footer),
+            2);
 }
-
-
 
 /*******************************************************************************
 
@@ -891,7 +863,6 @@ private scope class ProgressManager
 
     private StopWatch sw;
 
-
     /***************************************************************************
 
         Name of the activity / process we are timing.
@@ -899,7 +870,6 @@ private scope class ProgressManager
     ***************************************************************************/
 
     private cstring activity;
-
 
     /***************************************************************************
 
@@ -909,7 +879,6 @@ private scope class ProgressManager
 
     private cstring name;
 
-
     /***************************************************************************
 
         Value to be considered 100%.
@@ -917,7 +886,6 @@ private scope class ProgressManager
     ***************************************************************************/
 
     private ulong max;
-
 
     /***************************************************************************
 
@@ -927,7 +895,6 @@ private scope class ProgressManager
 
     private ulong curr;
 
-
     /***************************************************************************
 
         Time of the previous progress display.
@@ -936,15 +903,13 @@ private scope class ProgressManager
 
     private float prev_time;
 
-
     /***************************************************************************
 
         Minimum advance (in seconds) necessary for a progress() to be printed.
 
     ***************************************************************************/
 
-   private static MinAdvanceSecs = 1.0;
-
+    private static MinAdvanceSecs = 1.0;
 
     /***************************************************************************
 
@@ -957,7 +922,7 @@ private scope class ProgressManager
 
     ***************************************************************************/
 
-    public this ( cstring activity, cstring name, ulong max )
+    public this (cstring activity, cstring name, ulong max)
     {
         this.activity = activity;
         this.name = name;
@@ -966,7 +931,6 @@ private scope class ProgressManager
         this.prev_time = 0;
         this.sw.start;
     }
-
 
     /***************************************************************************
 
@@ -980,20 +944,18 @@ private scope class ProgressManager
 
     ***************************************************************************/
 
-    public void progress ( ulong advance )
+    public void progress (ulong advance)
     {
         auto old_value = this.curr;
         this.curr += advance;
 
-        if ( this.elapsed > this.prev_time + MinAdvanceSecs )
+        if (this.elapsed > this.prev_time + MinAdvanceSecs)
         {
-            log.trace("{}: {}%", this.name,
-                    (cast(float) this.curr / max) * 100.0f);
+            log.trace("{}: {}%", this.name, (cast(float) this.curr / max) * 100.0f);
 
             this.prev_time = this.elapsed;
         }
     }
-
 
     /***************************************************************************
 
@@ -1001,11 +963,10 @@ private scope class ProgressManager
 
     ***************************************************************************/
 
-    ~this ( )
+    ~this ()
     {
         log.trace("{} '{}' in {}s", this.activity, this.name, this.elapsed);
     }
-
 
     /***************************************************************************
 
@@ -1013,11 +974,10 @@ private scope class ProgressManager
 
     ***************************************************************************/
 
-    public final ulong current ( )
+    public final ulong current ()
     {
         return this.curr;
     }
-
 
     /***************************************************************************
 
@@ -1025,11 +985,10 @@ private scope class ProgressManager
 
     ***************************************************************************/
 
-    public final ulong maximum ( )
+    public final ulong maximum ()
     {
         return this.max;
     }
-
 
     /***************************************************************************
 
@@ -1037,9 +996,8 @@ private scope class ProgressManager
 
     ***************************************************************************/
 
-    public float elapsed ( )
+    public float elapsed ()
     {
         return this.sw.microsec() / 1_000_000.0f;
     }
 }
-

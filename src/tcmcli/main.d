@@ -13,7 +13,6 @@
 
 module tcmcli.main;
 
-
 /*******************************************************************************
 
     Imports
@@ -23,7 +22,6 @@ module tcmcli.main;
 import ocean.transition;
 
 import ocean.util.app.CliApp;
-
 
 /*******************************************************************************
 
@@ -35,13 +33,15 @@ import ocean.util.app.CliApp;
 
 *******************************************************************************/
 
-version (UnitTest) {} else
-private int main ( istring[] cl_args )
+version (UnitTest)
+{
+}
+else
+    private int main (istring[] cl_args)
 {
     auto app = new TcmCli;
     return app.main(cl_args);
 }
-
 
 /*******************************************************************************
 
@@ -63,21 +63,19 @@ private class TcmCli : CliApp
     import ocean.io.Console : Cin, Cout;
     import ocean.io.FilePath;
 
-
     /***************************************************************************
 
         Constructor
 
     ***************************************************************************/
 
-    public this ( )
+    public this ()
     {
         const name = "tcmcli";
         const desc = "tcmcli: DHT dump file (TCM) command line tool";
 
         super(name, desc, version_info);
     }
-
 
     /***************************************************************************
 
@@ -90,14 +88,13 @@ private class TcmCli : CliApp
 
     ***************************************************************************/
 
-    override public void setupArgs ( IApplication app, Arguments args )
+    override public void setupArgs (IApplication app, Arguments args)
     {
-        args("read").aliased('r').params(1).conflicts("write").
-            help("Stream from named TCM file to stdout.");
-        args("write").aliased('w').params(1).conflicts("read").
-            help("Stream from stdin to named TCM file.");
+        args("read").aliased('r').params(1).conflicts("write")
+            .help("Stream from named TCM file to stdout.");
+        args("write").aliased('w').params(1).conflicts("read")
+            .help("Stream from stdin to named TCM file.");
     }
-
 
     /***************************************************************************
 
@@ -114,18 +111,18 @@ private class TcmCli : CliApp
 
     ***************************************************************************/
 
-    override public istring validateArgs ( IApplication app, Arguments args )
+    override public istring validateArgs (IApplication app, Arguments args)
     {
-        if ( args("read").assigned )
+        if (args("read").assigned)
         {
-            if ( !FilePath(args.getString("read")).exists )
+            if (!FilePath(args.getString("read")).exists)
             {
                 return "Specified file path does not exist.";
             }
         }
-        else if ( args("write").assigned )
+        else if (args("write").assigned)
         {
-            if ( FilePath(args.getString("write")).exists )
+            if (FilePath(args.getString("write")).exists)
             {
                 return "Specified file path already exists.";
             }
@@ -137,7 +134,6 @@ private class TcmCli : CliApp
 
         return null;
     }
-
 
     /***************************************************************************
 
@@ -154,9 +150,9 @@ private class TcmCli : CliApp
 
     ***************************************************************************/
 
-    override protected int run ( Arguments args )
+    override protected int run (Arguments args)
     {
-        if ( args("read").assigned )
+        if (args("read").assigned)
         {
             return this.fileToStdout(args.getString("read"));
         }
@@ -168,7 +164,6 @@ private class TcmCli : CliApp
 
         assert(false);
     }
-
 
     /***************************************************************************
 
@@ -182,24 +177,24 @@ private class TcmCli : CliApp
 
     ***************************************************************************/
 
-    private int fileToStdout ( cstring file )
+    private int fileToStdout (cstring file)
     {
         auto tcm_reader = new ChannelLoader(new ubyte[64 * 1024], true);
         tcm_reader.open(file);
-        scope ( exit ) tcm_reader.close();
+        scope (exit)
+            tcm_reader.close();
 
         mstring buf;
-        foreach ( k, v; tcm_reader )
+        foreach (k, v; tcm_reader)
         {
             Record r;
-            r.key = cast(ubyte[])k;
-            r.value = cast(ubyte[])v;
+            r.key = cast(ubyte[]) k;
+            r.value = cast(ubyte[]) v;
             r.serialize(Cout.stream, buf);
         }
 
         return 0;
     }
-
 
     /***************************************************************************
 
@@ -213,18 +208,17 @@ private class TcmCli : CliApp
 
     ***************************************************************************/
 
-    private int stdinToFile ( cstring file )
+    private int stdinToFile (cstring file)
     {
         bool error;
 
-        auto tcm_writer = new ChannelDumper(new ubyte[64 * 1024], NewFileSuffix,
-            true);
+        auto tcm_writer = new ChannelDumper(new ubyte[64 * 1024], NewFileSuffix, true);
         tcm_writer.open(file);
-        scope ( exit )
+        scope (exit)
         {
             tcm_writer.close();
 
-            if ( !error )
+            if (!error)
             {
                 // Rename temp file to real output file name
                 FilePath(tcm_writer.path).rename(file);
@@ -232,32 +226,31 @@ private class TcmCli : CliApp
         }
 
         mstring buf;
-        while ( true )
+        while (true)
         {
             Record r;
             try
             {
                 r.deserialize(Cin.stream, buf);
             }
-            catch ( EofException e )
+            catch (EofException e)
             {
                 // An I/O exception (EOF) is expected when reading a key
                 return 0;
             }
 
-            with ( Record.Type ) switch ( r.type )
+            with (Record.Type) switch (r.type)
             {
-                case KeyValue:
-                    tcm_writer.write(cast(cstring)r.key, cast(cstring)r.value);
-                    break;
+            case KeyValue:
+                tcm_writer.write(cast(cstring) r.key, cast(cstring) r.value);
+                break;
 
-                default:
-                    // TODO: we could, of course, enhance this tool to support
-                    // converting other record types into valid DHT records.
-                    Stderr.formatln("Unexpected record format. Only key:value "
-                        "records are supported currently.");
-                    error = true;
-                    return 1;
+            default:
+                // TODO: we could, of course, enhance this tool to support
+                // converting other record types into valid DHT records.
+                Stderr.formatln("Unexpected record format. Only key:value " "records are supported currently.");
+                error = true;
+                return 1;
             }
         }
 

@@ -12,8 +12,6 @@
 
 module dhtnode.node.DhtNode;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -30,16 +28,13 @@ import dhtnode.storage.StorageEngine;
 
 import dhtnode.connection.DhtConnectionHandler;
 
-
-
 /*******************************************************************************
 
     DhtNode
 
 *******************************************************************************/
 
-public class DhtNode :
-    ChannelsNodeBase!(StorageEngine, DhtConnectionHandler), IDhtNodeInfo
+public class DhtNode : ChannelsNodeBase!(StorageEngine, DhtConnectionHandler), IDhtNodeInfo
 {
     import swarm.Const : NodeItem;
     import dhtnode.node.DhtHashRange;
@@ -52,7 +47,6 @@ public class DhtNode :
 
     import ocean.io.compress.lzo.LzoChunkCompressor;
 
-
     /***************************************************************************
 
         DHT node state
@@ -61,7 +55,6 @@ public class DhtNode :
 
     private State state_;
 
-
     /**************************************************************************
 
         Node minimum & maximum hash
@@ -69,7 +62,6 @@ public class DhtNode :
     ***************************************************************************/
 
     private DhtHashRange hash_range;
-
 
     /***************************************************************************
 
@@ -85,9 +77,9 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    public this ( NodeItem node_item, StorageChannels channels,
-        DhtHashRange hash_range, EpollSelectDispatcher epoll,
-        int backlog, istring[] per_request_stats )
+    public this (NodeItem node_item, StorageChannels channels,
+            DhtHashRange hash_range,
+            EpollSelectDispatcher epoll, int backlog, istring[] per_request_stats)
     {
         this.hash_range = hash_range;
 
@@ -101,12 +93,11 @@ public class DhtNode :
         super(node_item, channels, conn_setup_params, backlog);
 
         // Initialise requests to be stats tracked.
-        foreach ( cmd; per_request_stats )
+        foreach (cmd; per_request_stats)
         {
             this.request_stats.init(cmd);
         }
     }
-
 
     /***************************************************************************
 
@@ -115,11 +106,10 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    override public hash_t min_hash ( )
+    override public hash_t min_hash ()
     {
         return this.hash_range.range.min;
     }
-
 
     /***************************************************************************
 
@@ -128,11 +118,10 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    override public hash_t max_hash ( )
+    override public hash_t max_hash ()
     {
         return this.hash_range.range.max;
     }
-
 
     /***************************************************************************
 
@@ -143,11 +132,10 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    public void state ( State s )
+    public void state (State s)
     {
         this.state_ = s;
     }
-
 
     /***************************************************************************
 
@@ -156,11 +144,10 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    override public State state ( )
+    override public State state ()
     {
         return this.state_;
     }
-
 
     /***************************************************************************
 
@@ -169,11 +156,10 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    override protected cstring id ( )
+    override protected cstring id ()
     {
         return typeof(this).stringof;
     }
-
 
     /***************************************************************************
 
@@ -182,9 +168,8 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    override protected istring[] record_action_counter_ids ( )
+    override protected istring[] record_action_counter_ids ()
     {
         return ["written", "read", "forwarded", "iterated", "deleted"];
     }
 }
-

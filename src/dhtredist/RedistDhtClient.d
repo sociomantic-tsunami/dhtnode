@@ -12,7 +12,6 @@
 
 module dhtredist.RedistDhtClient;
 
-
 /*******************************************************************************
 
     Imports
@@ -49,7 +48,6 @@ public class RedistDhtClient : SchedulingDhtClient
     import dhtproto.client.legacy.internal.RequestSetup;
     import dhtproto.client.legacy.internal.request.params.RedistributeInfo;
 
-
     /***************************************************************************
 
         Specialised dht node registry which does not perform the usual
@@ -74,13 +72,12 @@ public class RedistDhtClient : SchedulingDhtClient
 
         ***********************************************************************/
 
-        public this ( EpollSelectDispatcher epoll, ClientSettings settings,
-            IRequestOverflow request_overflow,
-            INodeConnectionPoolErrorReporter error_reporter )
+        public this (EpollSelectDispatcher epoll, ClientSettings settings,
+                IRequestOverflow request_overflow,
+                INodeConnectionPoolErrorReporter error_reporter)
         {
             super(epoll, settings, request_overflow, error_reporter);
         }
-
 
         /***********************************************************************
 
@@ -96,17 +93,16 @@ public class RedistDhtClient : SchedulingDhtClient
 
         ***********************************************************************/
 
-        override public void setNodeResponsibleRange ( mstring address, ushort port,
-            hash_t min, hash_t max )
+        override public void setNodeResponsibleRange (mstring address,
+                ushort port, hash_t min, hash_t max)
         {
             auto conn_pool = super.inRegistry(address, port);
             assert(conn_pool, "node not in registry");
 
-            auto dht_conn_pool = (cast(DhtNodeConnectionPool*)conn_pool);
+            auto dht_conn_pool = (cast(DhtNodeConnectionPool*) conn_pool);
             dht_conn_pool.setNodeRange(min, max);
         }
     }
-
 
     /***************************************************************************
 
@@ -122,15 +118,14 @@ public class RedistDhtClient : SchedulingDhtClient
 
     ***************************************************************************/
 
-    public this ( EpollSelectDispatcher epoll,
-        size_t conn_limit = IClient.Config.default_connection_limit,
-        size_t queue_size = IClient.Config.default_queue_size,
-        size_t fiber_stack_size = IClient.default_fiber_stack_size,
-        uint max_events = 0 )
+    public this (EpollSelectDispatcher epoll,
+            size_t conn_limit = IClient.Config.default_connection_limit,
+            size_t queue_size = IClient.Config.default_queue_size,
+            size_t fiber_stack_size = IClient.default_fiber_stack_size,
+            uint max_events = 0)
     {
         super(epoll, conn_limit, queue_size, fiber_stack_size, max_events);
     }
-
 
     /***************************************************************************
 
@@ -151,14 +146,12 @@ public class RedistDhtClient : SchedulingDhtClient
     ***************************************************************************/
 
     override protected DhtNodeRegistry newDhtNodeRegistry (
-        EpollSelectDispatcher epoll, ClientSettings settings,
-        IRequestOverflow request_overflow,
-        INodeConnectionPoolErrorReporter error_reporter )
+            EpollSelectDispatcher epoll, ClientSettings settings,
+            IRequestOverflow request_overflow,
+            INodeConnectionPoolErrorReporter error_reporter)
     {
-        return new DhtNodeRegistry(epoll, settings, request_overflow,
-            error_reporter);
+        return new DhtNodeRegistry(epoll, settings, request_overflow, error_reporter);
     }
-
 
     /***************************************************************************
 
@@ -186,18 +179,16 @@ public class RedistDhtClient : SchedulingDhtClient
     private struct Redistribute
     {
         mixin RequestBase;
-        mixin IODelegate;       // io(T) method
-        mixin Node;             // node(NodeItem) method
+        mixin IODelegate; // io(T) method
+        mixin Node; // node(NodeItem) method
 
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public Redistribute redistribute ( mstring addr, ushort port,
-        RequestParams.RedistributeDg input, RequestNotification.Callback notifier )
+    public Redistribute redistribute (mstring addr, ushort port,
+            RequestParams.RedistributeDg input, RequestNotification.Callback notifier)
     {
-        return *Redistribute(DhtConst.Command.E.Redistribute,
-            notifier).node(NodeItem(addr, port)).io(input);
+        return *Redistribute(DhtConst.Command.E.Redistribute, notifier).node(
+                NodeItem(addr, port)).io(input);
     }
 }
-
-

@@ -12,8 +12,6 @@
 
 module dhtnode.main;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -28,22 +26,18 @@ import ocean.util.log.Logger;
 
 import core.memory;
 
-
-
 /*******************************************************************************
 
     D2-only stomping prevention counter
 
 *******************************************************************************/
 
-version ( D_Version2 )
+version (D_Version2)
 {
     mixin(`
         extern(C) extern shared long stomping_prevention_counter;
     `);
 }
-
-
 
 /*******************************************************************************
 
@@ -52,12 +46,10 @@ version ( D_Version2 )
 *******************************************************************************/
 
 private Logger logger;
-static this ( )
+static this ()
 {
     logger = Log.lookup("dhtnode.main");
 }
-
-
 
 /*******************************************************************************
 
@@ -69,14 +61,15 @@ static this ( )
 
 *******************************************************************************/
 
-version (UnitTest) {} else
-private int main ( istring[] cl_args )
+version (UnitTest)
+{
+}
+else
+    private int main (istring[] cl_args)
 {
     auto app = new DhtNodeServer;
     return app.main(cl_args);
 }
-
-
 
 /*******************************************************************************
 
@@ -120,12 +113,11 @@ public class DhtNodeServer : DaemonApp
 
     import ocean.core.ExceptionDefinitions : IOException, OutOfMemoryException;
 
-    import core.sys.posix.signal: SIGINT, SIGTERM, SIGQUIT;
+    import core.sys.posix.signal : SIGINT, SIGTERM, SIGQUIT;
     import core.sys.posix.sys.mman : mlockall, MCL_CURRENT, MCL_FUTURE;
     import core.stdc.errno : errno, EPERM, ENOMEM;
     import core.stdc.string : strerror;
     import ocean.text.util.StringC;
-
 
     /***************************************************************************
 
@@ -145,8 +137,7 @@ public class DhtNodeServer : DaemonApp
         bool lock_memory = true;
 
         /// Behaviour upon encountering an out-of-range record.
-        ConfigReader.LimitInit!(istring, "load", "load", "fatal", "ignore")
-            allow_out_of_range;
+        ConfigReader.LimitInit!(istring, "load", "load", "fatal", "ignore") allow_out_of_range;
 
         /// If this many records have been loaded from a channel file and all
         /// were out-of-range, then abort. If 0, this behaviour is disabled.
@@ -166,7 +157,6 @@ public class DhtNodeServer : DaemonApp
         /// tokyocabinet. 0 = use tokyocabinet's default number of buckets.
         uint bnum = 0;
 
-
         /***********************************************************************
 
             Returns:
@@ -176,26 +166,26 @@ public class DhtNodeServer : DaemonApp
 
         ***********************************************************************/
 
-        public StorageChannels.OutOfRangeHandling out_of_range_handling ( )
+        public StorageChannels.OutOfRangeHandling out_of_range_handling ()
         {
             StorageChannels.OutOfRangeHandling out_of_range_handling;
-            out_of_range_handling.abort_after_all_out_of_range =
-                this.abort_after_all_out_of_range;
+            out_of_range_handling.abort_after_all_out_of_range = this
+                .abort_after_all_out_of_range;
 
-            with ( StorageChannels.OutOfRangeHandling.Mode )
-            switch ( this.allow_out_of_range() )
+            with (StorageChannels.OutOfRangeHandling.Mode) switch (this
+                        .allow_out_of_range())
             {
-                case "load":
-                    out_of_range_handling.mode = Load;
-                    break;
-                case "fatal":
-                    out_of_range_handling.mode =  Fatal;
-                    break;
-                case "ignore":
-                    out_of_range_handling.mode =  Ignore;
-                    break;
-                default:
-                    verify(false);
+            case "load":
+                out_of_range_handling.mode = Load;
+                break;
+            case "fatal":
+                out_of_range_handling.mode = Fatal;
+                break;
+            case "ignore":
+                out_of_range_handling.mode = Ignore;
+                break;
+            default:
+                verify(false);
             }
 
             return out_of_range_handling;
@@ -203,7 +193,6 @@ public class DhtNodeServer : DaemonApp
     }
 
     private MemoryConfig memory_config;
-
 
     /***************************************************************************
 
@@ -215,7 +204,6 @@ public class DhtNodeServer : DaemonApp
 
     private PerformanceConfig performance_config;
 
-
     /***************************************************************************
 
         Epoll selector instance
@@ -223,7 +211,6 @@ public class DhtNodeServer : DaemonApp
     ***************************************************************************/
 
     private EpollSelectDispatcher epoll;
-
 
     /***************************************************************************
 
@@ -234,7 +221,6 @@ public class DhtNodeServer : DaemonApp
 
     private DhtNode node;
 
-
     /***************************************************************************
 
         Storage channels owned by the node (created by sub-class).
@@ -242,7 +228,6 @@ public class DhtNodeServer : DaemonApp
     ***************************************************************************/
 
     private StorageChannels storage_channels;
-
 
     /***************************************************************************
 
@@ -253,7 +238,6 @@ public class DhtNodeServer : DaemonApp
 
     private DhtHashRange hash_range;
 
-
     /***************************************************************************
 
         Node stats logger
@@ -261,7 +245,6 @@ public class DhtNodeServer : DaemonApp
     ***************************************************************************/
 
     private ChannelsNodeStats dht_stats;
-
 
     /***************************************************************************
 
@@ -271,16 +254,17 @@ public class DhtNodeServer : DaemonApp
 
     private mstring conn_error_buf;
 
-
     /***************************************************************************
 
         Constructor
 
     ***************************************************************************/
 
-    public this ( )
+    public this ()
     {
-        version ( D_Version2 ) { }
+        version (D_Version2)
+        {
+        }
         else
         {
             // GC collect hooks only available in D1
@@ -298,7 +282,6 @@ public class DhtNodeServer : DaemonApp
         super(app_name, app_desc, version_info, optional);
     }
 
-
     /***************************************************************************
 
         Override default DaemonApp arguments parsing, specifying that --config
@@ -310,14 +293,13 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    override public void setupArgs ( IApplication app, Arguments args )
+    override public void setupArgs (IApplication app, Arguments args)
     {
         super.setupArgs(app, args);
 
         args("config").deefalts = null;
         args("config").required;
     }
-
 
     /***************************************************************************
 
@@ -329,21 +311,20 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    public override void onSignal ( int signum )
+    public override void onSignal (int signum)
     {
-        switch ( signum )
+        switch (signum)
         {
-            case SIGINT:
-            case SIGTERM:
-            case SIGQUIT:
-                this.sigintHandler();
-                break;
+        case SIGINT:
+        case SIGTERM:
+        case SIGQUIT:
+            this.sigintHandler();
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
     }
-
 
     /***************************************************************************
 
@@ -355,7 +336,7 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    public override void processConfig ( IApplication app, ConfigParser config )
+    public override void processConfig (IApplication app, ConfigParser config)
     {
         ConfigReader.fill("Server", this.server_config, config);
         ConfigReader.fill("Performance", this.performance_config, config);
@@ -363,18 +344,13 @@ public class DhtNodeServer : DaemonApp
 
         hash_t min, max;
 
-        enforce(Hash.hashDigestToHashT(this.server_config.minval(), min, true),
-            "Minimum hash specified in config file is invalid -- "
-            "a full-length hash is expected");
+        enforce(Hash.hashDigestToHashT(this.server_config.minval(), min, true), "Minimum hash specified in config file is invalid -- " "a full-length hash is expected");
 
-        enforce(Hash.hashDigestToHashT(this.server_config.maxval(), max, true),
-            "Maximum hash specified in config file is invalid -- "
-            "a full-length hash is expected");
+        enforce(Hash.hashDigestToHashT(this.server_config.maxval(), max, true), "Maximum hash specified in config file is invalid -- " "a full-length hash is expected");
 
         this.hash_range = new DhtHashRange(min, max,
-            new HashRangeConfig(this.config_ext.default_configs));
+                new HashRangeConfig(this.config_ext.default_configs));
     }
-
 
     /***************************************************************************
 
@@ -389,25 +365,24 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    override protected int run ( Arguments args, ConfigParser config )
+    override protected int run (Arguments args, ConfigParser config)
     {
-        if ( this.memory_config.lock_memory )
+        if (this.memory_config.lock_memory)
         {
-            if ( !this.lockMemory() )
+            if (!this.lockMemory())
             {
                 return 1;
             }
         }
 
         auto storage = this.newStorageChannels();
-        redistribution_process = new RedistributionProcess(
-            storage, this.performance_config.redist_memory_limit_mulitplier);
+        redistribution_process = new RedistributionProcess(storage,
+                this.performance_config.redist_memory_limit_mulitplier);
 
-        this.node = new DhtNode(this.node_item,
-            storage, this.hash_range, this.epoll,
-            server_config.backlog, this.per_request_stats);
-        this.dht_stats =
-            new ChannelsNodeStats(this.node, this.stats_ext.stats_log);
+        this.node = new DhtNode(this.node_item, storage, this.hash_range,
+                this.epoll, server_config.backlog, this.per_request_stats);
+        this.dht_stats = new ChannelsNodeStats(this.node, this.stats_ext
+                .stats_log);
 
         this.node.error_callback = &this.nodeError;
         this.node.connection_limit = server_config.connection_limit;
@@ -417,7 +392,7 @@ public class DhtNodeServer : DaemonApp
         this.startEventHandling(this.epoll);
 
         this.timer_ext.register(&this.onWriterFlush,
-            cast(double)this.performance_config.write_flush_ms / 1000.0);
+                cast(double) this.performance_config.write_flush_ms / 1000.0);
 
         this.node.register(this.epoll);
 
@@ -428,14 +403,13 @@ public class DhtNodeServer : DaemonApp
         return 0;
     }
 
-
     /***************************************************************************
 
         Periodic stats update callback.
 
     ***************************************************************************/
 
-    override protected void onStatsTimer ( )
+    override protected void onStatsTimer ()
     {
         this.reportSystemStats();
         this.dht_stats.log();
@@ -448,7 +422,7 @@ public class DhtNodeServer : DaemonApp
 
         StompingPreventionStats stomping_stats;
 
-        version ( D_Version2 )
+        version (D_Version2)
         {
             mixin(`
                 import core.atomic : atomicLoad, atomicStore;
@@ -463,7 +437,6 @@ public class DhtNodeServer : DaemonApp
         this.stats_ext.stats_log.flush();
     }
 
-
     /***************************************************************************
 
         Periodic writer flush callback.
@@ -473,21 +446,21 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private bool onWriterFlush ( )
+    private bool onWriterFlush ()
     {
         try
         {
             this.node.flush();
         }
-        catch ( Exception exception )
+        catch (Exception exception)
         {
-            logger.error("Exception caught in writer flush timer handler: {} @ {}:{}",
-                exception.message, exception.file, exception.line);
+            logger.error(
+                    "Exception caught in writer flush timer handler: {} @ {}:{}",
+                    exception.message, exception.file, exception.line);
         }
 
         return true;
     }
-
 
     /***************************************************************************
 
@@ -500,16 +473,16 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private StorageChannels newStorageChannels ( )
+    private StorageChannels newStorageChannels ()
     {
         this.storage_channels = new StorageChannels(this.server_config.data_dir,
-            this.memory_config.size_limit, this.hash_range,
-            this.memory_config.bnum, this.memory_config.out_of_range_handling,
-            this.memory_config.disable_direct_io);
+                this.memory_config.size_limit,
+                this.hash_range, this.memory_config.bnum,
+                this.memory_config.out_of_range_handling,
+                this.memory_config.disable_direct_io);
 
         return this.storage_channels;
     }
-
 
     /***************************************************************************
 
@@ -521,40 +494,38 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private bool lockMemory ( )
+    private bool lockMemory ()
     {
-        if ( mlockall(MCL_CURRENT | MCL_FUTURE) )
+        if (mlockall(MCL_CURRENT | MCL_FUTURE))
         {
             const default_error = "Unknown";
             istring msg = default_error;
 
             // Provide custom error messages for expected errors
-            switch ( errno )
+            switch (errno)
             {
-                case EPERM:
-                    msg = "Executable does not have permissions to lock "
-                        "memory";
-                    break;
-                case ENOMEM:
-                    msg = "Attempted to lock more memory than allowed by "
-                        "soft resource limit (RLIMIT_MEMLOCK)";
-                    break;
-                default:
-                    // Leave default error message
+            case EPERM:
+                msg = "Executable does not have permissions to lock " "memory";
+                break;
+            case ENOMEM:
+                msg = "Attempted to lock more memory than allowed by " "soft resource limit (RLIMIT_MEMLOCK)";
+                break;
+            default:
+                // Leave default error message
             }
 
             auto error = strerror(errno);
             auto errno_desc = StringC.toDString(error);
 
-            logger.fatal("Error when attempting to lock memory: {} "
-                "(errno={}, '{}')", msg, errno, errno_desc);
+            logger.fatal(
+                    "Error when attempting to lock memory: {} " "(errno={}, '{}')",
+                    msg, errno, errno_desc);
 
             return false;
         }
 
         return true;
     }
-
 
     /***************************************************************************
 
@@ -563,21 +534,19 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private istring[] per_request_stats ( )
-    out ( rqs )
+    private istring[] per_request_stats ()
+    out (rqs)
     {
-        foreach ( rq; rqs )
+        foreach (rq; rqs)
         {
-            assert(rq in DhtConst.Command(),
-                "Cannot track stats for unknown request " ~ rq);
+            assert(rq in DhtConst.Command(), "Cannot track stats for unknown request " ~ rq);
         }
     }
     body
     {
-        return ["Put", "Get", "Exists", "Remove", "Listen", "GetAll", "GetAllKeys",
-                "GetAllFilter", "PutBatch"];
+        return ["Put", "Get", "Exists", "Remove", "Listen", "GetAll",
+            "GetAllKeys", "GetAllFilter", "PutBatch"];
     }
-
 
     /***************************************************************************
 
@@ -586,11 +555,11 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private DhtConst.NodeItem node_item ( )
+    private DhtConst.NodeItem node_item ()
     {
-        return DhtConst.NodeItem(this.server_config.address(), this.server_config.port());
+        return DhtConst.NodeItem(this.server_config.address(), this.server_config
+                .port());
     }
-
 
     /***************************************************************************
 
@@ -605,14 +574,13 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private void nodeError ( Exception exception,
-        IAdvancedSelectClient.Event event_info,
-        DhtConnectionHandler.IConnectionHandlerInfo conn )
+    private void nodeError (Exception exception,
+            IAdvancedSelectClient.Event event_info,
+            DhtConnectionHandler.IConnectionHandlerInfo conn)
     {
-        if ( cast(MessageFiber.KilledException)exception ||
-             cast(IOWarning)exception ||
-             cast(IOException)exception ||
-             cast(EpollException)exception )
+        if (cast(MessageFiber.KilledException) exception
+                || cast(IOWarning) exception
+                || cast(IOException) exception || cast(EpollException) exception)
         {
             // Don't log these exception types, which only occur on the normal
             // disconnection of a client.
@@ -623,11 +591,10 @@ public class DhtNodeServer : DaemonApp
             enableStomping(this.conn_error_buf);
             conn.formatInfo(this.conn_error_buf);
             logger.error("Exception caught in eventLoop: '{}' @ {}:{} on {}",
-                exception.message, exception.file, exception.line,
-                this.conn_error_buf);
+                    exception.message,
+                    exception.file, exception.line, this.conn_error_buf);
         }
     }
-
 
     /***************************************************************************
 
@@ -646,7 +613,7 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private void sigintHandler ( )
+    private void sigintHandler ()
     {
         logger.info("SIGINT handler. Shutting down.");
 
@@ -671,7 +638,9 @@ public class DhtNodeServer : DaemonApp
         this.node.state = DhtNode.State.ShutDown;
     }
 
-    version ( D_Version2 ) { }
+    version (D_Version2)
+    {
+    }
     else
     {
         /***********************************************************************
@@ -680,7 +649,7 @@ public class DhtNodeServer : DaemonApp
 
         ***********************************************************************/
 
-        private void gcCollectStart ( )
+        private void gcCollectStart ()
         {
             logger.trace("Starting GC collection");
         }
@@ -695,11 +664,10 @@ public class DhtNodeServer : DaemonApp
 
         ***********************************************************************/
 
-        private void gcCollectEnd ( int freed, int pagebytes )
+        private void gcCollectEnd (int freed, int pagebytes)
         {
             logger.trace("Finished GC collection: {} bytes freed, {} bytes freed within full pages",
-                freed, pagebytes);
+                    freed, pagebytes);
         }
     }
 }
-

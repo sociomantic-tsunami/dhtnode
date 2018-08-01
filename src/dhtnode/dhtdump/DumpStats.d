@@ -12,8 +12,6 @@
 
 module dhtnode.dhtdump.DumpStats;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -28,8 +26,6 @@ import ocean.util.log.Stats;
 
 import ocean.io.select.EpollSelectDispatcher;
 
-
-
 public class DumpStats
 {
     /***************************************************************************
@@ -39,7 +35,6 @@ public class DumpStats
     ***************************************************************************/
 
     public alias StatsLog.Config Config;
-
 
     /***************************************************************************
 
@@ -60,7 +55,6 @@ public class DumpStats
         ulong last_time_ms;
     }
 
-
     /***************************************************************************
 
         Total data written since the last log update.
@@ -68,7 +62,6 @@ public class DumpStats
     ***************************************************************************/
 
     private CycleStats cycle_stats;
-
 
     /***************************************************************************
 
@@ -82,7 +75,6 @@ public class DumpStats
         ulong bytes_written;
     }
 
-
     /***************************************************************************
 
         Total data written since the last log update. Cleared after updating.
@@ -90,7 +82,6 @@ public class DumpStats
     ***************************************************************************/
 
     private IOStats io_stats;
-
 
     /***************************************************************************
 
@@ -102,7 +93,6 @@ public class DumpStats
 
     private IOStats[cstring] channel_stats;
 
-
     /***************************************************************************
 
         Constructor. Registers an update timer with epoll which writes the stats
@@ -113,11 +103,10 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public this ( StatsLog stats_log )
+    public this (StatsLog stats_log)
     {
         this.stats_log = stats_log;
     }
-
 
     /***************************************************************************
 
@@ -130,14 +119,12 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void dumpedRecord ( cstring key, cstring value )
+    public void dumpedRecord (cstring key, cstring value)
     {
         this.io_stats.records_written++;
         // bytes of key, value, and length specifiers of each
-        this.io_stats.bytes_written += key.length + value.length
-            + (size_t.sizeof * 2);
+        this.io_stats.bytes_written += key.length + value.length + (size_t.sizeof * 2);
     }
-
 
     /***************************************************************************
 
@@ -151,9 +138,9 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void dumpedChannel ( cstring channel, ulong records, ulong bytes )
+    public void dumpedChannel (cstring channel, ulong records, ulong bytes)
     {
-        if ( !(channel in this.channel_stats) )
+        if (!(channel in this.channel_stats))
         {
             this.channel_stats[channel] = IOStats();
         }
@@ -161,7 +148,6 @@ public class DumpStats
         this.channel_stats[channel].records_written = records;
         this.channel_stats[channel].bytes_written = bytes;
     }
-
 
     /***************************************************************************
 
@@ -178,11 +164,10 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void channelRemoved ( char[] channel )
+    public void channelRemoved (char[] channel)
     {
         this.channel_stats.remove(channel);
     }
-
 
     /***************************************************************************
 
@@ -194,11 +179,10 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void dumpedAll ( ulong millisec )
+    public void dumpedAll (ulong millisec)
     {
         this.cycle_stats.last_time_ms = millisec;
     }
-
 
     /***************************************************************************
 
@@ -208,16 +192,15 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public ulong total_bytes ( )
+    public ulong total_bytes ()
     {
         ulong sum;
-        foreach ( channel; this.channel_stats )
+        foreach (channel; this.channel_stats)
         {
             sum += channel.bytes_written;
         }
         return sum;
     }
-
 
     /***************************************************************************
 
@@ -227,16 +210,15 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public ulong total_records ( )
+    public ulong total_records ()
     {
         ulong sum;
-        foreach ( channel; this.channel_stats )
+        foreach (channel; this.channel_stats)
         {
             sum += channel.records_written;
         }
         return sum;
     }
-
 
     /***************************************************************************
 
@@ -244,12 +226,12 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void log ( )
+    public void log ()
     {
         this.stats_log.add(this.io_stats);
         this.stats_log.add(this.cycle_stats);
 
-        foreach ( channel, stats; this.channel_stats )
+        foreach (channel, stats; this.channel_stats)
         {
             this.stats_log.addObject!("channel")(channel, stats);
         }
@@ -259,4 +241,3 @@ public class DumpStats
         this.stats_log.flush();
     }
 }
-

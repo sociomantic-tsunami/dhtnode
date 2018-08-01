@@ -32,7 +32,7 @@ import ocean.transition;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this ()
 {
     log = Log.lookup("dhtnode.request.ListenRequest");
 }
@@ -112,10 +112,10 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     ***************************************************************************/
 
-    final override protected bool prepareChannel ( cstring channel_name )
+    final override protected bool prepareChannel (cstring channel_name)
     {
         this.storage_channel = downcast!(StorageEngine)(
-            this.resources.storage_channels.getCreate(channel_name));
+                this.resources.storage_channels.getCreate(channel_name));
 
         if (this.storage_channel is null)
             return false;
@@ -142,8 +142,8 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     ***************************************************************************/
 
-    final override protected bool getNextRecord ( cstring channel_name,
-        mstring key, out Const!(void)[] value )
+    final override protected bool getNextRecord (cstring channel_name,
+            mstring key, out Const!(void)[] value)
     {
         enforce(key.length == Hash.HashDigits);
 
@@ -155,12 +155,11 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
             // Get record from storage engine
             mstring value_slice;
-            this.storage_channel.get(key, *this.resources.value_buffer,
-                value_slice);
+            this.storage_channel.get(key, *this.resources.value_buffer, value_slice);
             value = value_slice;
 
-            this.resources.node_info.record_action_counters
-                .increment("forwarded", value.length);
+            this.resources.node_info.record_action_counters.increment("forwarded",
+                    value.length);
             this.resources.loop_ceder.handleCeding();
 
             return true;
@@ -180,12 +179,12 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     ***************************************************************************/
 
-    final override protected void waitEvents ( out bool finish, out bool flush )
+    final override protected void waitEvents (out bool finish, out bool flush)
     {
-        scope(exit)
+        scope (exit)
         {
             finish = this.finish_trigger;
-            flush  = this.flush_trigger;
+            flush = this.flush_trigger;
             this.finish_trigger = false;
             this.flush_trigger = false;
         }
@@ -195,7 +194,8 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
             return;
 
         this.waiting_for_trigger = true;
-        scope(exit) this.waiting_for_trigger = false;
+        scope (exit)
+            this.waiting_for_trigger = false;
 
         this.resources.event.wait;
     }
@@ -213,56 +213,58 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     ***************************************************************************/
 
-    public void trigger ( Code code, hash_t key )
+    public void trigger (Code code, hash_t key)
     {
         final switch (code) with (Code)
         {
-            case DataReady:
-                if ( (*this.resources.hash_buffer).length < HashBufferMaxLength )
-                {
-                    //This could lead to that the buffer containing the same key
-                    //several times. Since the buffer is flushed often and
-                    //checking the value before adding it could be a to heavy
-                    //cost there's no need to do a check before adding the key.
-                    (*this.resources.hash_buffer) ~= key;
-                }
-                else
-                {
-                    cstring addr;
-                    ushort port;
-                    if ( this.reader.addr_port !is null )
-                    {
-                        addr = this.reader.addr_port.address;
-                        port = this.reader.addr_port.port;
-                    }
-                    log.warn(
-                        "Listen request on channel '{}', client {}:{}," ~
-                            " hash buffer reached maximum length --" ~
-                            " record discarded",
-                        *this.resources.channel_buffer, addr, port
-                    );
-                }
-                break;
-
-            case Flush:
-                this.flush_trigger = true;
-                break;
-
-            case Finish:
-                this.finish_trigger = true;
-                break;
-
-            case Deletion:
-                // Not relevant to this request.
-                break;
-
-            case None:
-                verify(false);
-                break;
-
-            version (D_Version2){} else
+        case DataReady:
+            if ((*this.resources.hash_buffer).length < HashBufferMaxLength)
             {
-                default: assert(false);
+                //This could lead to that the buffer containing the same key
+                //several times. Since the buffer is flushed often and
+                //checking the value before adding it could be a to heavy
+                //cost there's no need to do a check before adding the key.
+                (*this.resources.hash_buffer) ~= key;
+            }
+            else
+            {
+                cstring addr;
+                ushort port;
+                if (this.reader.addr_port !is null)
+                {
+                    addr = this.reader.addr_port.address;
+                    port = this.reader.addr_port.port;
+                }
+                log.warn("Listen request on channel '{}', client {}:{},"
+                        ~ " hash buffer reached maximum length --"
+                        ~ " record discarded",
+                        *this.resources.channel_buffer, addr, port);
+            }
+            break;
+
+        case Flush:
+            this.flush_trigger = true;
+            break;
+
+        case Finish:
+            this.finish_trigger = true;
+            break;
+
+        case Deletion:
+            // Not relevant to this request.
+            break;
+
+        case None:
+            verify(false);
+            break;
+
+            version (D_Version2)
+            {
+            }
+            else
+            {
+        default:
+                assert(false);
             }
         }
 
@@ -278,7 +280,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     ***************************************************************************/
 
-    final override protected void onDisconnect ( )
+    final override protected void onDisconnect ()
     {
         if (this.waiting_for_trigger)
         {
@@ -293,7 +295,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     ***************************************************************************/
 
-    final override protected void finalizeRequest ( )
+    final override protected void finalizeRequest ()
     {
         this.storage_channel.unregisterListener(this);
     }

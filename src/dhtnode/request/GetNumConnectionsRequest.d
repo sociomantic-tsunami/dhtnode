@@ -38,7 +38,7 @@ public scope class GetNumConnectionsRequest : Protocol.GetNumConnections
     ***************************************************************************/
 
     mixin RequestConstruction!();
- 
+
     /***************************************************************************
 
         Must return total num_conns of established connections to this node.
@@ -48,12 +48,10 @@ public scope class GetNumConnectionsRequest : Protocol.GetNumConnections
 
     ***************************************************************************/
 
-    final override protected NumConnectionsData getConnectionsData ( )
+    final override protected NumConnectionsData getConnectionsData ()
     {
-        return NumConnectionsData(
-            this.resources.node_info.node_item.Address,
-            this.resources.node_info.node_item.Port,
-            this.resources.node_info.num_open_connections
-        );
+        return NumConnectionsData(this.resources.node_info.node_item.Address,
+                this.resources.node_info.node_item.Port,
+                this.resources.node_info.num_open_connections);
     }
 }

@@ -58,7 +58,7 @@ public scope class GetAllFilterRequest : Protocol.GetAllFilter
 
     ***************************************************************************/
 
-    private bool filterPredicate ( cstring key, cstring value )
+    private bool filterPredicate (cstring key, cstring value)
     {
         return this.match.forward(value) < value.length;
     }
@@ -81,7 +81,7 @@ public scope class GetAllFilterRequest : Protocol.GetAllFilter
 
     ***************************************************************************/
 
-    final override protected void prepareFilter ( cstring filter )
+    final override protected void prepareFilter (cstring filter)
     {
         this.match = search(filter);
     }

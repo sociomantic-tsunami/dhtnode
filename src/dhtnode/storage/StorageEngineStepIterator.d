@@ -30,7 +30,6 @@ public class StorageEngineStepIterator
     import ocean.core.Verify;
     import dhtnode.storage.StorageEngine;
 
-
     /***************************************************************************
 
         Reference to storage engine, set by setStorage() method.
@@ -38,7 +37,6 @@ public class StorageEngineStepIterator
     ***************************************************************************/
 
     private StorageEngine storage;
-
 
     /***************************************************************************
 
@@ -48,7 +46,6 @@ public class StorageEngineStepIterator
     ***************************************************************************/
 
     private bool started;
-
 
     /***************************************************************************
 
@@ -61,7 +58,6 @@ public class StorageEngineStepIterator
 
     private mstring key_buffer;
 
-
     /***************************************************************************
 
         Key of current record (slice of this.key_buffer).
@@ -69,7 +65,6 @@ public class StorageEngineStepIterator
     ***************************************************************************/
 
     private mstring current_key;
-
 
     /***************************************************************************
 
@@ -83,7 +78,6 @@ public class StorageEngineStepIterator
 
     private mstring value_buffer;
 
-
     /***************************************************************************
 
         Storage initialiser.
@@ -93,12 +87,11 @@ public class StorageEngineStepIterator
 
     ***************************************************************************/
 
-    public void setStorage ( StorageEngine storage )
+    public void setStorage (StorageEngine storage)
     {
         this.storage = storage;
         this.started = false;
     }
-
 
     /***************************************************************************
 
@@ -109,11 +102,10 @@ public class StorageEngineStepIterator
 
     ***************************************************************************/
 
-    public mstring key ( )
+    public mstring key ()
     {
         return this.current_key;
     }
-
 
     /***************************************************************************
 
@@ -125,16 +117,14 @@ public class StorageEngineStepIterator
 
     ***************************************************************************/
 
-    public mstring value ( )
+    public mstring value ()
     {
-        verify(this.storage !is null,
-            typeof(this).stringof ~ ".next: storage not set");
+        verify(this.storage !is null, typeof(this).stringof ~ ".next: storage not set");
 
         mstring value_slice;
         this.storage.get(this.current_key, this.value_buffer, value_slice);
         return value_slice;
     }
-
 
     /***************************************************************************
 
@@ -143,21 +133,19 @@ public class StorageEngineStepIterator
 
     ***************************************************************************/
 
-    public void next ( )
+    public void next ()
     {
-        verify(this.storage !is null,
-            typeof(this).stringof ~ ".next: storage not set");
+        verify(this.storage !is null, typeof(this).stringof ~ ".next: storage not set");
 
         if (this.started)
-            this.storage.getNextKey(this.current_key, this.key_buffer,
-                this.current_key);
+            this.storage.getNextKey(this.current_key, this.key_buffer, this
+                    .current_key);
         else
         {
             this.started = true;
             this.storage.getFirstKey(this.key_buffer, this.current_key);
         }
     }
-
 
     /***************************************************************************
 
@@ -172,7 +160,7 @@ public class StorageEngineStepIterator
 
     ***************************************************************************/
 
-    public bool lastKey ( )
+    public bool lastKey ()
     {
         return this.key.length == 0;
     }

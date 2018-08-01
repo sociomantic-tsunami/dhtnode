@@ -38,8 +38,7 @@ enum IterationKind
 
 *******************************************************************************/
 
-public template ChannelIteration ( alias resources, IterationKind kind,
-    alias predicate = alwaysTrue )
+public template ChannelIteration(alias resources, IterationKind kind, alias predicate = alwaysTrue)
 {
     import dhtnode.storage.StorageEngine;
     import dhtnode.storage.StorageEngineStepIterator;
@@ -83,7 +82,7 @@ public template ChannelIteration ( alias resources, IterationKind kind,
 
     ***************************************************************************/
 
-    override protected bool prepareChannel ( cstring channel_name )
+    override protected bool prepareChannel (cstring channel_name)
     {
         auto storage_channel = channel_name in resources.storage_channels;
         if (storage_channel is null)
@@ -122,7 +121,7 @@ public template ChannelIteration ( alias resources, IterationKind kind,
 
         // loops either until match is found or last key processed
         while (true)
-        { 
+        {
             this.iterator.next();
 
             resources.loop_ceder.handleCeding();
@@ -142,8 +141,8 @@ public template ChannelIteration ( alias resources, IterationKind kind,
 
             if (predicate(args))
             {
-                this.resources.node_info.record_action_counters
-                    .increment("iterated", iterator.value.length);
+                this.resources.node_info.record_action_counters.increment(
+                        "iterated", iterator.value.length);
                 return true;
             }
         }
@@ -162,7 +161,7 @@ public template ChannelIteration ( alias resources, IterationKind kind,
 
 *******************************************************************************/
 
-public bool alwaysTrue ( T... ) ( T args )
+public bool alwaysTrue (T...)(T args)
 {
     return true;
 }

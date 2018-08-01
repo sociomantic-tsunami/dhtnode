@@ -12,8 +12,6 @@
 
 module dhtnode.config.PerformanceConfig;
 
-
-
 /*******************************************************************************
 
     Performance config values
@@ -41,4 +39,3 @@ public class PerformanceConfig
 
     double redist_memory_limit_mulitplier = 1.1;
 }
-

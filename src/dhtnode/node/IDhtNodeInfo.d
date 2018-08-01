@@ -12,7 +12,6 @@
 
 module dhtnode.node.IDhtNodeInfo;
 
-
 /*******************************************************************************
 
     Imports
@@ -20,7 +19,6 @@ module dhtnode.node.IDhtNodeInfo;
 *******************************************************************************/
 
 import swarm.node.model.IChannelsNodeInfo;
-
 
 /*******************************************************************************
 
@@ -38,8 +36,7 @@ public interface IDhtNodeInfo : IChannelsNodeInfo
 
     ***************************************************************************/
 
-    public hash_t min_hash ( );
-
+    public hash_t min_hash ();
 
     /***************************************************************************
 
@@ -48,8 +45,7 @@ public interface IDhtNodeInfo : IChannelsNodeInfo
 
     ***************************************************************************/
 
-    public hash_t max_hash ( );
-
+    public hash_t max_hash ();
 
     /***************************************************************************
 
@@ -64,7 +60,6 @@ public interface IDhtNodeInfo : IChannelsNodeInfo
         ShutDown
     }
 
-
     /***************************************************************************
 
         Returns:
@@ -72,6 +67,5 @@ public interface IDhtNodeInfo : IChannelsNodeInfo
 
     ***************************************************************************/
 
-    public State state ( );
+    public State state ();
 }
-

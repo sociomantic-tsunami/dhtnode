@@ -48,11 +48,11 @@ public scope class GetSizeRequest : Protocol.GetSize
 
     ***************************************************************************/
 
-    final override protected SizeData getSizeData ( )
+    final override protected SizeData getSizeData ()
     {
         ulong records, bytes;
 
-        foreach ( channel; this.resources.storage_channels )
+        foreach (channel; this.resources.storage_channels)
         {
             auto channel_records = channel.num_records;
             auto channel_bytes = channel.num_bytes;
@@ -61,11 +61,7 @@ public scope class GetSizeRequest : Protocol.GetSize
             bytes += channel_bytes;
         }
 
-        return SizeData(
-            this.resources.node_info.node_item.Address,
-            this.resources.node_info.node_item.Port,
-            records,
-            bytes
-        );
+        return SizeData(this.resources.node_info.node_item.Address,
+                this.resources.node_info.node_item.Port, records, bytes);
     }
 }

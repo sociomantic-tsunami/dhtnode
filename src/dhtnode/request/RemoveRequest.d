@@ -58,7 +58,7 @@ public scope class RemoveRequest : Protocol.Remove
 
     ***************************************************************************/
 
-    final override protected bool isAllowed ( cstring key )
+    final override protected bool isAllowed (cstring key)
     {
         return this.resources.storage_channels.responsibleForKey(key);
     }
@@ -73,18 +73,17 @@ public scope class RemoveRequest : Protocol.Remove
 
     ***************************************************************************/
 
-    final override protected void remove ( cstring channel_name, cstring key )
+    final override protected void remove (cstring channel_name, cstring key)
     {
-        auto storage_channel =
-            *this.resources.channel_buffer in this.resources.storage_channels;
-        if ( storage_channel !is null )
+        auto storage_channel = *this.resources.channel_buffer in this.resources
+            .storage_channels;
+        if (storage_channel !is null)
         {
             auto dht_channel = downcast!(StorageEngine)(*storage_channel);
             verify(dht_channel !is null);
             auto bytes = dht_channel.getSize(key);
             dht_channel.remove(key);
-            this.resources.node_info.record_action_counters
-                .increment("deleted", bytes);
+            this.resources.node_info.record_action_counters.increment("deleted", bytes);
         }
     }
 }

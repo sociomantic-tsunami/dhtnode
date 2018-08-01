@@ -12,8 +12,6 @@
 
 module dhtnode.dhtdump.main;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -51,8 +49,6 @@ import ocean.util.log.Logger;
 
 import ocean.core.Time;
 
-
-
 /*******************************************************************************
 
     Static module logger
@@ -61,12 +57,10 @@ import ocean.core.Time;
 
 private Logger log;
 
-static this ( )
+static this ()
 {
     log = Log.lookup("dhtnode.dhtdump.main");
 }
-
-
 
 /*******************************************************************************
 
@@ -78,8 +72,11 @@ static this ( )
 
 *******************************************************************************/
 
-version (UnitTest) {} else
-private int main ( istring[] cl_args )
+version (UnitTest)
+{
+}
+else
+    private int main (istring[] cl_args)
 {
     try
     {
@@ -88,14 +85,13 @@ private int main ( istring[] cl_args )
         log.info("Exiting with return code {}", ret);
         return ret;
     }
-    catch ( Throwable e )
+    catch (Throwable e)
     {
-        log.error("Caught exception in main: {} @ {}:{}",
-            e.message, e.file, e.line);
+        log.error("Caught exception in main: {} @ {}:{}", e.message, e.file, e
+                .line);
         throw e;
     }
 }
-
 
 public class DhtDump : DaemonApp
 {
@@ -107,7 +103,6 @@ public class DhtDump : DaemonApp
 
     private EpollSelectDispatcher epoll;
 
-
     /***************************************************************************
 
         Dht client instance
@@ -115,7 +110,6 @@ public class DhtDump : DaemonApp
     ***************************************************************************/
 
     private DumpCycle.ScopeDhtClient dht;
-
 
     /***************************************************************************
 
@@ -125,7 +119,6 @@ public class DhtDump : DaemonApp
 
     private DumpCycle dump_cycle;
 
-
     /***************************************************************************
 
         Dump stats instance.
@@ -133,7 +126,6 @@ public class DhtDump : DaemonApp
     ***************************************************************************/
 
     private DumpStats dump_stats;
-
 
     /***************************************************************************
 
@@ -149,7 +141,6 @@ public class DhtDump : DaemonApp
 
     private DhtConfig dht_config;
 
-
     /***************************************************************************
 
         Dump settings, read from config file
@@ -157,7 +148,6 @@ public class DhtDump : DaemonApp
     ***************************************************************************/
 
     private DumpCycle.Config dump_config;
-
 
     /***************************************************************************
 
@@ -167,28 +157,25 @@ public class DhtDump : DaemonApp
 
     private DumpStats.Config stats_config;
 
-
     /***************************************************************************
 
         Constructor.
 
     ***************************************************************************/
 
-    public this ( )
+    public this ()
     {
         this.epoll = new EpollSelectDispatcher;
 
         const app_name = "dhtdump";
-        const app_desc = "iterates over all channels in a dht node, dumping the"
-            " data to disk";
+        const app_desc = "iterates over all channels in a dht node, dumping the" " data to disk";
         super(app_name, app_desc, version_info);
 
-        this.dht = new DumpCycle.ScopeDhtClient(this.epoll,
-            new DhtClient.ScopeRequestsPlugin);
+        this.dht = new DumpCycle.ScopeDhtClient(this.epoll, new DhtClient
+                .ScopeRequestsPlugin);
 
         this.dump_cycle = new DumpCycle(this.epoll, this.dht);
     }
-
 
     /***************************************************************************
 
@@ -203,14 +190,13 @@ public class DhtDump : DaemonApp
 
     ***************************************************************************/
 
-    public override void setupArgs ( IApplication app, Arguments args )
+    public override void setupArgs (IApplication app, Arguments args)
     {
-        args("oneshot").aliased('o').
-            help("one-shot mode, perform a single dump immediately then exit");
+        args("oneshot").aliased('o')
+            .help("one-shot mode, perform a single dump immediately then exit");
         args("config").deefalts = null;
         args("config").required;
     }
-
 
     /***************************************************************************
 
@@ -225,7 +211,7 @@ public class DhtDump : DaemonApp
 
     ***************************************************************************/
 
-    protected override int run ( Arguments args, ConfigParser config )
+    protected override int run (Arguments args, ConfigParser config)
     {
         ConfigReader.fill("Dht", this.dht_config, config);
         ConfigReader.fill("Dump", this.dump_config, config);
@@ -235,7 +221,7 @@ public class DhtDump : DaemonApp
 
         this.initDht();
 
-        if ( args.exists("oneshot") )
+        if (args.exists("oneshot"))
             this.dump_cycle.one_shot = true;
 
         this.startEventHandling(this.epoll);
@@ -245,7 +231,6 @@ public class DhtDump : DaemonApp
         return true;
     }
 
-
     /***************************************************************************
 
         Called by the timer extension when the stats period fires. Writes the
@@ -253,12 +238,11 @@ public class DhtDump : DaemonApp
 
     ***************************************************************************/
 
-    override protected void onStatsTimer ( )
+    override protected void onStatsTimer ()
     {
-        if ( !this.dump_cycle.one_shot )
+        if (!this.dump_cycle.one_shot)
             this.dump_stats.log();
     }
-
 
     /***************************************************************************
 
@@ -268,34 +252,34 @@ public class DhtDump : DaemonApp
 
     ***************************************************************************/
 
-    private void initDht ( )
+    private void initDht ()
     {
         this.dht.addNode(this.dht_config.address, this.dht_config.port);
 
         const retry_wait_s = 2;
         bool error;
 
-        void result ( DhtClient.RequestContext, bool success )
+        void result (DhtClient.RequestContext, bool success)
         {
-            if ( !success )
+            if (!success)
             {
-                auto dht_registry = cast(DhtNodeRegistry)this.dht.nodes;
-                if ( !(dht_registry.all_node_ranges_known &&
-                       dht_registry.all_versions_ok &&
-                       !dht_registry.node_range_overlap &&
-                       dht_registry.node_range_gap) )
+                auto dht_registry = cast(DhtNodeRegistry) this.dht.nodes;
+                if (!(dht_registry.all_node_ranges_known
+                        && dht_registry.all_versions_ok
+                        && !dht_registry.node_range_overlap
+                        && dht_registry.node_range_gap))
                 {
                     error = true;
                 }
             }
         }
 
-        void notifier ( DhtClient.RequestNotification info )
+        void notifier (DhtClient.RequestNotification info)
         {
-            if ( info.type == info.type.Finished && !info.succeeded )
+            if (info.type == info.type.Finished && !info.succeeded)
             {
                 log.error("Error during dht handshake: {}, retrying in {}s",
-                    info.message(this.dht.msg_buf), retry_wait_s);
+                        info.message(this.dht.msg_buf), retry_wait_s);
             }
         }
 
@@ -305,13 +289,12 @@ public class DhtDump : DaemonApp
             this.dht.nodeHandshake(&result, &notifier);
             this.epoll.eventLoop();
 
-            if ( error )
+            if (error)
             {
                 // no fibers in existence yet, so we can just do a blocking wait
                 Thread.sleep(ocean.core.Time.seconds(retry_wait_s));
             }
         }
-        while ( error );
+        while (error);
     }
 }
-

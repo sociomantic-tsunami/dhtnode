@@ -15,8 +15,6 @@
 
 module dhtnode.storage.StorageEngine;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -34,8 +32,6 @@ import dhtnode.storage.StorageEngineStepIterator;
 
 import ocean.util.log.Logger;
 
-
-
 /*******************************************************************************
 
     Static module logger
@@ -43,12 +39,10 @@ import ocean.util.log.Logger;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this ()
 {
     log = Log.lookup("dhtnode.storage.MemoryStorage");
 }
-
-
 
 /***************************************************************************
 
@@ -59,20 +53,16 @@ static this ( )
 public class StorageEngine : IStorageEngine
 {
     import dhtnode.node.DhtHashRange;
-    import dhtnode.storage.tokyocabinet.c.tcmdb :
-        TCMDB,
-        tcmdbnew, tcmdbnew2, tcmdbvanish, tcmdbdel,
-        tcmdbput, tcmdbputkeep, tcmdbputcat,
-        tcmdbget, tcmdbforeach,
-        tcmdbout, tcmdbrnum, tcmdbmsiz, tcmdbvsiz,
-        tcmdbiterinit, tcmdbiterinit2, tcmdbiternext;
+    import dhtnode.storage.tokyocabinet.c.tcmdb : TCMDB, tcmdbnew, tcmdbnew2,
+        tcmdbvanish, tcmdbdel, tcmdbput, tcmdbputkeep, tcmdbputcat, tcmdbget,
+        tcmdbforeach, tcmdbout, tcmdbrnum, tcmdbmsiz, tcmdbvsiz, tcmdbiterinit,
+        tcmdbiterinit2, tcmdbiternext;
 
     import Hash = swarm.util.Hash;
 
     import ocean.core.Verify;
     import ocean.core.TypeConvert;
     import core.stdc.stdlib : free;
-
 
     /***********************************************************************
 
@@ -83,10 +73,9 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public alias void delegate ( cstring id ) DeleteChannelCb;
+    public alias void delegate(cstring id) DeleteChannelCb;
 
     private DeleteChannelCb delete_channel;
-
 
     /***************************************************************************
 
@@ -100,7 +89,6 @@ public class StorageEngine : IStorageEngine
 
     protected Listeners listeners;
 
-
     /***************************************************************************
 
         Alias for a listener.
@@ -108,7 +96,6 @@ public class StorageEngine : IStorageEngine
     ***************************************************************************/
 
     public alias Listeners.Listener IListener;
-
 
     /***************************************************************************
 
@@ -118,7 +105,6 @@ public class StorageEngine : IStorageEngine
 
     private TCMDB* db;
 
-
     /***************************************************************************
 
         Minimum and maximum record hashes supported by node
@@ -126,7 +112,6 @@ public class StorageEngine : IStorageEngine
     ***************************************************************************/
 
     private DhtHashRange hash_range;
-
 
     /***********************************************************************
 
@@ -141,8 +126,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public this ( cstring id, DhtHashRange hash_range, uint bnum,
-        DeleteChannelCb delete_channel )
+    public this (cstring id, DhtHashRange hash_range, uint bnum, DeleteChannelCb delete_channel)
     {
         super(id);
 
@@ -151,7 +135,7 @@ public class StorageEngine : IStorageEngine
 
         this.listeners = new Listeners;
 
-        if ( bnum == 0 )
+        if (bnum == 0)
         {
             this.db = tcmdbnew();
         }
@@ -160,7 +144,6 @@ public class StorageEngine : IStorageEngine
             this.db = tcmdbnew2(bnum);
         }
     }
-
 
     /***********************************************************************
 
@@ -177,20 +160,18 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) put ( cstring key, cstring value,
-        bool trigger_listeners = true )
+    public typeof(this) put (cstring key, cstring value, bool trigger_listeners = true)
     {
         auto hash = Hash.straightToHash(key);
 
         tcmdbput(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof),
-            value.ptr, castFrom!(size_t).to!(int)(value.length));
+                value.ptr, castFrom!(size_t).to!(int)(value.length));
 
-        if ( trigger_listeners )
+        if (trigger_listeners)
             this.listeners.trigger(Listeners.Listener.Code.DataReady, hash);
 
         return this;
     }
-
 
     /***********************************************************************
 
@@ -210,27 +191,25 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) get ( cstring key, ref mstring value_buffer,
-        out mstring value )
+    public typeof(this) get (cstring key, ref mstring value_buffer, out mstring value)
     {
         auto hash = Hash.straightToHash(key);
 
         int len;
-        if ( auto value_ = cast(void*)tcmdbget(this.db, &hash,
-            castFrom!(size_t).to!(int)(hash.sizeof), &len) )
+        if (auto value_ = cast(void*) tcmdbget (this.db, &hash,
+                castFrom!(size_t).to!(int)(hash.sizeof), &len))
         {
-            if ( value_buffer.length < len )
+            if (value_buffer.length < len)
                 value_buffer.length = len;
 
-            value_buffer[0..len] = (cast(char*)value_)[0..len];
-            value = value_buffer[0..len];
+            value_buffer[0 .. len] = (cast(char*) value_)[0 .. len];
+            value = value_buffer[0 .. len];
 
             free(value_);
         }
 
         return this;
     }
-
 
     /***********************************************************************
 
@@ -244,15 +223,13 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public size_t getSize ( cstring key )
+    public size_t getSize (cstring key)
     {
         auto hash = Hash.straightToHash(key);
 
-        auto s = tcmdbvsiz(this.db,
-            &hash, castFrom!(size_t).to!(int)(hash.sizeof));
+        auto s = tcmdbvsiz(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
         return s < 0 ? 0 : s;
     }
-
 
     /***********************************************************************
 
@@ -266,7 +243,7 @@ public class StorageEngine : IStorageEngine
 
    ************************************************************************/
 
-    public bool exists ( cstring key )
+    public bool exists (cstring key)
     {
         auto hash = Hash.straightToHash(key);
 
@@ -276,7 +253,6 @@ public class StorageEngine : IStorageEngine
 
         return size >= 0;
     }
-
 
     /***********************************************************************
 
@@ -290,7 +266,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) remove ( cstring key )
+    public typeof(this) remove (cstring key)
     {
         auto hash = Hash.straightToHash(key);
 
@@ -298,7 +274,6 @@ public class StorageEngine : IStorageEngine
 
         return this;
     }
-
 
     /***************************************************************************
 
@@ -315,13 +290,12 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public bool responsibleForKey ( cstring key )
+    public bool responsibleForKey (cstring key)
     {
         auto hash = Hash.straightToHash(key);
         return Hash.isWithinNodeResponsibility(hash, this.hash_range.range.min,
-            this.hash_range.range.max);
+                this.hash_range.range.max);
     }
-
 
     /**************************************************************************
 
@@ -330,8 +304,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public alias int delegate ( ref hash_t key, ref char[] value ) IterDg;
-
+    public alias int delegate(ref hash_t key, ref char[] value) IterDg;
 
     /***************************************************************************
 
@@ -350,7 +323,6 @@ public class StorageEngine : IStorageEngine
 
         IterDg dg;
 
-
         /***********************************************************************
 
             Return value of last call of the delegate. Required by opApply.
@@ -359,7 +331,6 @@ public class StorageEngine : IStorageEngine
 
         int ret;
     }
-
 
     /***************************************************************************
 
@@ -379,17 +350,16 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    extern ( C ) private static bool db_iter ( void* key_ptr, int key_len,
-        void* val_ptr, int val_len, void* context_ )
+    extern (C) private static bool db_iter (void* key_ptr, int key_len,
+            void* val_ptr, int val_len, void* context_)
     {
-        auto key = *(cast(hash_t*)key_ptr);
-        auto val = (cast(char*)val_ptr)[0..val_len];
-        auto context = cast(IterContext*)context_;
+        auto key = *(cast(hash_t*) key_ptr);
+        auto val = (cast(char*) val_ptr)[0 .. val_len];
+        auto context = cast(IterContext*) context_;
 
         context.ret = context.dg(key, val);
         return context.ret == 0;
     }
-
 
     /***************************************************************************
 
@@ -399,7 +369,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public int opApply ( IterDg dg )
+    public int opApply (IterDg dg)
     {
         IterContext context;
         context.dg = dg;
@@ -408,7 +378,6 @@ public class StorageEngine : IStorageEngine
 
         return context.ret;
     }
-
 
     /***********************************************************************
 
@@ -420,13 +389,12 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) getAll ( StorageEngineStepIterator iterator )
+    public typeof(this) getAll (StorageEngineStepIterator iterator)
     {
         iterator.setStorage(this);
 
         return this;
     }
-
 
     /***************************************************************************
 
@@ -437,11 +405,10 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public override void reset ( )
+    public override void reset ()
     {
         this.listeners.trigger(IListener.Code.Finish, 0);
     }
-
 
     /***************************************************************************
 
@@ -449,11 +416,10 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public override void flush ( )
+    public override void flush ()
     {
         this.listeners.trigger(IListener.Code.Flush, 0);
     }
-
 
     /***************************************************************************
 
@@ -465,11 +431,10 @@ public class StorageEngine : IStorageEngine
 
      **************************************************************************/
 
-    public void registerListener ( IListener listener )
+    public void registerListener (IListener listener)
     {
         this.listeners.register(listener);
     }
-
 
     /***************************************************************************
 
@@ -480,11 +445,10 @@ public class StorageEngine : IStorageEngine
 
      **************************************************************************/
 
-    public void unregisterListener ( IListener listener )
+    public void unregisterListener (IListener listener)
     {
         this.listeners.unregister(listener);
     }
-
 
     /***********************************************************************
 
@@ -500,11 +464,10 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    override public typeof(this) close ( )
+    override public typeof(this) close ()
     {
         return this;
     }
-
 
     /***********************************************************************
 
@@ -520,7 +483,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    override public typeof(this) clear ( )
+    override public typeof(this) clear ()
     {
         tcmdbvanish(this.db);
 
@@ -529,7 +492,6 @@ public class StorageEngine : IStorageEngine
         return this;
     }
 
-
     /***********************************************************************
 
         Returns:
@@ -537,7 +499,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public ulong num_records ( )
+    public ulong num_records ()
     {
         ulong num;
 
@@ -546,7 +508,6 @@ public class StorageEngine : IStorageEngine
         return num;
     }
 
-
     /***********************************************************************
 
         Returns:
@@ -554,7 +515,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public ulong num_bytes ( )
+    public ulong num_bytes ()
     {
         ulong size;
 
@@ -562,7 +523,6 @@ public class StorageEngine : IStorageEngine
 
         return size;
     }
-
 
     /***********************************************************************
 
@@ -581,14 +541,13 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) getFirstKey ( ref mstring key_buffer, out mstring key )
+    public typeof(this) getFirstKey (ref mstring key_buffer, out mstring key)
     {
         tcmdbiterinit(this.db);
         this.iterateNextKey(key_buffer, key);
 
         return this;
     }
-
 
     /***********************************************************************
 
@@ -615,21 +574,19 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) getNextKey ( cstring last_key, ref mstring key_buffer,
-        out mstring key )
+    public typeof(this) getNextKey (cstring last_key, ref mstring key_buffer, out mstring key)
     {
         auto hash = Hash.straightToHash(last_key);
 
         tcmdbiterinit2(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
 
-        if ( !this.iterateNextKey(key_buffer, key) )
+        if (!this.iterateNextKey(key_buffer, key))
             return this;
 
         this.iterateNextKey(key_buffer, key);
 
         return this;
     }
-
 
     /**************************************************************************
 
@@ -649,19 +606,19 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    private bool iterateNextKey ( ref char[] key_buffer, out mstring key )
+    private bool iterateNextKey (ref char[] key_buffer, out mstring key)
     {
         int len;
-        if ( auto key_ = cast(hash_t*)tcmdbiternext(this.db, &len) )
+        if (auto key_ = cast(hash_t*) tcmdbiternext (this.db, &len))
         {
             verify(len == hash_t.sizeof);
             auto str_len = hash_t.sizeof * 2;
 
-            if ( key_buffer.length < str_len )
+            if (key_buffer.length < str_len)
                 key_buffer.length = str_len;
 
-            Hash.toHexString(*key_, key_buffer[0..str_len]);
-            key = key_buffer[0..str_len];
+            Hash.toHexString(*key_, key_buffer[0 .. str_len]);
+            key = key_buffer[0 .. str_len];
 
             free(key_);
 

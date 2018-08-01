@@ -31,7 +31,7 @@ import ocean.util.log.Logger;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this ()
 {
     log = Log.lookup("dhtnode.request.PutBatchRequest");
 }
@@ -72,8 +72,8 @@ public scope class PutBatchRequest : Protocol.PutBatch
         Caches requested channel
 
     ***************************************************************************/
-    
-    final override protected bool prepareChannel ( cstring channel_name )
+
+    final override protected bool prepareChannel (cstring channel_name)
     {
         if (!super.prepareChannel(channel_name))
             return false;
@@ -96,7 +96,7 @@ public scope class PutBatchRequest : Protocol.PutBatch
 
     ***************************************************************************/
 
-    final override protected bool isAllowed ( cstring key )
+    final override protected bool isAllowed (cstring key)
     {
         return this.resources.storage_channels.responsibleForKey(key);
     }
@@ -113,15 +113,15 @@ public scope class PutBatchRequest : Protocol.PutBatch
 
     ***************************************************************************/
 
-    final override protected bool isSizeAllowed ( size_t size )
+    final override protected bool isSizeAllowed (size_t size)
     {
-        if ( !this.resources.storage_channels.sizeLimitOk(size) )
+        if (!this.resources.storage_channels.sizeLimitOk(size))
         {
             .log.warn("Batch rejected: size limit exceeded");
             return false;
         }
 
-        if ( !redistribution_process.allowed(size) )
+        if (!redistribution_process.allowed(size))
         {
             .log.warn("Batch rejected: uneven redistribution");
             return false;
@@ -144,12 +144,11 @@ public scope class PutBatchRequest : Protocol.PutBatch
 
     ***************************************************************************/
 
-    final override protected bool putRecord ( cstring channel, cstring key,
-        in void[] value )
+    final override protected bool putRecord (cstring channel, cstring key, in void[] value)
     {
         this.storage_channel.put(key, cast(cstring) value, false);
-        this.resources.node_info.record_action_counters
-            .increment("written", value.length);
+        this.resources.node_info.record_action_counters.increment("written", value
+                .length);
         return true;
     }
 }

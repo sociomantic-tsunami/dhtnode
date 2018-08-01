@@ -24,8 +24,6 @@
 
 module dhtnode.node.DhtHashRange;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -39,8 +37,6 @@ import swarm.util.Hash : HashRange;
 import ocean.core.Enforce;
 import ocean.core.Verify;
 
-
-
 public class DhtHashRange
 {
     /***************************************************************************
@@ -51,7 +47,6 @@ public class DhtHashRange
 
     private HashRange range_;
 
-
     /***************************************************************************
 
         Config file updater.
@@ -59,7 +54,6 @@ public class DhtHashRange
     ***************************************************************************/
 
     private HashRangeConfig config_file;
-
 
     /***************************************************************************
 
@@ -75,7 +69,7 @@ public class DhtHashRange
 
     ***************************************************************************/
 
-    public this ( hash_t min, hash_t max, HashRangeConfig config_file )
+    public this (hash_t min, hash_t max, HashRangeConfig config_file)
     {
         verify(config_file !is null);
         this.config_file = config_file;
@@ -84,7 +78,6 @@ public class DhtHashRange
         this.range_ = HashRange(min, max);
     }
 
-
     /***************************************************************************
 
         Returns:
@@ -92,11 +85,10 @@ public class DhtHashRange
 
     ***************************************************************************/
 
-    public HashRange range ( )
+    public HashRange range ()
     {
         return this.range_;
     }
-
 
     /***************************************************************************
 
@@ -105,11 +97,10 @@ public class DhtHashRange
 
     ***************************************************************************/
 
-    public bool is_empty ( )
+    public bool is_empty ()
     {
         return this.range.is_empty;
     }
-
 
     /***************************************************************************
 
@@ -124,7 +115,7 @@ public class DhtHashRange
 
     ***************************************************************************/
 
-    public void set ( hash_t min, hash_t max )
+    public void set (hash_t min, hash_t max)
     {
         this.config_file.set(min, max);
 
@@ -132,17 +123,15 @@ public class DhtHashRange
         this.range_ = HashRange(min, max);
     }
 
-
     /***************************************************************************
 
         Sets the hash range to empty and updates the config file(s).
 
     ***************************************************************************/
 
-    public void clear ( )
+    public void clear ()
     {
         this.config_file.clear();
         this.range_ = this.range_.init;
     }
 }
-

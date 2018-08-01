@@ -12,8 +12,6 @@
 
 module dhtnode.connection.DhtConnectionHandler;
 
-
-
 /*******************************************************************************
 
     Imports
@@ -50,8 +48,6 @@ import dhtnode.request.PutBatchRequest;
 
 import dhtproto.node.request.model.DhtCommand;
 
-
-
 /*******************************************************************************
 
     DHT node connection handler setup class.
@@ -66,7 +62,6 @@ public class DhtConnectionSetupParams : ConnectionSetupParams
 
     import ocean.io.compress.lzo.LzoChunkCompressor;
 
-
     /***************************************************************************
 
         Reference to the storage channels which the requests are operating on.
@@ -74,7 +69,6 @@ public class DhtConnectionSetupParams : ConnectionSetupParams
     ***************************************************************************/
 
     public StorageChannels storage_channels;
-
 
     /***************************************************************************
 
@@ -85,7 +79,6 @@ public class DhtConnectionSetupParams : ConnectionSetupParams
 
     public SharedResources shared_resources;
 
-
     /***************************************************************************
 
         Lzo de/compressor.
@@ -94,7 +87,6 @@ public class DhtConnectionSetupParams : ConnectionSetupParams
 
     public LzoChunkCompressor lzo;
 }
-
 
 /*******************************************************************************
 
@@ -107,11 +99,9 @@ public class DhtConnectionSetupParams : ConnectionSetupParams
 
 *******************************************************************************/
 
-public class DhtConnectionHandler
-    : ConnectionHandlerTemplate!(DhtConst.Command)
+public class DhtConnectionHandler : ConnectionHandlerTemplate!(DhtConst.Command)
 {
     import dhtnode.request.model.RequestResources;
-
 
     /***************************************************************************
 
@@ -127,8 +117,7 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    private scope class DhtRequestResources
-        : RequestResources, IDhtRequestResources
+    private scope class DhtRequestResources : RequestResources, IDhtRequestResources
     {
         import ocean.io.compress.lzo.LzoChunkCompressor;
         import ocean.io.select.fiber.SelectFiber;
@@ -137,66 +126,64 @@ public class DhtConnectionHandler
 
         import swarm.util.RecordBatcher;
 
-
         /**********************************************************************
 
             Forward methods of DhtCommand.Resources to own implementations
 
         **********************************************************************/
 
-        override public mstring* getChannelBuffer ( )
+        override public mstring* getChannelBuffer()
         {
             return this.channel_buffer();
         }
 
         /// ditto
-        override public mstring* getKeyBuffer ( )
+        override public mstring* getKeyBuffer()
         {
             return this.key_buffer();
         }
 
         /// ditto
-        override public mstring* getFilterBuffer ( )
+        override public mstring* getFilterBuffer()
         {
             return this.filter_buffer();
         }
 
         /// ditto
-        override public mstring* getValueBuffer ( )
+        override public mstring* getValueBuffer()
         {
             return this.value_buffer();
         }
 
         /// ditto
-        override public mstring* getDecompressBuffer ( )
+        override public mstring* getDecompressBuffer()
         {
             return this.batch_buffer();
         }
 
         /// ditto
-        override public ubyte[]* getCompressBuffer ( )
+        override public ubyte[]* getCompressBuffer()
         {
             return cast(ubyte[]*) this.batch_buffer();
         }
 
         /// ditto
-        override public RecordBatcher getRecordBatcher ( )
+        override public RecordBatcher getRecordBatcher ()
         {
             return this.batcher();
         }
 
         /// ditto
-        override public RecordBatch getRecordBatch ( )
+        override public RecordBatch getRecordBatch ()
         {
             return this.record_batch();
         }
 
         /// ditto
-        override public RedistributeNode[]* getRedistributeNodeBuffer ( )
+        override public RedistributeNode[]* getRedistributeNodeBuffer()
         {
             return this.redistribute_node_buffer();
         }
-
 
         /***********************************************************************
 
@@ -204,11 +191,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        public this ( )
+        public this ()
         {
             super(this.setup.shared_resources);
         }
-
 
         /***********************************************************************
 
@@ -216,11 +202,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override public StorageChannels storage_channels ( )
+        override public StorageChannels storage_channels ()
         {
             return this.setup.storage_channels;
         }
-
 
         /***********************************************************************
 
@@ -228,11 +213,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override public IDhtNodeInfo node_info ( )
+        override public IDhtNodeInfo node_info ()
         {
-            return cast(IDhtNodeInfo)this.setup.node_info;
+            return cast(IDhtNodeInfo) this.setup.node_info;
         }
-
 
         /***********************************************************************
 
@@ -240,11 +224,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected mstring new_channel_buffer ( )
+        override protected mstring new_channel_buffer ()
         {
             return new char[32];
         }
-
 
         /***********************************************************************
 
@@ -252,11 +235,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected mstring new_key_buffer ( )
+        override protected mstring new_key_buffer ()
         {
             return new char[16]; // 16 hex digits in a 64-bit hash
         }
-
 
         /***********************************************************************
 
@@ -264,7 +246,7 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected mstring new_value_buffer ( )
+        override protected mstring new_value_buffer ()
         {
             return new char[512];
         }
@@ -275,7 +257,7 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected cstring[] new_channel_list_buffer ( )
+        override protected cstring[] new_channel_list_buffer ()
         {
             return new cstring[this.setup.storage_channels.length];
         }
@@ -286,11 +268,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected mstring new_filter_buffer ( )
+        override protected mstring new_filter_buffer ()
         {
             return new char[10];
         }
-
 
         /***********************************************************************
 
@@ -298,11 +279,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected mstring new_batch_buffer ( )
+        override protected mstring new_batch_buffer ()
         {
             return new char[RecordBatcher.DefaultMaxBatchSize];
         }
-
 
         /***********************************************************************
 
@@ -310,11 +290,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected hash_t[] new_hash_buffer ( )
+        override protected hash_t[] new_hash_buffer ()
         {
             return new hash_t[10];
         }
-
 
         /***********************************************************************
 
@@ -322,11 +301,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected StorageEngineStepIterator new_iterator ( )
+        override protected StorageEngineStepIterator new_iterator ()
         {
             return this.setup.storage_channels.newIterator();
         }
-
 
         /***********************************************************************
 
@@ -334,11 +312,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected RedistributeNode[] new_redistribute_node_buffer ( )
+        override protected RedistributeNode[] new_redistribute_node_buffer ()
         {
             return new RedistributeNode[2];
         }
-
 
         /***********************************************************************
 
@@ -346,11 +323,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected FiberSelectEvent new_event ( )
+        override protected FiberSelectEvent new_event ()
         {
             return new FiberSelectEvent(this.outer.fiber);
         }
-
 
         /***********************************************************************
 
@@ -358,11 +334,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected FiberTimerEvent new_timer ( )
+        override protected FiberTimerEvent new_timer ()
         {
             return new FiberTimerEvent(this.outer.fiber);
         }
-
 
         /***********************************************************************
 
@@ -370,11 +345,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected LoopCeder new_loop_ceder ( )
+        override protected LoopCeder new_loop_ceder ()
         {
             return new LoopCeder(this.event);
         }
-
 
         /***********************************************************************
 
@@ -382,11 +356,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected RecordBatcher new_batcher ( )
+        override protected RecordBatcher new_batcher ()
         {
             return new RecordBatcher(this.setup.lzo.lzo);
         }
-
 
         /***********************************************************************
 
@@ -394,11 +367,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected RecordBatch new_record_batch ( )
+        override protected RecordBatch new_record_batch ()
         {
             return new RecordBatch(this.setup.lzo.lzo);
         }
-
 
         /***********************************************************************
 
@@ -406,13 +378,11 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected NodeRecordBatcherMap new_node_record_batch ( )
+        override protected NodeRecordBatcherMap new_node_record_batch ()
         {
             const estimated_num_nodes = 5;
-            return new NodeRecordBatcherMap(this.setup.lzo.lzo,
-                estimated_num_nodes);
+            return new NodeRecordBatcherMap(this.setup.lzo.lzo, estimated_num_nodes);
         }
-
 
         /***********************************************************************
 
@@ -420,11 +390,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected DhtClient new_dht_client ( )
+        override protected DhtClient new_dht_client ()
         {
             return new DhtClient(this.outer.fiber.epoll);
         }
-
 
         /***********************************************************************
 
@@ -432,11 +401,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected void init_event ( FiberSelectEvent event )
+        override protected void init_event (FiberSelectEvent event)
         {
             event.fiber = this.outer.fiber;
         }
-
 
         /***********************************************************************
 
@@ -444,11 +412,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected void init_timer ( FiberTimerEvent timer )
+        override protected void init_timer (FiberTimerEvent timer)
         {
             timer.fiber = this.outer.fiber;
         }
-
 
         /***********************************************************************
 
@@ -456,11 +423,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected void init_loop_ceder ( LoopCeder loop_ceder )
+        override protected void init_loop_ceder (LoopCeder loop_ceder)
         {
             loop_ceder.event = this.event;
         }
-
 
         /***********************************************************************
 
@@ -468,11 +434,10 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected void init_dht_client ( DhtClient dht_client )
+        override protected void init_dht_client (DhtClient dht_client)
         {
             dht_client.clearNodes();
         }
-
 
         /***********************************************************************
 
@@ -480,12 +445,11 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        private DhtConnectionSetupParams setup ( )
+        private DhtConnectionSetupParams setup ()
         {
-            return cast(DhtConnectionSetupParams)this.outer.setup;
+            return cast(DhtConnectionSetupParams) this.outer.setup;
         }
     }
-
 
     /***************************************************************************
 
@@ -496,7 +460,6 @@ public class DhtConnectionHandler
     ***************************************************************************/
 
     private Exception invalid_command_exception;
-
 
     /***************************************************************************
 
@@ -509,14 +472,13 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    public this ( FinalizeDg finalize_dg, ConnectionSetupParams setup )
+    public this (FinalizeDg finalize_dg, ConnectionSetupParams setup)
     {
         super(finalize_dg, setup);
 
-        this.invalid_command_exception = new Exception("Invalid command",
-            __FILE__, __LINE__);
+        this.invalid_command_exception = new Exception("Invalid command", __FILE__,
+                __LINE__);
     }
-
 
     /***************************************************************************
 
@@ -525,11 +487,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleNone ( )
+    override protected void handleNone ()
     {
         this.handleInvalidCommand();
     }
-
 
     /***************************************************************************
 
@@ -537,11 +498,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetVersion ( )
+    override protected void handleGetVersion ()
     {
         this.handleCommand!(GetVersionRequest);
     }
-
 
     /***************************************************************************
 
@@ -549,11 +509,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetResponsibleRange ( )
+    override protected void handleGetResponsibleRange ()
     {
         this.handleCommand!(GetResponsibleRangeRequest);
     }
-
 
     /***************************************************************************
 
@@ -561,11 +520,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetNumConnections ( )
+    override protected void handleGetNumConnections ()
     {
         this.handleCommand!(GetNumConnectionsRequest);
     }
-
 
     /***************************************************************************
 
@@ -573,11 +531,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetChannels ( )
+    override protected void handleGetChannels ()
     {
         this.handleCommand!(GetChannelsRequest);
     }
-
 
     /***************************************************************************
 
@@ -585,11 +542,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetSize ( )
+    override protected void handleGetSize ()
     {
         this.handleCommand!(GetSizeRequest);
     }
-
 
     /***************************************************************************
 
@@ -597,11 +553,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetChannelSize ( )
+    override protected void handleGetChannelSize ()
     {
         this.handleCommand!(GetChannelSizeRequest);
     }
-
 
     /***************************************************************************
 
@@ -609,11 +564,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handlePut ( )
+    override protected void handlePut ()
     {
         this.handleCommand!(PutRequest, RequestStatsTracking.TimeAndCount);
     }
-
 
     /***************************************************************************
 
@@ -621,11 +575,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handlePutBatch ( )
+    override protected void handlePutBatch ()
     {
         this.handleCommand!(PutBatchRequest, RequestStatsTracking.TimeAndCount);
     }
-
 
     /***************************************************************************
 
@@ -633,11 +586,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGet ( )
+    override protected void handleGet ()
     {
         this.handleCommand!(GetRequest, RequestStatsTracking.TimeAndCount);
     }
-
 
     /***************************************************************************
 
@@ -645,11 +597,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetAll ( )
+    override protected void handleGetAll ()
     {
         this.handleCommand!(GetAllRequest, RequestStatsTracking.Count);
     }
-
 
     /***************************************************************************
 
@@ -657,11 +608,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetAllFilter ( )
+    override protected void handleGetAllFilter ()
     {
         this.handleCommand!(GetAllFilterRequest, RequestStatsTracking.Count);
     }
-
 
     /***************************************************************************
 
@@ -669,11 +619,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleGetAllKeys ( )
+    override protected void handleGetAllKeys ()
     {
         this.handleCommand!(GetAllKeysRequest, RequestStatsTracking.Count);
     }
-
 
     /***************************************************************************
 
@@ -681,11 +630,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleListen ( )
+    override protected void handleListen ()
     {
         this.handleCommand!(ListenRequest, RequestStatsTracking.Count);
     }
-
 
     /***************************************************************************
 
@@ -693,11 +641,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleExists ( )
+    override protected void handleExists ()
     {
         this.handleCommand!(ExistsRequest, RequestStatsTracking.TimeAndCount);
     }
-
 
     /***************************************************************************
 
@@ -705,11 +652,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleRemove ( )
+    override protected void handleRemove ()
     {
         this.handleCommand!(RemoveRequest, RequestStatsTracking.TimeAndCount);
     }
-
 
     /***************************************************************************
 
@@ -717,11 +663,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleRemoveChannel ( )
+    override protected void handleRemoveChannel ()
     {
         this.handleCommand!(RemoveChannelRequest);
     }
-
 
     /***************************************************************************
 
@@ -729,11 +674,10 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    override protected void handleRedistribute ( )
+    override protected void handleRedistribute ()
     {
         this.handleCommand!(RedistributeRequest, RequestStatsTracking.Count);
     }
-
 
     /***************************************************************************
 
@@ -746,8 +690,8 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    private void handleCommand ( Handler : DhtCommand,
-        RequestStatsTracking stats_tracking = RequestStatsTracking.None ) ( )
+    private void handleCommand (Handler : DhtCommand,
+            RequestStatsTracking stats_tracking = RequestStatsTracking.None)()
     {
         scope resources = new DhtRequestResources;
         scope handler = new Handler(this.reader, this.writer, resources);
@@ -755,7 +699,6 @@ public class DhtConnectionHandler
         // calls handler.handle() and checks memory and buffer allocation after
         // request finishes
         this.handleRequest!(ConnectionResources, DhtRequestResources,
-            stats_tracking)(handler, resources, handler.command_name);
+                stats_tracking)(handler, resources, handler.command_name);
     }
 }
-

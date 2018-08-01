@@ -21,19 +21,19 @@ extern (C):
 
 struct TCLISTDATUM
 {
-    char*   ptr;
-    int     size;
+    char* ptr;
+    int size;
 };
 
 struct TCLIST
 {
     TCLISTDATUM* array;
-    int          anum;
-    int          start;
-    int          num;
+    int anum;
+    int start;
+    int num;
 };
 
-alias int function (TCLISTDATUM*, TCLISTDATUM*) ListCmp;
+alias int function(TCLISTDATUM*, TCLISTDATUM*) ListCmp;
 
 TCLIST* tclistnew();
 
@@ -43,60 +43,60 @@ TCLIST* tclistnew3(char* str, ...);
 
 TCLIST* tclistdup(TCLIST* list);
 
-void tclistdel(TCLIST* list);
+void tclistdel (TCLIST* list);
 
-int tclistnum(TCLIST* list);
+int tclistnum (TCLIST* list);
 
 void* tclistval(TCLIST* list, int index, int* sp);
 
 char* tclistval2(TCLIST* list, int index);
 
-void tclistpush(TCLIST* list, void* ptr, int size);
+void tclistpush (TCLIST* list, void* ptr, int size);
 
-void tclistpush2(TCLIST* list, char* str);
+void tclistpush2 (TCLIST* list, char* str);
 
 void* tclistpop(TCLIST* list, int* sp);
 
 char* tclistpop2(TCLIST* list);
 
-void tclistunshift(TCLIST* list, void* ptr, int size);
+void tclistunshift (TCLIST* list, void* ptr, int size);
 
-void tclistunshift2(TCLIST* list, char* str);
+void tclistunshift2 (TCLIST* list, char* str);
 
 void* tclistshift(TCLIST* list, int* sp);
 
 char* tclistshift2(TCLIST* list);
 
-void tclistinsert(TCLIST* list, int index, void* ptr, int size);
+void tclistinsert (TCLIST* list, int index, void* ptr, int size);
 
-void tclistinsert2(TCLIST* list, int index, char* str);
+void tclistinsert2 (TCLIST* list, int index, char* str);
 
 void* tclistremove(TCLIST* list, int index, int* sp);
 
 char* tclistremove2(TCLIST* list, int index);
 
-void tclistover(TCLIST* list, int index, void* ptr, int size);
+void tclistover (TCLIST* list, int index, void* ptr, int size);
 
-void tclistover2(TCLIST* list, int index, char* str);
+void tclistover2 (TCLIST* list, int index, char* str);
 
-void tclistsort(TCLIST* list);
+void tclistsort (TCLIST* list);
 
-int tclistlsearch(TCLIST* list, void* ptr, int size);
+int tclistlsearch (TCLIST* list, void* ptr, int size);
 
-int tclistbsearch(TCLIST* list, void* ptr, int size);
+int tclistbsearch (TCLIST* list, void* ptr, int size);
 
-void tclistclear(TCLIST* list);
+void tclistclear (TCLIST* list);
 
 void* tclistdump(TCLIST* list, int* sp);
 
 TCLIST* tclistload(void* ptr, int size);
 
-void tclistpushmalloc(TCLIST* list, void* ptr, int size);
+void tclistpushmalloc (TCLIST* list, void* ptr, int size);
 
-void tclistsortci(TCLIST* list);
+void tclistsortci (TCLIST* list);
 
-void tclistsortex(TCLIST* list, ListCmp cmp);
+void tclistsortex (TCLIST* list, ListCmp cmp);
 
-void tclistinvert(TCLIST* list);
+void tclistinvert (TCLIST* list);
 
-void tclistprintf(TCLIST* list, char* format, ...);
+void tclistprintf (TCLIST* list, char* format, ...);
