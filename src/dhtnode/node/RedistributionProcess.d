@@ -34,7 +34,7 @@ import ocean.util.log.Logger;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this()
 {
     log = Log.lookup("dhtnode.node.RedistributionProcess");
 }
@@ -108,11 +108,12 @@ public class RedistributionProcess
 
     ***************************************************************************/
 
-    public this ( StorageChannels channels, double redist_memory_limit_mulitplier )
+    public this(StorageChannels channels,
+                double redist_memory_limit_mulitplier)
     {
         verify(channels !is null);
         verify(redist_memory_limit_mulitplier > 0);
-        this.channels = channels;
+        this.channels                       = channels;
         this.redist_memory_limit_mulitplier = redist_memory_limit_mulitplier;
     }
 
@@ -130,9 +131,11 @@ public class RedistributionProcess
 
         auto current_bytes = this.bytesInStorage();
         this.storage_bytes_limit = cast(ulong)
-            (current_bytes * this.redist_memory_limit_mulitplier);
+                                       (current_bytes *
+                                       this.redist_memory_limit_mulitplier);
 
-        log.info("Starting redistribution. Calculated maximum storage size = {}"
+        log.info(
+            "Starting redistribution. Calculated maximum storage size = {}"
             ~ " (current: {} x multipler: {})", this.storage_bytes_limit,
             current_bytes, this.redist_memory_limit_mulitplier);
     }
@@ -153,11 +156,12 @@ public class RedistributionProcess
 
     ***************************************************************************/
 
-    public bool allowed ( ulong bytes )
+    public bool allowed (ulong bytes)
     {
-        if ( this.in_progress )
+        if (this.in_progress)
         {
-            return (this.bytesInStorage() + bytes) <= this.storage_bytes_limit;
+            return (this.bytesInStorage() + bytes) <=
+                   this.storage_bytes_limit;
         }
         else
         {
@@ -189,7 +193,7 @@ public class RedistributionProcess
     private ulong bytesInStorage ( )
     {
         ulong total;
-        foreach ( channel; this.channels )
+        foreach (channel; this.channels)
         {
             total += channel.num_bytes;
         }
@@ -198,7 +202,7 @@ public class RedistributionProcess
     }
 }
 
-version ( UnitTest )
+version (UnitTest)
 {
     import ocean.core.Test;
     import dhtnode.config.HashRangeConfig;
@@ -220,16 +224,17 @@ version ( UnitTest )
 unittest
 {
     // Create a storage engine and get its initial size
-    auto hr = new DhtHashRange(hash_t.min, hash_t.max, new HashRangeConfig([]));
-    auto storage = new StorageEngine("dummy", hr, 0, (cstring){});
+    auto hr =
+        new DhtHashRange(hash_t.min, hash_t.max, new HashRangeConfig(
+                []));
+    auto storage      = new StorageEngine("dummy", hr, 0, (cstring){});
     auto initial_size = storage.num_bytes;
 
     // Add records until the reported size of the storage engine increases
     do
     {
         storage.put("0000000000000000", "value");
-    }
-    while ( storage.num_bytes == initial_size );
+    } while (storage.num_bytes == initial_size);
 
     // Clear the storage engine and check that the reported size returns to the
     // initial value

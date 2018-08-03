@@ -66,7 +66,7 @@ import ocean.util.log.Logger;
 
 private Logger log;
 
-static this ( )
+static this()
 {
     log = Log.lookup("dhtnode.dhtdump.DumpCycle");
 }
@@ -85,11 +85,11 @@ public class DumpCycle : SelectFiber
 
     public static class Config
     {
-        cstring data_dir = "data";
-        uint period_s = 60 * 60 * 4;
-        uint min_wait_s = 60;
-        uint retry_wait_s = 30;
-        bool disable_direct_io = false;
+        cstring data_dir          = "data";
+        uint    period_s          = 60 * 60 * 4;
+        uint    min_wait_s        = 60;
+        uint    retry_wait_s      = 30;
+        bool    disable_direct_io = false;
     }
 
     private Config dump_config;
@@ -111,7 +111,8 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    public alias ExtensibleDhtClient!(DhtClient.ScopeRequestsPlugin) ScopeDhtClient;
+    public alias ExtensibleDhtClient!(DhtClient.ScopeRequestsPlugin)
+    ScopeDhtClient;
 
     private ScopeDhtClient dht;
 
@@ -208,15 +209,15 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    public this ( EpollSelectDispatcher epoll, ScopeDhtClient dht )
+    public this(EpollSelectDispatcher epoll, ScopeDhtClient dht)
     {
         const fiber_stack_bytes = 32 * 1024;
         super(epoll, &this.run, fiber_stack_bytes);
 
         this.dht = dht;
 
-        this.root = new FilePath;
-        this.path = new FilePath;
+        this.root      = new FilePath;
+        this.path      = new FilePath;
         this.swap_path = new FilePath;
 
         this.timer = new FiberTimerEvent(this);
@@ -232,14 +233,15 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    public void start ( Config dump_config, DumpStats stats )
+    public void start (Config dump_config, DumpStats stats)
     {
         this.dump_config = dump_config;
-        this.stats = stats;
+        this.stats       = stats;
 
-        auto buffer = cast(ubyte[]) GC.malloc(IOBufferSize)[0 .. IOBufferSize];
+        auto buffer =
+            cast(ubyte[]) GC.malloc (IOBufferSize)[0 .. IOBufferSize];
         this.file = new ChannelDumper(buffer, NewFileSuffix,
-                dump_config.disable_direct_io);
+            dump_config.disable_direct_io);
 
         this.root.set(this.dump_config.data_dir);
         enforce(this.root.exists, "Data directory does not exist");
@@ -258,7 +260,7 @@ public class DumpCycle : SelectFiber
 
     private void run ( )
     {
-        if ( this.one_shot )
+        if (this.one_shot)
         {
             bool ok;
             do
@@ -266,20 +268,19 @@ public class DumpCycle : SelectFiber
                 ulong microsecs;
 
                 ok = this.cycle(microsecs);
-                if ( !ok )
+                if (!ok)
                 {
                     this.wait(microsecs, true);
                 }
-            }
-            while ( !ok );
+            } while (!ok);
         }
         else
         {
             this.initialWait();
 
-            while ( true )
+            while (true)
             {
-                bool ok;
+                bool  ok;
                 ulong microsecs;
 
                 ok = this.cycle(microsecs);
@@ -302,7 +303,7 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    private bool cycle ( out ulong microsecs )
+    private bool cycle (out ulong microsecs)
     {
         try
         {
@@ -314,7 +315,7 @@ public class DumpCycle : SelectFiber
 
             log.info("Dumping {} channels", channels.length);
 
-            foreach ( channel; channels )
+            foreach (channel; channels)
             {
                 log.info("Dumping '{}'", channel);
 
@@ -322,9 +323,10 @@ public class DumpCycle : SelectFiber
                 {
                     this.dumpChannel(channel, error);
                 }
-                catch ( Exception e )
+                catch (Exception e)
                 {
-                    log.error("Exception thrown while dumping channel '{}': '{}' @ {}:{}",
+                    log.error(
+                        "Exception thrown while dumping channel '{}': '{}' @ {}:{}",
                         channel, e.message, e.file, e.line);
                     throw e;
                 }
@@ -334,7 +336,7 @@ public class DumpCycle : SelectFiber
             this.stats.dumpedAll(microsecs / 1_000);
             return !error;
         }
-        catch ( Exception e )
+        catch (Exception e)
         {
             log.error("Exception thrown in dump cycle: '{}' @ {}:{}",
                 e.message, e.file, e.line);
@@ -357,24 +359,24 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    private Const!(mstring[]) getChannels ( ref bool error )
+    private Const!(mstring[]) getChannels(ref bool error)
     {
         // Copy the last cycle's list of channels
         this.last_cycle_channels.length = this.channels.length;
         enableStomping(this.last_cycle_channels);
-        foreach ( i, channel; this.channels )
+        foreach (i, channel; this.channels)
             this.last_cycle_channels[i].copy(this.channels[i]);
 
         // Get the current list of channels
         this.getCurrentChannels(error);
 
         // Detect removed channels
-        foreach ( old_channel; this.last_cycle_channels )
+        foreach (old_channel; this.last_cycle_channels)
         {
             // make const view of channels to make badly ported `contains`
             // API happy
             Const!(cstring[]) cchannels = this.channels;
-            if ( !cchannels.contains(old_channel) )
+            if (!cchannels.contains(old_channel))
             {
                 log.info("Detected removed channel '{}'", old_channel);
                 this.stats.channelRemoved(old_channel);
@@ -398,30 +400,30 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    private Const!(mstring[]) getCurrentChannels ( ref bool error )
+    private Const!(mstring[]) getCurrentChannels(ref bool error)
     {
         log.info("Getting list of channels");
-        scope ( exit ) log.info("Got list of channels: {}", this.channels);
+        scope (exit) log.info("Got list of channels: {}", this.channels);
 
-        void get_dg ( DhtClient.RequestContext, in cstring addr, ushort port,
-            in cstring channel )
+        void get_dg (DhtClient.RequestContext, in cstring addr, ushort port,
+            in cstring channel)
         {
-            if ( channel.length )
+            if (channel.length)
             {
                 log.trace("GetChannels: {}:{}, '{}'", addr, port, channel);
                 // make const view of channels to make badly ported `contains`
                 // API happy
                 Const!(cstring[]) cchannels = this.channels;
-                if ( !cchannels.contains(channel) )
+                if (!cchannels.contains(channel))
                 {
                     this.channels.appendCopy(channel);
                 }
             }
         }
 
-        void notifier ( DhtClient.RequestNotification info )
+        void notifier (DhtClient.RequestNotification info)
         {
-            if ( info.type == info.type.Finished && !info.succeeded )
+            if (info.type == info.type.Finished && !info.succeeded)
             {
                 log.error("DhtClient error during GetChannels: {}",
                     info.message(this.dht.msg_buf));
@@ -448,14 +450,14 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    private void dumpChannel ( cstring channel, ref bool error )
+    private void dumpChannel (cstring channel, ref bool error)
     {
         ulong records, bytes;
 
-        void get_dg ( DhtClient.RequestContext, in cstring key,
-            in cstring value )
+        void get_dg (DhtClient.RequestContext, in cstring key,
+            in cstring value)
         {
-            if ( key.length && value.length )
+            if (key.length && value.length)
             {
                 records++;
                 // bytes of key, value, and length specifiers of each
@@ -467,9 +469,9 @@ public class DumpCycle : SelectFiber
             }
         }
 
-        void notifier ( DhtClient.RequestNotification info )
+        void notifier (DhtClient.RequestNotification info)
         {
-            if ( info.type == info.type.Finished && !info.succeeded )
+            if (info.type == info.type.Finished && !info.succeeded)
             {
                 log.error("DhtClient error during GetAll: {}",
                     info.message(this.dht.msg_buf));
@@ -485,15 +487,16 @@ public class DumpCycle : SelectFiber
         {
             buildFilePath(this.root, this.path, channel).cat(".");
             this.file.open(this.path.toString());
-            scope ( exit ) this.file.close();
+            scope (exit) this.file.close();
 
             this.dht.perform(this,
                 this.dht.getAll(channel, &get_dg, &notifier));
 
-            this.finalizeChannel(this.file.path, channel, records, bytes, error,
+            this.finalizeChannel(this.file.path, channel, records, bytes,
+                error,
                 time.microsec);
         }
-        catch ( Exception e )
+        catch (Exception e)
         {
             log.error("Failed to dump channel to file '{}': {} @ {} : {}",
                 this.file.path, e.message, e.file, e.line);
@@ -515,10 +518,10 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    private void finalizeChannel ( cstring filepath, cstring channel,
-        ulong records, ulong bytes, bool error, ulong dump_microsec )
+    private void finalizeChannel (cstring filepath, cstring channel,
+        ulong records, ulong bytes, bool error, ulong dump_microsec)
     {
-        if ( error )
+        if (error)
         {
             // Delete partial 'channel.dumping' file
             log.warn("Removing partial dump file '{}'", filepath);
@@ -554,9 +557,9 @@ public class DumpCycle : SelectFiber
         // Set initial wait time randomly (up to dump_period), to ensure that
         // all nodes are not dumping simultaneously.
         scope rand = new Random;
-        uint random_wait;
+        uint  random_wait;
         rand(random_wait);
-        auto wait = random_wait % this.dump_config.period_s;
+        auto  wait = random_wait % this.dump_config.period_s;
 
         log.info("Performing initial dump in {}s (randomized)", wait);
         this.timer.wait(wait);
@@ -578,10 +581,10 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    private void wait ( ulong microsec_active, bool error )
+    private void wait (ulong microsec_active, bool error)
     {
         double wait;
-        if ( error )
+        if (error)
         {
             wait = this.dump_config.retry_wait_s;
             log.warn("Dump not completed successfully. Retrying in {}s", wait);
@@ -590,7 +593,7 @@ public class DumpCycle : SelectFiber
         {
             double sec_active = microsec_active / 1_000_000f;
             wait = this.dump_config.period_s - sec_active;
-            if ( wait < this.dump_config.min_wait_s )
+            if (wait < this.dump_config.min_wait_s)
             {
                 log.warn("Calculated wait time too short -- either the "
                     "channel dump took an unusually long time, or the "
@@ -599,7 +602,7 @@ public class DumpCycle : SelectFiber
             }
 
             auto restart_time =
-                WallClock.now() + TimeSpan().fromSeconds(cast(long)wait);
+                WallClock.now() + TimeSpan().fromSeconds(cast(long) wait);
             log.info("Finished dumping channels, took {}s, dumped {}, "
                 "sleeping for {}s (next cycle scheduled at {})", sec_active,
                 BitGrouping.format(this.stats.total_bytes, this.bytes_buf, "b"),

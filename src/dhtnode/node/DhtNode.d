@@ -66,7 +66,7 @@ public class DhtNode :
 
         Node minimum & maximum hash
 
-    ***************************************************************************/
+     ***************************************************************************/
 
     private DhtHashRange hash_range;
 
@@ -85,23 +85,23 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    public this ( NodeItem node_item, StorageChannels channels,
-        DhtHashRange hash_range, EpollSelectDispatcher epoll,
-        int backlog, istring[] per_request_stats )
+    public this(NodeItem node_item, StorageChannels channels,
+                DhtHashRange hash_range, EpollSelectDispatcher epoll,
+                int backlog, istring[] per_request_stats)
     {
         this.hash_range = hash_range;
 
         auto conn_setup_params = new DhtConnectionSetupParams;
-        conn_setup_params.node_info = this;
-        conn_setup_params.epoll = epoll;
+        conn_setup_params.node_info        = this;
+        conn_setup_params.epoll            = epoll;
         conn_setup_params.storage_channels = channels;
         conn_setup_params.shared_resources = new SharedResources;
-        conn_setup_params.lzo = new LzoChunkCompressor;
+        conn_setup_params.lzo              = new LzoChunkCompressor;
 
         super(node_item, channels, conn_setup_params, backlog);
 
         // Initialise requests to be stats tracked.
-        foreach ( cmd; per_request_stats )
+        foreach (cmd; per_request_stats)
         {
             this.request_stats.init(cmd);
         }
@@ -143,7 +143,7 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    public void state ( State s )
+    public void state (State s)
     {
         this.state_ = s;
     }

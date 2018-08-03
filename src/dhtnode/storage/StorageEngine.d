@@ -43,7 +43,7 @@ import ocean.util.log.Logger;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this()
 {
     log = Log.lookup("dhtnode.storage.MemoryStorage");
 }
@@ -60,12 +60,12 @@ public class StorageEngine : IStorageEngine
 {
     import dhtnode.node.DhtHashRange;
     import dhtnode.storage.tokyocabinet.c.tcmdb :
-        TCMDB,
-        tcmdbnew, tcmdbnew2, tcmdbvanish, tcmdbdel,
-        tcmdbput, tcmdbputkeep, tcmdbputcat,
-        tcmdbget, tcmdbforeach,
-        tcmdbout, tcmdbrnum, tcmdbmsiz, tcmdbvsiz,
-        tcmdbiterinit, tcmdbiterinit2, tcmdbiternext;
+           TCMDB,
+           tcmdbnew, tcmdbnew2, tcmdbvanish, tcmdbdel,
+           tcmdbput, tcmdbputkeep, tcmdbputcat,
+           tcmdbget, tcmdbforeach,
+           tcmdbout, tcmdbrnum, tcmdbmsiz, tcmdbvsiz,
+           tcmdbiterinit, tcmdbiterinit2, tcmdbiternext;
 
     import Hash = swarm.util.Hash;
 
@@ -83,9 +83,9 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public alias void delegate ( cstring id ) DeleteChannelCb;
+    public alias void delegate(cstring id) DeleteChannelCb;
 
-    private DeleteChannelCb delete_channel;
+    private DeleteChannelCb                delete_channel;
 
 
     /***************************************************************************
@@ -96,7 +96,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    protected alias IListeners!(hash_t) Listeners;
+    protected alias     IListeners!(hash_t) Listeners;
 
     protected Listeners listeners;
 
@@ -141,17 +141,17 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public this ( cstring id, DhtHashRange hash_range, uint bnum,
-        DeleteChannelCb delete_channel )
+    public this(cstring id, DhtHashRange hash_range, uint bnum,
+                DeleteChannelCb delete_channel)
     {
         super(id);
 
-        this.hash_range = hash_range;
+        this.hash_range     = hash_range;
         this.delete_channel = delete_channel;
 
         this.listeners = new Listeners;
 
-        if ( bnum == 0 )
+        if (bnum == 0)
         {
             this.db = tcmdbnew();
         }
@@ -177,15 +177,15 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) put ( cstring key, cstring value,
-        bool trigger_listeners = true )
+    public typeof(this)put(cstring key, cstring value,
+        bool trigger_listeners = true)
     {
         auto hash = Hash.straightToHash(key);
 
         tcmdbput(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof),
             value.ptr, castFrom!(size_t).to!(int)(value.length));
 
-        if ( trigger_listeners )
+        if (trigger_listeners)
             this.listeners.trigger(Listeners.Listener.Code.DataReady, hash);
 
         return this;
@@ -210,20 +210,20 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) get ( cstring key, ref mstring value_buffer,
-        out mstring value )
+    public typeof(this)get(cstring key, ref mstring value_buffer,
+        out mstring value)
     {
         auto hash = Hash.straightToHash(key);
 
-        int len;
-        if ( auto value_ = cast(void*)tcmdbget(this.db, &hash,
-            castFrom!(size_t).to!(int)(hash.sizeof), &len) )
+        int  len;
+        if (auto value_ = cast(void*) tcmdbget(this.db, &hash,
+                castFrom!(size_t).to!(int)(hash.sizeof), &len))
         {
-            if ( value_buffer.length < len )
+            if (value_buffer.length < len)
                 value_buffer.length = len;
 
-            value_buffer[0..len] = (cast(char*)value_)[0..len];
-            value = value_buffer[0..len];
+            value_buffer[0..len] = (cast(char*) value_)[0..len];
+            value                = value_buffer[0..len];
 
             free(value_);
         }
@@ -244,7 +244,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public size_t getSize ( cstring key )
+    public size_t getSize (cstring key)
     {
         auto hash = Hash.straightToHash(key);
 
@@ -264,15 +264,17 @@ public class StorageEngine : IStorageEngine
         Returns:
              true if record exists or false itherwise
 
-   ************************************************************************/
+     ************************************************************************/
 
-    public bool exists ( cstring key )
+    public bool exists (cstring key)
     {
         auto hash = Hash.straightToHash(key);
 
-        int size;
+        int  size;
 
-        size = tcmdbvsiz(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
+        size =
+            tcmdbvsiz(this.db, &hash,
+                castFrom!(size_t).to!(int)(hash.sizeof));
 
         return size >= 0;
     }
@@ -290,7 +292,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) remove ( cstring key )
+    public typeof(this)remove(cstring key)
     {
         auto hash = Hash.straightToHash(key);
 
@@ -315,7 +317,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public bool responsibleForKey ( cstring key )
+    public bool responsibleForKey (cstring key)
     {
         auto hash = Hash.straightToHash(key);
         return Hash.isWithinNodeResponsibility(hash, this.hash_range.range.min,
@@ -328,9 +330,9 @@ public class StorageEngine : IStorageEngine
         opApply delegate. If the delegate returns <> 0, the iteration will be
         aborted.
 
-    ***************************************************************************/
+     ***************************************************************************/
 
-    public alias int delegate ( ref hash_t key, ref char[] value ) IterDg;
+    public alias int delegate(ref hash_t key, ref char[] value) IterDg;
 
 
     /***************************************************************************
@@ -379,12 +381,12 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    extern ( C ) private static bool db_iter ( void* key_ptr, int key_len,
-        void* val_ptr, int val_len, void* context_ )
+    extern (C) private static bool db_iter (void* key_ptr, int key_len,
+        void* val_ptr, int val_len, void* context_)
     {
-        auto key = *(cast(hash_t*)key_ptr);
-        auto val = (cast(char*)val_ptr)[0..val_len];
-        auto context = cast(IterContext*)context_;
+        auto key     = *(cast(hash_t*) key_ptr);
+        auto val     = (cast(char*) val_ptr)[0..val_len];
+        auto context = cast(IterContext*) context_;
 
         context.ret = context.dg(key, val);
         return context.ret == 0;
@@ -399,12 +401,12 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public int opApply ( IterDg dg )
+    public int opApply (IterDg dg)
     {
         IterContext context;
         context.dg = dg;
 
-        tcmdbforeach(this.db, &db_iter, cast(void*)&context);
+        tcmdbforeach(this.db, &db_iter, cast(void*) &context);
 
         return context.ret;
     }
@@ -420,7 +422,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) getAll ( StorageEngineStepIterator iterator )
+    public typeof(this)getAll(StorageEngineStepIterator iterator)
     {
         iterator.setStorage(this);
 
@@ -465,7 +467,7 @@ public class StorageEngine : IStorageEngine
 
      **************************************************************************/
 
-    public void registerListener ( IListener listener )
+    public void registerListener (IListener listener)
     {
         this.listeners.register(listener);
     }
@@ -480,7 +482,7 @@ public class StorageEngine : IStorageEngine
 
      **************************************************************************/
 
-    public void unregisterListener ( IListener listener )
+    public void unregisterListener (IListener listener)
     {
         this.listeners.unregister(listener);
     }
@@ -500,7 +502,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    override public typeof(this) close ( )
+    override public typeof(this)close( )
     {
         return this;
     }
@@ -520,7 +522,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    override public typeof(this) clear ( )
+    override public typeof(this)clear( )
     {
         tcmdbvanish(this.db);
 
@@ -581,7 +583,7 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) getFirstKey ( ref mstring key_buffer, out mstring key )
+    public typeof(this)getFirstKey(ref mstring key_buffer, out mstring key)
     {
         tcmdbiterinit(this.db);
         this.iterateNextKey(key_buffer, key);
@@ -595,9 +597,9 @@ public class StorageEngine : IStorageEngine
         Gets the key of the record following the specified key.
 
         Notes:
-            * "following" means the next key in the TokyoCabinet storage, which
+    * "following" means the next key in the TokyoCabinet storage, which
               is *not* necessarily the next key in numerical order.
-            * If the last key has been removed, the iteration will be restarted
+    * If the last key has been removed, the iteration will be restarted
               at the closest key. As above, the exact meaning of "closest" is
               determined by TokyoCabinet.
 
@@ -615,14 +617,15 @@ public class StorageEngine : IStorageEngine
 
     ***********************************************************************/
 
-    public typeof(this) getNextKey ( cstring last_key, ref mstring key_buffer,
-        out mstring key )
+    public typeof(this)getNextKey(cstring last_key, ref mstring key_buffer,
+        out mstring key)
     {
         auto hash = Hash.straightToHash(last_key);
 
-        tcmdbiterinit2(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
+        tcmdbiterinit2(this.db, &hash,
+            castFrom!(size_t).to!(int)(hash.sizeof));
 
-        if ( !this.iterateNextKey(key_buffer, key) )
+        if (!this.iterateNextKey(key_buffer, key))
             return this;
 
         this.iterateNextKey(key_buffer, key);
@@ -647,17 +650,17 @@ public class StorageEngine : IStorageEngine
         Returns
             true on success or false if record not existing
 
-    ***************************************************************************/
+     ***************************************************************************/
 
-    private bool iterateNextKey ( ref char[] key_buffer, out mstring key )
+    private bool iterateNextKey (ref char[] key_buffer, out mstring key)
     {
         int len;
-        if ( auto key_ = cast(hash_t*)tcmdbiternext(this.db, &len) )
+        if (auto key_ = cast(hash_t*) tcmdbiternext(this.db, &len))
         {
             verify(len == hash_t.sizeof);
             auto str_len = hash_t.sizeof * 2;
 
-            if ( key_buffer.length < str_len )
+            if (key_buffer.length < str_len)
                 key_buffer.length = str_len;
 
             Hash.toHexString(*key_, key_buffer[0..str_len]);

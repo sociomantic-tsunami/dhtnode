@@ -176,7 +176,7 @@ public class DhtConnectionHandler
         /// ditto
         override public ubyte[]* getCompressBuffer ( )
         {
-            return cast(ubyte[]*) this.batch_buffer();
+            return cast(ubyte[]*) this.batch_buffer ();
         }
 
         /// ditto
@@ -204,7 +204,7 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        public this ( )
+        public this()
         {
             super(this.setup.shared_resources);
         }
@@ -230,7 +230,7 @@ public class DhtConnectionHandler
 
         override public IDhtNodeInfo node_info ( )
         {
-            return cast(IDhtNodeInfo)this.setup.node_info;
+            return cast(IDhtNodeInfo) this.setup.node_info;
         }
 
 
@@ -432,7 +432,7 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected void init_event ( FiberSelectEvent event )
+        override protected void init_event (FiberSelectEvent event)
         {
             event.fiber = this.outer.fiber;
         }
@@ -444,7 +444,7 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected void init_timer ( FiberTimerEvent timer )
+        override protected void init_timer (FiberTimerEvent timer)
         {
             timer.fiber = this.outer.fiber;
         }
@@ -456,7 +456,7 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected void init_loop_ceder ( LoopCeder loop_ceder )
+        override protected void init_loop_ceder (LoopCeder loop_ceder)
         {
             loop_ceder.event = this.event;
         }
@@ -468,7 +468,7 @@ public class DhtConnectionHandler
 
         ***********************************************************************/
 
-        override protected void init_dht_client ( DhtClient dht_client )
+        override protected void init_dht_client (DhtClient dht_client)
         {
             dht_client.clearNodes();
         }
@@ -482,7 +482,7 @@ public class DhtConnectionHandler
 
         private DhtConnectionSetupParams setup ( )
         {
-            return cast(DhtConnectionSetupParams)this.outer.setup;
+            return cast(DhtConnectionSetupParams) this.outer.setup;
         }
     }
 
@@ -509,7 +509,7 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    public this ( FinalizeDg finalize_dg, ConnectionSetupParams setup )
+    public this(FinalizeDg finalize_dg, ConnectionSetupParams setup)
     {
         super(finalize_dg, setup);
 
@@ -746,16 +746,17 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    private void handleCommand ( Handler : DhtCommand,
-        RequestStatsTracking stats_tracking = RequestStatsTracking.None ) ( )
+    private void handleCommand (Handler : DhtCommand,
+        RequestStatsTracking stats_tracking = RequestStatsTracking.None) ( )
     {
         scope resources = new DhtRequestResources;
-        scope handler = new Handler(this.reader, this.writer, resources);
+        scope handler   = new Handler(this.reader, this.writer, resources);
 
         // calls handler.handle() and checks memory and buffer allocation after
         // request finishes
         this.handleRequest!(ConnectionResources, DhtRequestResources,
-            stats_tracking)(handler, resources, handler.command_name);
+                            stats_tracking)(handler, resources,
+            handler.command_name);
     }
 }
 

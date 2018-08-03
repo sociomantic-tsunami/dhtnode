@@ -42,9 +42,10 @@ import dhtredist.Redist;
 
 *******************************************************************************/
 
-version (UnitTest) {} else
-private int main ( istring[] args )
-{
-    auto app = new DhtRedist;
-    return app.main(args);
-}
+version (UnitTest) {}
+else
+    private int main (istring[] args)
+    {
+        auto app = new DhtRedist;
+        return app.main(args);
+    }

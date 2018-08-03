@@ -52,13 +52,13 @@ public scope class GetSizeRequest : Protocol.GetSize
     {
         ulong records, bytes;
 
-        foreach ( channel; this.resources.storage_channels )
+        foreach (channel; this.resources.storage_channels)
         {
             auto channel_records = channel.num_records;
-            auto channel_bytes = channel.num_bytes;
+            auto channel_bytes   = channel.num_bytes;
 
             records += channel_records;
-            bytes += channel_bytes;
+            bytes   += channel_bytes;
         }
 
         return SizeData(
@@ -66,6 +66,6 @@ public scope class GetSizeRequest : Protocol.GetSize
             this.resources.node_info.node_item.Port,
             records,
             bytes
-        );
+            );
     }
 }

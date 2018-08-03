@@ -45,7 +45,7 @@ import Integer = ocean.text.convert.Integer_tango;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this()
 {
     log = Log.lookup("dhtnode.storage.DumpFile");
 }
@@ -99,7 +99,7 @@ public const IOBufferSize = 32 * 1024 * 1024;
 
 *******************************************************************************/
 
-public FilePath buildFilePath ( FilePath root, FilePath path, cstring channel )
+public FilePath buildFilePath (FilePath root, FilePath path, cstring channel)
 {
     path.set(root);
     path.append(channel);
@@ -121,11 +121,11 @@ public FilePath buildFilePath ( FilePath root, FilePath path, cstring channel )
 
 *******************************************************************************/
 
-public void rotateDumpFile ( cstring dumped_path, cstring channel, FilePath root,
-    FilePath path, FilePath swap_path )
+public void rotateDumpFile (cstring dumped_path, cstring channel, FilePath root,
+    FilePath path, FilePath swap_path)
 {
-    path.set(dumped_path); // dump.new
-    buildFilePath(root, swap_path, channel); // dump
+    path.set(dumped_path);                     // dump.new
+    buildFilePath(root, swap_path, channel);   // dump
     path.rename(swap_path);
 }
 
@@ -162,10 +162,10 @@ public class ChannelDumper
 
     ***************************************************************************/
 
-    public this ( ubyte[] buffer, cstring suffix, bool disable_direct_io )
+    public this(ubyte[] buffer, cstring suffix, bool disable_direct_io)
     {
         this.output = new BufferedDirectWriteTempFile(null, buffer, suffix,
-                disable_direct_io);
+            disable_direct_io);
     }
 
 
@@ -179,7 +179,7 @@ public class ChannelDumper
 
     ***************************************************************************/
 
-    public void open ( cstring path )
+    public void open (cstring path)
     {
         this.output.open(path);
 
@@ -209,7 +209,7 @@ public class ChannelDumper
 
     ***************************************************************************/
 
-    public void write ( cstring key, cstring value )
+    public void write (cstring key, cstring value)
     {
         SimpleStreamSerializer.write(this.output, key);
         SimpleStreamSerializer.write(this.output, value);
@@ -264,19 +264,20 @@ abstract public class ChannelLoaderBase
 
         ***********************************************************************/
 
-        public int opApply ( int delegate ( ref mstring key, ref mstring value ) dg )
+        public int opApply (int delegate(ref mstring key,
+                                         ref mstring value) dg)
         {
             int res;
 
             do
             {
-                if ( !this.getRecord(this.outer.load_key, this.outer.load_value) )
+                if (!this.getRecord(this.outer.load_key, this.outer.load_value))
                     break;
 
                 res = dg(this.outer.load_key, this.outer.load_value);
-                if ( res ) break;
-            }
-            while ( true );
+                if (res)
+                    break;
+            } while (true);
 
             return res;
         }
@@ -296,7 +297,7 @@ abstract public class ChannelLoaderBase
 
         ***********************************************************************/
 
-        abstract protected bool getRecord ( ref mstring key, ref mstring value );
+        abstract protected bool getRecord (ref mstring key, ref mstring value);
     }
 
 
@@ -323,10 +324,11 @@ abstract public class ChannelLoaderBase
 
         ***********************************************************************/
 
-        override public bool getRecord ( ref mstring key, ref mstring value )
+        override public bool getRecord (ref mstring key, ref mstring value)
         {
             SimpleStreamSerializer.read(this.outer.input, key);
-            if ( key.length == 0 ) return false;
+            if (key.length == 0)
+                return false;
 
             SimpleStreamSerializer.read(this.outer.input, value);
 
@@ -385,7 +387,7 @@ abstract public class ChannelLoaderBase
 
     ***************************************************************************/
 
-    public this ( InputStream input )
+    public this(InputStream input)
     {
         this.input = input;
     }
@@ -433,7 +435,7 @@ abstract public class ChannelLoaderBase
     public bool supported_file_format_version ( )
     {
         return this.file_format_version_ >= this.min_supported_version &&
-            this.file_format_version_ <= this.max_supported_version;
+               this.file_format_version_ <= this.max_supported_version;
     }
 
 
@@ -472,37 +474,37 @@ abstract public class ChannelLoaderBase
 
     ***************************************************************************/
 
-    public int opApply ( int delegate ( ref mstring key, ref mstring value ) dg )
+    public int opApply (int delegate(ref mstring key, ref mstring value) dg)
     {
         // Function which instantiates a reader for the appropriate file format
         // version and passes it to the provided delegate. This pattern is used
         // so that the reader can be newed at scope (on the stack).
-        void read ( void delegate ( FormatReaderBase ) use_reader )
+        void read (void delegate(FormatReaderBase) use_reader)
         {
-            if ( !this.supported_file_format_version )
+            if (!this.supported_file_format_version)
             {
                 throw new Exception(
-                    cast(istring)("Unsupported dump file format: "
+                    cast(istring) ("Unsupported dump file format: "
                         ~ Integer.toString(this.file_format_version_))
-                );
+                    );
             }
 
-            switch ( this.file_format_version_ )
+            switch (this.file_format_version_)
             {
-                case 0:
-                    scope v0_reader = new FormatReader_v0;
-                    use_reader(v0_reader);
-                    break;
-                default:
-                    enforce(false);
+            case 0:
+                scope v0_reader = new FormatReader_v0;
+                use_reader(v0_reader);
+                break;
+            default:
+                enforce(false);
             }
         }
 
         int res;
 
         read((FormatReaderBase reader){
-            res = reader.opApply(dg);
-        });
+                res = reader.opApply(dg);
+            });
 
         return res;
     }
@@ -543,7 +545,7 @@ public class ChannelLoader : ChannelLoaderBase
 
     ***************************************************************************/
 
-    public this ( ubyte[] buffer, bool disable_direct_io )
+    public this(ubyte[] buffer, bool disable_direct_io)
     {
         super(new BufferedDirectReadFile(null, buffer, disable_direct_io));
     }
@@ -561,9 +563,9 @@ public class ChannelLoader : ChannelLoaderBase
 
     ***************************************************************************/
 
-    public void open ( cstring path )
+    public void open (cstring path)
     {
-        (cast(BufferedDirectReadFile)this.input).open(path);
+        (cast(BufferedDirectReadFile) this.input).open(path);
 
         super.open();
     }
@@ -578,7 +580,7 @@ public class ChannelLoader : ChannelLoaderBase
 
     override protected ulong length_ ( )
     {
-        return (cast(File)this.input.conduit).length;
+        return (cast(File) this.input.conduit).length;
     }
 }
 

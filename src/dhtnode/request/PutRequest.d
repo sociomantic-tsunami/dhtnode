@@ -57,7 +57,7 @@ public scope class PutRequest : Protocol.Put
 
     ***************************************************************************/
 
-    final override protected bool isAllowed ( cstring key )
+    final override protected bool isAllowed (cstring key)
     {
         return this.resources.storage_channels.responsibleForKey(key);
     }
@@ -74,9 +74,9 @@ public scope class PutRequest : Protocol.Put
 
     ***************************************************************************/
 
-    final override protected bool isSizeAllowed ( size_t size )
+    final override protected bool isSizeAllowed (size_t size)
     {
-       return this.resources.storage_channels.sizeLimitOk(size);
+        return this.resources.storage_channels.sizeLimitOk(size);
     }
 
     /***************************************************************************
@@ -93,13 +93,14 @@ public scope class PutRequest : Protocol.Put
 
     ***************************************************************************/
 
-    final override protected bool putRecord ( cstring channel, cstring key,
-        in void[] value )
+    final override protected bool putRecord (cstring channel, cstring key,
+        in void[] value)
     {
         this.resources.node_info.record_action_counters
-            .increment("written", value.length);
+        .increment("written", value.length);
 
-        auto storage_channel = this.resources.storage_channels.getCreate(channel);
+        auto storage_channel = this.resources.storage_channels.getCreate(
+            channel);
         if (storage_channel is null)
             return false;
 

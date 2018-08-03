@@ -44,8 +44,8 @@ public class ServerConfig
 
     cstring data_dir = "data";
 
-    uint connection_limit = 5_000;
+    uint    connection_limit = 5_000;
 
-    uint backlog = 2048;
+    uint    backlog = 2048;
 }
 

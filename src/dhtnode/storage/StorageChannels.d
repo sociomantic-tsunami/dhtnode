@@ -37,7 +37,7 @@ import ocean.util.log.Logger;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this()
 {
     log = Log.lookup("dhtnode.storage.MemoryStorageChannels");
 }
@@ -56,7 +56,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
     import dhtnode.storage.StorageEngineStepIterator;
 
     import dhtnode.storage.StorageEngine : StorageEngine;
-    import dhtnode.storage.DumpManager : DumpManager;
+    import dhtnode.storage.DumpManager   : DumpManager;
 
     import ocean.io.FilePath;
 
@@ -161,21 +161,21 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
     ***************************************************************************/
 
-    public this ( cstring dir, ulong size_limit, DhtHashRange hash_range,
-        uint bnum, OutOfRangeHandling out_of_range_handling,
-        bool disable_direct_io )
+    public this(cstring dir, ulong size_limit, DhtHashRange hash_range,
+                uint bnum, OutOfRangeHandling out_of_range_handling,
+                bool disable_direct_io)
     {
         super(size_limit);
 
         this.dir = this.getWorkingPath(dir);
 
-        if ( !this.dir.exists )
+        if (!this.dir.exists)
         {
             this.createWorkingDir();
         }
 
         this.hash_range = hash_range;
-        this.bnum = bnum;
+        this.bnum       = bnum;
 
         this.dump_manager = new DumpManager(this.dir, out_of_range_handling,
             disable_direct_io);
@@ -225,7 +225,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
     ***************************************************************************/
 
-    public bool responsibleForKey ( cstring key )
+    public bool responsibleForKey (cstring key)
     {
         auto hash = Hash.straightToHash(key);
         return Hash.isWithinNodeResponsibility(hash, this.hash_range.range.min,
@@ -247,7 +247,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
     ***************************************************************************/
 
-    public void setHashRange ( hash_t min, hash_t max )
+    public void setHashRange (hash_t min, hash_t max)
     {
         this.hash_range.set(min, max);
     }
@@ -268,14 +268,14 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
         StopWatch sw;
         sw.start();
-        foreach ( channel; this )
+        foreach (channel; this)
         {
-            auto dht_channel = cast(StorageEngine)channel;
+            auto dht_channel = cast(StorageEngine) channel;
             verify(dht_channel !is null);
             this.dump_manager.dump(dht_channel);
         }
 
-        auto seconds = (cast(double)sw.microsec) / 1_000_000.0;
+        auto seconds = (cast(double) sw.microsec) / 1_000_000.0;
         log.info("Finished closing memory channels, took {}s", seconds);
     }
 
@@ -292,10 +292,10 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
     ***************************************************************************/
 
-    protected override StorageEngine create_ ( cstring id )
+    protected override StorageEngine create_ (cstring id)
     {
         return new StorageEngine(id, this.hash_range, this.bnum,
-                &this.dump_manager.deleteChannel);
+            &this.dump_manager.deleteChannel);
     }
 
 
@@ -311,13 +311,13 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
         log.info("Scanning {} for memory files", this.dir.toString);
 
         this.state = State.ChannelsScan;
-        scope ( exit ) this.state = State.Running;
+        scope (exit) this.state = State.Running;
 
         StopWatch sw;
         sw.start();
         this.dump_manager.loadChannels(&this.create);
 
-        auto seconds = (cast(double)sw.microsec) / 1_000_000.0;
+        auto seconds = (cast(double) sw.microsec) / 1_000_000.0;
         log.info("Finished scanning {} for memory files, took {}s",
             this.dir.toString, seconds);
     }
@@ -338,15 +338,15 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
     ***************************************************************************/
 
-    private FilePath getWorkingPath ( cstring dir )
+    private FilePath getWorkingPath (cstring dir)
     {
         FilePath path = new FilePath;
 
-        if ( dir )
+        if (dir)
         {
             path.set(dir);
 
-            if ( !path.isAbsolute() )
+            if (!path.isAbsolute())
             {
                 path.prepend(Environment.cwd());
             }
@@ -374,7 +374,9 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
         }
         catch (Exception e)
         {
-            e.msg = typeof(this).stringof ~ ": Failed creating directory: " ~ e.msg;
+            e.msg =
+                typeof(this).stringof ~ ": Failed creating directory: " ~ e.
+                msg;
 
             throw e;
         }

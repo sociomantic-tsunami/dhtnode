@@ -53,12 +53,12 @@ public scope class GetAllFilterRequest : Protocol.GetAllFilter
     mixin RequestConstruction!();
 
     /***************************************************************************
-    
+
         Predicate that accepts records that match filter defined by this.match
 
     ***************************************************************************/
 
-    private bool filterPredicate ( cstring key, cstring value )
+    private bool filterPredicate (cstring key, cstring value)
     {
         return this.match.forward(value) < value.length;
     }
@@ -73,7 +73,7 @@ public scope class GetAllFilterRequest : Protocol.GetAllFilter
     mixin ChannelIteration!(resources, IterationKind.KeyValue, filterPredicate);
 
     /***************************************************************************
-        
+
         Initialized regex match based on provided filter string
 
         Params:
@@ -81,7 +81,7 @@ public scope class GetAllFilterRequest : Protocol.GetAllFilter
 
     ***************************************************************************/
 
-    final override protected void prepareFilter ( cstring filter )
+    final override protected void prepareFilter (cstring filter)
     {
         this.match = search(filter);
     }

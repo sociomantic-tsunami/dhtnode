@@ -50,7 +50,8 @@ public scope class GetResponsibleRangeRequest : Protocol.GetResponsibleRange
 
     ***************************************************************************/
 
-    final override protected void getRangeLimits ( out hash_t min, out hash_t max )
+    final override protected void getRangeLimits (out hash_t min,
+        out hash_t max)
     {
         min = this.resources.node_info.min_hash;
         max = this.resources.node_info.max_hash;

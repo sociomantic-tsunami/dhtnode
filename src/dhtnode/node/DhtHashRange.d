@@ -75,7 +75,7 @@ public class DhtHashRange
 
     ***************************************************************************/
 
-    public this ( hash_t min, hash_t max, HashRangeConfig config_file )
+    public this(hash_t min, hash_t max, HashRangeConfig config_file)
     {
         verify(config_file !is null);
         this.config_file = config_file;
@@ -124,7 +124,7 @@ public class DhtHashRange
 
     ***************************************************************************/
 
-    public void set ( hash_t min, hash_t max )
+    public void set (hash_t min, hash_t max)
     {
         this.config_file.set(min, max);
 

@@ -65,10 +65,10 @@ public interface IDhtRequestResources : IRequestResources, DhtCommand.Resources
 
     ***************************************************************************/
 
-    alias .FiberSelectEvent FiberSelectEvent;
-    alias .LoopCeder LoopCeder;
-    alias .StorageChannels StorageChannels;
-    alias .IDhtNodeInfo IDhtNodeInfo;
+    alias.FiberSelectEvent FiberSelectEvent;
+    alias.LoopCeder        LoopCeder;
+    alias.StorageChannels  StorageChannels;
+    alias.IDhtNodeInfo     IDhtNodeInfo;
 
 
     /***************************************************************************

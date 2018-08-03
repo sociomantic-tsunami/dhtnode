@@ -38,7 +38,7 @@ import ocean.util.log.Logger;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this()
 {
     log = Log.lookup("dhtnode.request.RedistributeRequest");
 }
@@ -63,9 +63,10 @@ public scope class RedistributeRequest : Protocol.Redistribute
     import dhtproto.client.legacy.DhtConst;
     import dhtproto.client.legacy.common.NodeRecordBatcher;
     import dhtproto.client.legacy.internal.registry.model.IDhtNodeRegistryInfo;
-    import dhtproto.client.legacy.internal.connection.model.IDhtNodeConnectionPoolInfo;
+    import dhtproto.client.legacy.internal.connection.model.
+           IDhtNodeConnectionPoolInfo;
 
-    import ocean.core.Array : copy;
+    import ocean.core.Array       : copy;
     import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
     import ocean.time.StopWatch;
@@ -90,7 +91,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    final override protected void adjustHashRange ( hash_t min, hash_t max )
+    final override protected void adjustHashRange (hash_t min, hash_t max)
     {
         log.info("Setting hash range: 0x{:X16}..0x{:X16}", min, max);
         this.resources.storage_channels.setHashRange(min, max);
@@ -102,10 +103,10 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    final override protected void redistributeData(RedistributeNode[] dataset)
+    final override protected void redistributeData (RedistributeNode[] dataset)
     {
         redistribution_process.starting();
-        scope ( exit )
+        scope (exit)
         {
             redistribution_process.finishing();
         }
@@ -120,16 +121,16 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
         // set up dht client
         auto client = this.resources.dht_client;
-        foreach ( node; *this.resources.redistribute_node_buffer )
+        foreach (node; *this.resources.redistribute_node_buffer)
         {
             client.addNode(node.node, node.range);
         }
 
         this.resources.node_record_batch.reset(
-            cast(IDhtNodeRegistryInfo)client.nodes);
+            cast(IDhtNodeRegistryInfo) client.nodes);
 
         // iterate over channels, redistributing data
-        foreach ( channel; this.resources.storage_channels )
+        foreach (channel; this.resources.storage_channels)
         {
             auto dht_channel = downcast!(StorageEngine)(channel);
             verify(dht_channel !is null);
@@ -137,9 +138,10 @@ public scope class RedistributeRequest : Protocol.Redistribute
             {
                 this.handleChannel(client, dht_channel);
             }
-            catch ( Exception e )
+            catch (Exception e)
             {
-                log.error("Exception thrown while redistributing channel '{}': "
+                log.error(
+                    "Exception thrown while redistributing channel '{}': "
                     "'{}' @ {}:{}", channel.id, e.message, e.file, e.line);
                 throw e;
             }
@@ -175,7 +177,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    private void handleChannel ( DhtClient client, StorageEngine channel )
+    private void handleChannel (DhtClient client, StorageEngine channel)
     {
         log.info("Redistributing channel '{}'", channel.id);
 
@@ -189,19 +191,19 @@ public scope class RedistributeRequest : Protocol.Redistribute
             this.resources.iterator.setStorage(channel);
             this.resources.iterator.next(); // advance iterator to first record
 
-            while ( !this.resources.iterator.lastKey )
+            while (!this.resources.iterator.lastKey)
             {
-                bool remove_record;
+                bool     remove_record;
                 NodeItem node;
 
-                if ( this.recordShouldBeForwarded(this.resources.iterator.key,
-                    client, node) )
+                if (this.recordShouldBeForwarded(this.resources.iterator.key,
+                        client, node))
                 {
                     auto result = this.forwardRecord(client, channel,
                         this.resources.iterator.key,
                         this.resources.iterator.value, node);
-                    with ( ForwardResult ) final switch ( result )
-                    {
+                    with (ForwardResult) final switch (result)
+                        {
                         case SentSingle:
                         case Invalid:
                             remove_record = true;
@@ -217,22 +219,25 @@ public scope class RedistributeRequest : Protocol.Redistribute
                         case None:
                             verify(false);
                             break;
-                        version (D_Version2){} else
-                        {
+                            version (D_Version2) {}
+                            else
+                            {
                             default: assert(false);
+                            }
                         }
-                    }
                 }
 
                 this.advanceIteration(this.resources.iterator, remove_record,
                     channel);
 
-                if ( num_records_iterated % 100_000 == 0 )
+                if (num_records_iterated % 100_000 == 0)
                 {
-                    log.trace("Progress redistributing channel '{}': {}/{} "
+                    log.trace(
+                        "Progress redistributing channel '{}': {}/{} "
                         "records iterated, {} forwarded, channel now contains "
                         "{} records",
-                        channel.id, num_records_iterated + 1, num_records_before,
+                        channel.id, num_records_iterated + 1,
+                        num_records_before,
                         num_records_sent, channel.num_records);
                 }
 
@@ -241,16 +246,17 @@ public scope class RedistributeRequest : Protocol.Redistribute
                 this.resources.loop_ceder.handleCeding();
             }
 
-            if ( !this.flushBatches(client, channel) )
+            if (!this.flushBatches(client, channel))
             {
                 error_during_iteration = true;
             }
 
-            if ( error_during_iteration )
+            if (error_during_iteration)
             {
                 const uint retry_s = 2;
 
-                log.error("Finished redistributing channel '{}': {}/{} records "
+                log.error(
+                    "Finished redistributing channel '{}': {}/{} records "
                     "iterated, channel now contains {} records, "
                     " (error occurred during iteration over channel, retrying in {}s)",
                     channel.id, num_records_iterated, num_records_before,
@@ -260,13 +266,13 @@ public scope class RedistributeRequest : Protocol.Redistribute
             }
             else
             {
-                log.info("Finished redistributing channel '{}': {}/{} records "
+                log.info(
+                    "Finished redistributing channel '{}': {}/{} records "
                     "iterated, channel now contains {} records",
                     channel.id, num_records_iterated, num_records_before,
                     channel.num_records);
             }
-        }
-        while ( error_during_iteration );
+        } while (error_during_iteration);
     }
 
 
@@ -290,18 +296,18 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    private bool recordShouldBeForwarded ( cstring key, DhtClient client,
-        out NodeItem node )
+    private bool recordShouldBeForwarded (cstring key, DhtClient client,
+        out NodeItem node)
     {
         auto hash = Hash.straightToHash(key);
-        foreach ( n; client.nodes )
+        foreach (n; client.nodes)
         {
-            auto dht_node = cast(IDhtNodeConnectionPoolInfo)n;
-            if ( Hash.isWithinNodeResponsibility(
-                hash, dht_node.min_hash, dht_node.max_hash) )
+            auto dht_node = cast(IDhtNodeConnectionPoolInfo) n;
+            if (Hash.isWithinNodeResponsibility(
+                    hash, dht_node.min_hash, dht_node.max_hash))
             {
                 node.Address = n.address;
-                node.Port = n.port;
+                node.Port    = n.port;
                 return true;
             }
         }
@@ -342,16 +348,18 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    private ForwardResult forwardRecord ( DhtClient client, StorageEngine channel,
-        cstring key, cstring value, NodeItem node )
+    private ForwardResult forwardRecord (DhtClient client,
+        StorageEngine channel,
+        cstring key, cstring value,
+        NodeItem node)
     {
-        if ( value.length == 0 )
+        if (value.length == 0)
         {
             log.warn("Removing empty record {}", key);
             return ForwardResult.Invalid;
         }
 
-        if ( value.length >= DhtConst.RecordSizeLimit )
+        if (value.length >= DhtConst.RecordSizeLimit)
         {
             log.warn("Removing too large record ({} bytes) {}", value.length,
                 key);
@@ -362,21 +370,21 @@ public scope class RedistributeRequest : Protocol.Redistribute
         bool fits, too_big;
         fits = batch.fits(key, value, too_big);
 
-        if ( too_big )
+        if (too_big)
         {
             log.warn("Forwarding large record {} ({} bytes) individually", key,
                 value.length);
             return this.sendRecord(client, key, value, channel)
-                ? ForwardResult.SentSingle : ForwardResult.SendError;
+                   ? ForwardResult.SentSingle : ForwardResult.SendError;
         }
         else
         {
             ForwardResult result = ForwardResult.Batched;
 
-            if ( !fits )
+            if (!fits)
             {
                 result = this.sendBatch(client, batch, channel)
-                    ? ForwardResult.SentBatch : ForwardResult.SendError;
+                         ? ForwardResult.SentBatch : ForwardResult.SendError;
 
                 // The batch is always cleared. If an error occurred, we just
                 // retry the whole iteration.
@@ -408,18 +416,18 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    private bool flushBatches ( DhtClient client, StorageEngine channel )
+    private bool flushBatches (DhtClient client, StorageEngine channel)
     {
         bool send_error;
 
-        foreach ( node; client.nodes )
+        foreach (node; client.nodes)
         {
             auto node_item = NodeItem(node.address, node.port);
-            auto batch = this.resources.node_record_batch[node_item];
+            auto batch     = this.resources.node_record_batch[node_item];
 
-            if ( batch.length )
+            if (batch.length)
             {
-                if ( !this.sendBatch(client, batch, channel) )
+                if (!this.sendBatch(client, batch, channel))
                 {
                     send_error = true;
                 }
@@ -453,35 +461,36 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    private bool sendBatch ( DhtClient client, NodeRecordBatcher batch,
-        StorageEngine channel )
+    private bool sendBatch (DhtClient client, NodeRecordBatcher batch,
+        StorageEngine channel)
     {
         bool error;
 
-        NodeRecordBatcher put_dg ( client.RequestContext )
+        NodeRecordBatcher put_dg (client.RequestContext)
         {
             return batch;
         }
 
-        void notifier ( client.RequestNotification info )
+        void notifier (client.RequestNotification info)
         {
-            if ( info.type == info.type.Finished && !info.succeeded )
+            if (info.type == info.type.Finished && !info.succeeded)
             {
-                log.error("Error while sending batch of {} records to channel '{}': {}",
+                log.error(
+                    "Error while sending batch of {} records to channel '{}': {}",
                     batch.length, channel.id, info.message(client.msg_buf));
                 error = true;
             }
         }
 
         client.perform(this.reader.fiber, client.putBatch(batch.address,
-            batch.port, channel.id, &put_dg, &notifier));
+                batch.port, channel.id, &put_dg, &notifier));
 
         // Remove successfully sent records from channel
-        if ( !error )
+        if (!error)
         {
             this.resources.key_buffer.length = Hash.HexDigest.length;
             enableStomping(*this.resources.key_buffer);
-            foreach ( hash; batch.batched_hashes )
+            foreach (hash; batch.batched_hashes)
             {
                 Hash.toHexString(hash, *this.resources.key_buffer);
                 channel.remove(*this.resources.key_buffer);
@@ -515,19 +524,19 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    private bool sendRecord ( DhtClient client, cstring key, cstring value,
-        StorageEngine channel )
+    private bool sendRecord (DhtClient client, cstring key, cstring value,
+        StorageEngine channel)
     {
         bool error;
 
-        cstring put_dg ( client.RequestContext )
+        cstring put_dg (client.RequestContext)
         {
             return value;
         }
 
-        void notifier ( client.RequestNotification info )
+        void notifier (client.RequestNotification info)
         {
-            if ( info.type == info.type.Finished && !info.succeeded )
+            if (info.type == info.type.Finished && !info.succeeded)
             {
                 log.error("Error while sending record {} to channel '{}': {}",
                     key, channel.id, info.message(client.msg_buf));
@@ -536,8 +545,9 @@ public scope class RedistributeRequest : Protocol.Redistribute
         }
 
         auto hash = Hash.straightToHash(key);
-        client.perform(this.reader.fiber, client.put(channel.id, hash, &put_dg,
-            &notifier));
+        client.perform(this.reader.fiber,
+            client.put(channel.id, hash, &put_dg,
+                &notifier));
 
         return !error;
     }
@@ -560,17 +570,17 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
     ***************************************************************************/
 
-    private void advanceIteration ( StorageEngineStepIterator iterator,
-        bool remove_record, StorageEngine channel )
+    private void advanceIteration (StorageEngineStepIterator iterator,
+        bool remove_record, StorageEngine channel)
     {
-        if ( remove_record )
+        if (remove_record)
         {
             (*this.resources.key_buffer).copy(iterator.key);
         }
 
         iterator.next();
 
-        if ( remove_record )
+        if (remove_record)
         {
             channel.remove(*this.resources.key_buffer);
         }

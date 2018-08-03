@@ -113,7 +113,7 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public this ( StatsLog stats_log )
+    public this(StatsLog stats_log)
     {
         this.stats_log = stats_log;
     }
@@ -130,12 +130,12 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void dumpedRecord ( cstring key, cstring value )
+    public void dumpedRecord (cstring key, cstring value)
     {
         this.io_stats.records_written++;
         // bytes of key, value, and length specifiers of each
         this.io_stats.bytes_written += key.length + value.length
-            + (size_t.sizeof * 2);
+                                       + (size_t.sizeof * 2);
     }
 
 
@@ -151,15 +151,15 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void dumpedChannel ( cstring channel, ulong records, ulong bytes )
+    public void dumpedChannel (cstring channel, ulong records, ulong bytes)
     {
-        if ( !(channel in this.channel_stats) )
+        if (!(channel in this.channel_stats))
         {
             this.channel_stats[channel] = IOStats();
         }
 
         this.channel_stats[channel].records_written = records;
-        this.channel_stats[channel].bytes_written = bytes;
+        this.channel_stats[channel].bytes_written   = bytes;
     }
 
 
@@ -178,7 +178,7 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void channelRemoved ( char[] channel )
+    public void channelRemoved (char[] channel)
     {
         this.channel_stats.remove(channel);
     }
@@ -194,7 +194,7 @@ public class DumpStats
 
     ***************************************************************************/
 
-    public void dumpedAll ( ulong millisec )
+    public void dumpedAll (ulong millisec)
     {
         this.cycle_stats.last_time_ms = millisec;
     }
@@ -211,7 +211,7 @@ public class DumpStats
     public ulong total_bytes ( )
     {
         ulong sum;
-        foreach ( channel; this.channel_stats )
+        foreach (channel; this.channel_stats)
         {
             sum += channel.bytes_written;
         }
@@ -230,7 +230,7 @@ public class DumpStats
     public ulong total_records ( )
     {
         ulong sum;
-        foreach ( channel; this.channel_stats )
+        foreach (channel; this.channel_stats)
         {
             sum += channel.records_written;
         }
@@ -249,7 +249,7 @@ public class DumpStats
         this.stats_log.add(this.io_stats);
         this.stats_log.add(this.cycle_stats);
 
-        foreach ( channel, stats; this.channel_stats )
+        foreach (channel, stats; this.channel_stats)
         {
             this.stats_log.addObject!("channel")(channel, stats);
         }

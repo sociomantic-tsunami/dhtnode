@@ -93,7 +93,7 @@ public class StorageEngineStepIterator
 
     ***************************************************************************/
 
-    public void setStorage ( StorageEngine storage )
+    public void setStorage (StorageEngine storage)
     {
         this.storage = storage;
         this.started = false;

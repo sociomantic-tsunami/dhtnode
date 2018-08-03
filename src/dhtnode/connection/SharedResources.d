@@ -43,7 +43,8 @@ public import dhtnode.connection.DhtClient;
 
 public import swarm.util.RecordBatcher;
 
-public import dhtproto.client.legacy.common.NodeRecordBatcher : NodeRecordBatcherMap;
+public import dhtproto.client.legacy.common.NodeRecordBatcher :
+              NodeRecordBatcherMap;
 
 public import dhtproto.node.request.params.RedistributeNode;
 
@@ -58,22 +59,22 @@ public import dhtproto.node.request.params.RedistributeNode;
 
 public struct ConnectionResources
 {
-    mstring channel_buffer;
-    mstring key_buffer;
-    mstring filter_buffer;
-    mstring batch_buffer;
-    mstring value_buffer;
-    cstring[] channel_list_buffer;
-    hash_t[] hash_buffer;
-    FiberSelectEvent event;
-    FiberTimerEvent timer;
-    LoopCeder loop_ceder;
+    mstring                   channel_buffer;
+    mstring                   key_buffer;
+    mstring                   filter_buffer;
+    mstring                   batch_buffer;
+    mstring                   value_buffer;
+    cstring[]                 channel_list_buffer;
+    hash_t[]                  hash_buffer;
+    FiberSelectEvent          event;
+    FiberTimerEvent           timer;
+    LoopCeder                 loop_ceder;
     StorageEngineStepIterator iterator;
-    RecordBatcher batcher;
-    RecordBatch record_batch;
-    NodeRecordBatcherMap node_record_batch;
-    RedistributeNode[] redistribute_node_buffer;
-    DhtClient dht_client;
+    RecordBatcher             batcher;
+    RecordBatch               record_batch;
+    NodeRecordBatcherMap      node_record_batch;
+    RedistributeNode[]        redistribute_node_buffer;
+    DhtClient                 dht_client;
 }
 
 

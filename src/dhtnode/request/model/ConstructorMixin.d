@@ -19,12 +19,12 @@ module dhtnode.request.model.ConstructorMixin;
 
 *******************************************************************************/
 
-public template RequestConstruction ( )
+public template RequestConstruction( )
 {
     import dhtnode.request.model.RequestResources;
 
     /***************************************************************************
-    
+
         Keeps resource object without reducing it to DhtCommand.Resources
         interface
 
@@ -43,8 +43,8 @@ public template RequestConstruction ( )
 
     ***************************************************************************/
 
-    public this ( FiberSelectReader reader, FiberSelectWriter writer,
-        IDhtRequestResources resources )
+    public this(FiberSelectReader reader, FiberSelectWriter writer,
+                IDhtRequestResources resources)
     {
         super(reader, writer, resources);
         this.resources = resources;

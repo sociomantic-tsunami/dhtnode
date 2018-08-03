@@ -26,9 +26,9 @@ import ocean.core.Array : concat;
 
 import ocean.io.device.DirectIO;
 
-import core.sys.posix.unistd : unlink;
+import core.sys.posix.unistd  : unlink;
 
-import core.stdc.errno : errno, ENOENT;
+import core.stdc.errno        : errno, ENOENT;
 
 import ocean.stdc.posix.fcntl : open, O_DIRECT; // O_DIRECT is Linux only
 
@@ -43,7 +43,7 @@ import ocean.util.log.Logger;
 *******************************************************************************/
 
 private Logger log;
-static this ( )
+static this()
 {
     log = Log.lookup("dhtnode.storage.DirectIO");
 }
@@ -57,9 +57,9 @@ static this ( )
 
 *******************************************************************************/
 
-extern ( C )
+extern (C)
 {
-    int mkostemps(char *path_template, int suffixlen, int flags);
+int mkostemps (char *path_template, int suffixlen, int flags);
 }
 
 
@@ -113,13 +113,13 @@ public class BufferedDirectWriteTempFile : BufferedDirectWriteFile
 
         ***********************************************************************/
 
-        public override void open ( cstring path, Style style = this.WriteCreate )
+        public override void open (cstring path, Style style = this.WriteCreate)
         {
             this.temp_file_path.concat(path, "XXXXXX", this.outer.suffix, "\0");
             auto fd = mkostemps(this.temp_file_path.ptr,
-                    cast(int)this.outer.suffix.length,
-                    this.outer.disable_direct_io ? 0 : O_DIRECT);
-            if ( fd == -1 )
+                cast(int) this.outer.suffix.length,
+                this.outer.disable_direct_io ? 0 : O_DIRECT);
+            if (fd == -1)
             {
                 // If mkostemp() fails, it might leave the file created
                 // afterall, apparently the file is created first and just
@@ -133,13 +133,13 @@ public class BufferedDirectWriteTempFile : BufferedDirectWriteFile
                     // file wasn't created after all
                     if (r == -1 && errno != ENOENT)
                         log.error("Can't remove failed temporary file {}",
-                                this.temp_file_path[0..$-1]);
+                            this.temp_file_path[0..$ - 1]);
                 }
                 this.error(); // throws an IOException
             }
 
             // the oddly-named 'reopen' allows us to set the Device's fd
-            this.reopen(cast(Handle)fd);
+            this.reopen(cast(Handle) fd);
         }
 
         /***********************************************************************
@@ -161,7 +161,7 @@ public class BufferedDirectWriteTempFile : BufferedDirectWriteFile
 
     ***************************************************************************/
 
-        private cstring suffix;
+    private cstring suffix;
 
     /***************************************************************************
 
@@ -176,7 +176,7 @@ public class BufferedDirectWriteTempFile : BufferedDirectWriteFile
 
     ***************************************************************************/
 
-        private bool disable_direct_io;
+    private bool disable_direct_io;
 
     /***************************************************************************
 
@@ -207,10 +207,10 @@ public class BufferedDirectWriteTempFile : BufferedDirectWriteFile
 
     ***************************************************************************/
 
-    public this ( cstring path, ubyte[] buffer, cstring suffix = ".tmp",
-            bool disable_direct_io = false )
+    public this(cstring path, ubyte[] buffer, cstring suffix = ".tmp",
+                bool disable_direct_io = false)
     {
-        this.suffix = suffix;
+        this.suffix            = suffix;
         this.disable_direct_io = disable_direct_io;
         super(path, buffer);
     }
@@ -242,10 +242,10 @@ public class BufferedDirectWriteTempFile : BufferedDirectWriteFile
 
     ***************************************************************************/
 
-    public this ( cstring path = null, size_t buffer_blocks = 32 * 2 * 1024,
-            cstring suffix = ".tmp", bool disable_direct_io = false )
+    public this(cstring path = null, size_t buffer_blocks = 32 * 2 * 1024,
+                cstring suffix = ".tmp", bool disable_direct_io = false)
     {
-        this.suffix = suffix;
+        this.suffix            = suffix;
         this.disable_direct_io = disable_direct_io;
         super(path, buffer_blocks);
     }
@@ -278,7 +278,8 @@ public class BufferedDirectWriteTempFile : BufferedDirectWriteFile
 
 *******************************************************************************/
 
-public class BufferedDirectReadFile : ocean.io.device.DirectIO.BufferedDirectReadFile
+public class BufferedDirectReadFile : ocean.io.device.DirectIO.
+    BufferedDirectReadFile
 {
     /***************************************************************************
 
@@ -316,18 +317,19 @@ public class BufferedDirectReadFile : ocean.io.device.DirectIO.BufferedDirectRea
 
         ***********************************************************************/
 
-        public override void open ( cstring path, Style style = this.ReadExisting )
+        public override void open (cstring path,
+            Style style = this.ReadExisting)
         {
             this.temp_file_path.concat(path, "\0");
             auto fd = .open(this.temp_file_path.ptr,
-                    this.outer.disable_direct_io ? 0 : O_DIRECT);
-            if ( fd == -1 )
+                this.outer.disable_direct_io ? 0 : O_DIRECT);
+            if (fd == -1)
             {
                 this.error(); // throws an IOException
             }
 
             // the oddly-named 'reopen' allows us to set the Device's fd
-            this.reopen(cast(Handle)fd);
+            this.reopen(cast(Handle) fd);
         }
     }
 
@@ -340,7 +342,7 @@ public class BufferedDirectReadFile : ocean.io.device.DirectIO.BufferedDirectRea
 
     ***************************************************************************/
 
-        private bool disable_direct_io;
+    private bool disable_direct_io;
 
     /***************************************************************************
 
@@ -360,7 +362,7 @@ public class BufferedDirectReadFile : ocean.io.device.DirectIO.BufferedDirectRea
 
     ***************************************************************************/
 
-    public this ( cstring path, ubyte[] buffer, bool disable_direct_io = false )
+    public this(cstring path, ubyte[] buffer, bool disable_direct_io = false)
     {
         this.disable_direct_io = disable_direct_io;
         super(path, buffer);
@@ -382,8 +384,8 @@ public class BufferedDirectReadFile : ocean.io.device.DirectIO.BufferedDirectRea
 
     ***************************************************************************/
 
-    public this ( cstring path = null, size_t buffer_blocks = 32 * 2 * 1024,
-            bool disable_direct_io = false )
+    public this(cstring path = null, size_t buffer_blocks = 32 * 2 * 1024,
+                bool disable_direct_io = false)
     {
         this.disable_direct_io = disable_direct_io;
         super(path, buffer_blocks);

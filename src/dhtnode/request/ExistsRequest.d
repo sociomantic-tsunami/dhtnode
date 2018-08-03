@@ -59,8 +59,8 @@ public scope class ExistsRequest : Protocol.Exists
 
     ***************************************************************************/
 
-    final override protected bool recordExists ( cstring channel_name,
-        cstring key )
+    final override protected bool recordExists (cstring channel_name,
+        cstring key)
     {
         auto storage_channel = channel_name in this.resources.storage_channels;
         if (storage_channel is null)

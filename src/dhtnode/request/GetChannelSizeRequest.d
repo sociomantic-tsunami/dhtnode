@@ -53,16 +53,17 @@ public scope class GetChannelSizeRequest : Protocol.GetChannelSize
 
     ***************************************************************************/
 
-    final override protected ChannelSizeData getChannelData ( cstring channel_name )
+    final override protected ChannelSizeData getChannelData (
+        cstring channel_name)
     {
         ulong records, bytes;
 
-        auto storage_channel =
+        auto  storage_channel =
             *this.resources.channel_buffer in this.resources.storage_channels;
-        if ( storage_channel !is null )
+        if (storage_channel !is null)
         {
             records = storage_channel.num_records;
-            bytes = storage_channel.num_bytes;
+            bytes   = storage_channel.num_bytes;
         }
 
         return ChannelSizeData(
@@ -70,6 +71,6 @@ public scope class GetChannelSizeRequest : Protocol.GetChannelSize
             this.resources.node_info.node_item.Port,
             records,
             bytes
-        );
+            );
     }
 }
