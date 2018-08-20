@@ -30,6 +30,7 @@ $B/dhtredist: src/dhtredist/main.d
 dhtredist: $B/dhtredist
 all += $B/dhtredist
 
+$B/tcmcli: override LDFLAGS += -lebtree
 $B/tcmcli: src/tcmcli/main.d
 tcmcli: $B/tcmcli
 all += $B/tcmcli
