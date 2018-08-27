@@ -166,8 +166,7 @@ public scope class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
         if ( this.iterator.lastKey() )
             return false;
 
-        auto ok = toHashT(this.iterator.key, hash_key);
-        assert(ok);
+        hash_key = this.iterator.key;
         return true;
     }
 

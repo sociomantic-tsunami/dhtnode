@@ -6,7 +6,7 @@
     Tokyo Cabinet as the real storage engine.
 
     copyright:
-        Copyright (c) 2013-2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2013-2017 dunnhumby Germany GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
@@ -432,7 +432,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public alias int delegate ( ref char[] key, ref char[] value ) IterDg;
+    public alias int delegate ( ref hash_t key, ref char[] value ) IterDg;
 
 
     /***************************************************************************
@@ -484,7 +484,7 @@ public class StorageEngine : IStorageEngine
     extern ( C ) private static bool db_iter ( void* key_ptr, int key_len,
         void* val_ptr, int val_len, void* context_ )
     {
-        auto key = (cast(char*)key_ptr)[0..key_len];
+        auto key = *(cast(hash_t*)key_ptr);
         auto val = (cast(char*)val_ptr)[0..val_len];
         auto context = cast(IterContext*)context_;
 
@@ -671,24 +671,17 @@ public class StorageEngine : IStorageEngine
         Gets the first key in the database.
 
         Params:
-            key_buffer = buffer to receive record key output. The length of
-                this buffer is never decreased, only increased (if necessary).
-                This is an optimization, as this method is called extremely
-                frequently and array length resetting is not free (especially in
-                D2 builds, where assumeSafeAppend must be called).
-            key = record key output (slice of key_buffer)
+            key = record key output
 
         Returns:
-            this instance
+            true on success; false if there are no more keys to iterate
 
     ***********************************************************************/
 
-    public typeof(this) getFirstKey ( ref mstring key_buffer, out mstring key )
+    public bool getFirstKey ( out hash_t key )
     {
         tcmdbiterinit(this.db);
-        this.iterateNextKey(key_buffer, key);
-
-        return this;
+        return this.iterateNextKey(key);
     }
 
 
@@ -705,31 +698,22 @@ public class StorageEngine : IStorageEngine
 
         Params:
             last_key = key to iterate from
-            key_buffer = buffer to receive record key output. The length of
-                this buffer is never decreased, only increased (if necessary).
-                This is an optimization, as this method is called extremely
-                frequently and array length resetting is not free (especially in
-                D2 builds, where assumeSafeAppend must be called).
-            key = record key output (slice of key_buffer)
+            key = record key output
 
         Returns:
-            this instance
+            true on success; false if there are no more keys to iterate
 
     ***********************************************************************/
 
-    public typeof(this) getNextKey ( cstring last_key, ref mstring key_buffer,
-        out mstring key )
+    public bool getNextKey ( hash_t last_key, out hash_t key )
     {
-        auto hash = Hash.straightToHash(last_key);
+        tcmdbiterinit2(this.db, &last_key,
+            castFrom!(size_t).to!(int)(last_key.sizeof));
 
-        tcmdbiterinit2(this.db, &hash, castFrom!(size_t).to!(int)(hash.sizeof));
+        if ( !this.iterateNextKey(key) )
+            return false;
 
-        if ( !this.iterateNextKey(key_buffer, key) )
-            return this;
-
-        this.iterateNextKey(key_buffer, key);
-
-        return this;
+        return this.iterateNextKey(key);
     }
 
 
@@ -739,19 +723,14 @@ public class StorageEngine : IStorageEngine
         record in the database.
 
         Params:
-            key_buffer = buffer to receive record key output. The length of
-                this buffer is never decreased, only increased (if necessary).
-                This is an optimization, as this method is called extremely
-                frequently and array length resetting is not free (especially in
-                D2 builds, where assumeSafeAppend must be called).
-            key = record key output (slice of key_buffer)
+            key = record key output
 
         Returns
-            true on success or false if record not existing
+            true on success; false if there are no more keys to iterate
 
     ***************************************************************************/
 
-    private bool iterateNextKey ( ref char[] key_buffer, out mstring key )
+    private bool iterateNextKey ( out hash_t key )
     {
         int len;
         if ( auto key_ = cast(hash_t*)tcmdbiternext(this.db, &len) )
@@ -759,11 +738,7 @@ public class StorageEngine : IStorageEngine
             verify(len == hash_t.sizeof);
             auto str_len = hash_t.sizeof * 2;
 
-            if ( key_buffer.length < str_len )
-                key_buffer.length = str_len;
-
-            Hash.toHexString(*key_, key_buffer[0..str_len]);
-            key = key_buffer[0..str_len];
+            key = *key_;
 
             free(key_);
 
@@ -771,5 +746,81 @@ public class StorageEngine : IStorageEngine
         }
         else
             return false;
+    }
+}
+
+version ( UnitTest )
+{
+    import ocean.core.Test;
+    import Hash = swarm.util.Hash;
+}
+
+unittest
+{
+    auto storage = new StorageEngine("dummy", null, 1024, null);
+
+    hash_t key1 = 0x0123456789abcdef;
+    hash_t key2 = 0xfedcba9876543210;
+    char[hash_t.sizeof * 2] key_str1, key_str2;
+    Hash.toHexString(key1, key_str1);
+    Hash.toHexString(key2, key_str2);
+    cstring val1 = "value";
+    cstring val2 = "another value";
+
+    mstring buf, value;
+
+    // Operations on a non-existent record.
+    test(!storage.exists(key1));
+    test!("==")(storage.getSize(key1), 0);
+    test!("==")(storage.num_records(), 0);
+
+    // Basic put / get.
+    storage.put(key1, val1);
+    storage.get(key1, buf, value);
+    test!("==")(value, val1);
+
+    // Basic get / put with string keys.
+    storage.put(key_str1, val2);
+    storage.get(key_str1, buf, value);
+    test!("==")(value, val2);
+
+    // Exists.
+    test(storage.exists(key1));
+    test(storage.exists(key_str1));
+
+    // Num records.
+    test!("==")(storage.num_records(), 1);
+
+    // Remove.
+    storage.remove(key1);
+    test(!storage.exists(key1));
+    test!("==")(storage.getSize(key1), 0);
+
+    // Put then remove with string keys.
+    storage.put(key_str1, val1);
+    test(storage.exists(key1));
+    storage.remove(key_str1);
+    test(!storage.exists(key1));
+    test!("==")(storage.getSize(key1), 0);
+
+    // Put two records.
+    storage.put(key1, val1);
+    storage.put(key2, val2);
+    test!("==")(storage.num_records(), 2);
+
+    // Iteration.
+    mstring[hash_t] iterated;
+    foreach ( k, v; storage )
+        iterated[k] = v.dup;
+    test!("==")(iterated.length, 2);
+    foreach ( k, v; iterated )
+    {
+        if ( k == key1 )
+            test!("==")(v, val1);
+        else
+        {
+            test!("==")(k, key2);
+            test!("==")(v, val2);
+        }
     }
 }

@@ -9,7 +9,7 @@
         5. Return to 2.
 
     copyright:
-        Copyright (c) 2014-2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2014-2017 dunnhumby Germany GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
@@ -325,7 +325,7 @@ public class DumpCycle : SelectFiber
                 catch ( Exception e )
                 {
                     log.error("Exception thrown while dumping channel '{}': '{}' @ {}:{}",
-                        channel, getMsg(e), e.file, e.line);
+                        channel, e.message, e.file, e.line);
                     throw e;
                 }
             }
@@ -337,7 +337,7 @@ public class DumpCycle : SelectFiber
         catch ( Exception e )
         {
             log.error("Exception thrown in dump cycle: '{}' @ {}:{}",
-                getMsg(e), e.file, e.line);
+                e.message, e.file, e.line);
             throw e;
         }
     }
@@ -496,7 +496,7 @@ public class DumpCycle : SelectFiber
         catch ( Exception e )
         {
             log.error("Failed to dump channel to file '{}': {} @ {} : {}",
-                this.file.path, getMsg(e), e.file, e.line);
+                this.file.path, e.message, e.file, e.line);
         }
     }
 

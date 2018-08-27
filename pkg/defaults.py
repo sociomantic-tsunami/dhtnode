@@ -1,8 +1,8 @@
 OPTS.update(
     name = VAR.fullname,
     url = 'https://github.com/sociomantic/dhtnode',
-    maintainer = 'Sociomantic Labs GmbH <tsunami@sociomantic.com>',
-    vendor = 'Sociomantic Labs GmbH',
+    maintainer = 'dunnhumby Germany GmbH <tsunami@sociomantic.com>',
+    vendor = 'dunnhumby Germany GmbH',
     description = '''Distributed hash-table node
 The dht node is a server which handles requests from the dht client defined in
 swarm (swarm.dht.DhtClient). One or more nodes make up a complete dht, though

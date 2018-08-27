@@ -3,7 +3,7 @@
     DHT Node Server Daemon
 
     copyright:
-        Copyright (c) 2011-2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2011-2017 dunnhumby Germany GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
@@ -481,7 +481,7 @@ public class DhtNodeServer : DaemonApp
         catch ( Exception exception )
         {
             logger.error("Exception caught in writer flush timer handler: {} @ {}:{}",
-                getMsg(exception), exception.file, exception.line);
+                exception.message, exception.file, exception.line);
         }
 
         return true;
@@ -616,17 +616,13 @@ public class DhtNodeServer : DaemonApp
             // Don't log these exception types, which only occur on the normal
             // disconnection of a client.
         }
-        else if ( cast(OutOfMemoryException)exception )
-        {
-            logger.error("OutOfMemoryException caught in eventLoop");
-        }
         else
         {
             this.conn_error_buf.length = 0;
             enableStomping(this.conn_error_buf);
             conn.formatInfo(this.conn_error_buf);
             logger.error("Exception caught in eventLoop: '{}' @ {}:{} on {}",
-                getMsg(exception), exception.file, exception.line,
+                exception.message, exception.file, exception.line,
                 this.conn_error_buf);
         }
     }

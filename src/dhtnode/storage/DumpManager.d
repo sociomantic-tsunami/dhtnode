@@ -7,7 +7,7 @@
     etc.
 
     copyright:
-        Copyright (c) 2013-2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2013-2017 dunnhumby Germany GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
@@ -276,11 +276,16 @@ public class DumpManager
                 storage.id, storage.num_records);
 
         // Write records
-        foreach ( key, value; storage )
+        foreach ( hash_key, value; storage )
         {
-            // TODO: handle case where out of disk space
-            output.write(key, value);
+            // Render hash to a hex-string for dumping.
+            char[hash_t.sizeof * 2] key_str;
+            Hash.toHexString(hash_key, key_str);
+
+            output.write(key_str, value);
             progress_manager.progress(1);
+
+            // TODO: handle case where out of disk space
         }
 
         log.info("Finished dumping channel '{}' to disk, took {}s, "
@@ -458,7 +463,17 @@ public class DumpManager
         ref ulong out_of_range, ref ulong invalid, ref ulong too_big,
         ref ulong empty )
     {
-        if ( !Hash.isHash(key) )
+        // TODO: this support for reading hash_t keys from the dump file is a
+        // hack to work around an error. It can be removed in the next release
+        // (or the dump format adapted fully to write keys as hash_t.)
+        char[hash_t.sizeof * 2] key_str;
+        if ( key.length == hash_t.sizeof )
+        {
+            auto hash_key = *(cast(hash_t*)key.ptr);
+            Hash.toHexString(hash_key, key_str);
+            key = key_str;
+        }
+        else if ( !Hash.isHash(key) )
         {
             log.error("Encountered invalid non-hexadecimal key in channel '{}': "
                 "{} -- ignored", storage.id, key);

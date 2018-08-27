@@ -8,7 +8,7 @@
     of replacement nodes, along with their hash responsibility ranges.
 
     copyright:
-        Copyright (c) 2015-2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2015-2017 dunnhumby Germany GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
@@ -148,7 +148,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
             catch ( Exception e )
             {
                 log.error("Exception thrown while redistributing channel '{}': "
-                    "'{}' @ {}:{}", channel.id, getMsg(e), e.file, e.line);
+                    "'{}' @ {}:{}", channel.id, e.message, e.file, e.line);
                 throw e;
             }
         }
@@ -202,11 +202,11 @@ public scope class RedistributeRequest : Protocol.Redistribute
                 bool remove_record;
                 NodeItem node;
 
-                if ( this.recordShouldBeForwarded(this.resources.iterator.key,
-                    client, node) )
+                if ( this.recordShouldBeForwarded(
+                    this.resources.iterator.key_as_string, client, node) )
                 {
                     auto result = this.forwardRecord(client, channel,
-                        this.resources.iterator.key,
+                        this.resources.iterator.key_as_string,
                         this.resources.iterator.value, node);
                     with ( ForwardResult ) final switch ( result )
                     {
@@ -487,12 +487,9 @@ public scope class RedistributeRequest : Protocol.Redistribute
         // Remove successfully sent records from channel
         if ( !error )
         {
-            this.resources.key_buffer.length = Hash.HexDigest.length;
-            enableStomping(*this.resources.key_buffer);
             foreach ( hash; batch.batched_hashes )
             {
-                Hash.toHexString(hash, *this.resources.key_buffer);
-                channel.remove(*this.resources.key_buffer);
+                channel.remove(hash);
             }
         }
 
@@ -571,16 +568,17 @@ public scope class RedistributeRequest : Protocol.Redistribute
     private void advanceIteration ( StorageEngineStepIterator iterator,
         bool remove_record, StorageEngine channel )
     {
+        hash_t key;
         if ( remove_record )
         {
-            (*this.resources.key_buffer).copy(iterator.key);
+            key = iterator.key();
         }
 
         iterator.next();
 
         if ( remove_record )
         {
-            channel.remove(*this.resources.key_buffer);
+            channel.remove(key);
         }
     }
 }

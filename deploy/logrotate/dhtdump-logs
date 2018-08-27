@@ -19,6 +19,6 @@
 	maxsize 500M
 	sharedscripts
 	postrotate
-		/usr/bin/killall -HUP dhtdump
+		systemctl reload 'dhtdump@*'
 	endscript
 }

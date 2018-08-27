@@ -3,7 +3,7 @@
     Mixin for shared iteration code
 
     copyright:
-        Copyright (c) 2015-2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2015-2017 dunnhumby Germany GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
@@ -132,18 +132,18 @@ public template ChannelIteration ( alias resources, IterationKind kind,
 
             static if (kind == IterationKind.Key)
             {
-                args[0] = iterator.key();
+                args[0] = this.iterator.key_as_string();
             }
             else
             {
-                args[0] = iterator.key();
-                args[1] = iterator.value();
+                args[0] = this.iterator.key_as_string();
+                args[1] = this.iterator.value();
             }
 
             if (predicate(args))
             {
                 this.resources.node_info.record_action_counters
-                    .increment("iterated", iterator.value.length);
+                    .increment("iterated", this.iterator.value.length);
                 return true;
             }
         }

@@ -3,7 +3,7 @@
     Dht node channel dump tool.
 
     copyright:
-        Copyright (c) 2014-2017 sociomantic labs GmbH. All rights reserved
+        Copyright (c) 2014-2017 dunnhumby Germany GmbH. All rights reserved
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
@@ -91,7 +91,7 @@ private int main ( istring[] cl_args )
     catch ( Throwable e )
     {
         log.error("Caught exception in main: {} @ {}:{}",
-            getMsg(e), e.file, e.line);
+            e.message, e.file, e.line);
         throw e;
     }
 }

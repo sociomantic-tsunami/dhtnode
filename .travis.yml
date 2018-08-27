@@ -14,7 +14,6 @@ git:
 # Global environment variables
 env:
     global:
-        - ARTIFACTS_DIR=build/travis-artifacts
         - DIST=xenial
         - COV=1
         # Default beaver image names. May be overriden in specific stages
@@ -26,14 +25,6 @@ env:
 # Do a shallow submodule fetch
 before_install: git submodule update --init
 
-# (Ab)use Travis cache to pass artifacts between stages.
-# As long as the environment variables of different stages match, travis will
-# pull the same "cache", so we can use this to actually pass artifacts between
-# stages.
-cache:
-    directories:
-        - $ARTIFACTS_DIR
-
 # Basic config is inherited from the global scope
 jobs:
     templates:
@@ -41,36 +32,38 @@ jobs:
           stage: Test
           after_success: beaver dlang codecov
           script:
+              - set -e # Do not continue on failure
               - beaver dlang install
               - beaver dlang make
-              # Build packages too, this should be done by beaver:
-              # https://github.com/sociomantic-tsunami/beaver/issues/34
+        - &package-matrix
+          stage: Build and upload packages
+          if: tag IS present
+          script:
+              - set -e # Do not continue on failure
+              - beaver dlang install
+              - beaver dlang make
               - beaver dlang make pkg
-              # Save the packages in the cache directory so
-              # it's accessible in next stages
-              - cp -v build/last/pkg/*.deb "$ARTIFACTS_DIR/";
+              - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode build/production/pkg/*.deb
+
     include:
         # Test matrix
         - <<: *test-matrix
-          env: DMD=1.081.* F=production
+          env: DMD=1.082.* F=production
         - <<: *test-matrix
-          env: DMD=1.081.* F=devel
+          env: DMD=1.082.* F=devel
         - <<: *test-matrix
-          env: DMD=2.070.2.s* F=production
+          env: DMD=2.071.2.s* F=production
         - <<: *test-matrix
-          env: DMD=2.070.2.s* F=devel
-        - stage: Generate deployment image
-          env: DMD=2.070.2.s* F=production
+          env: DMD=2.071.2.s* F=devel
+
+        # Test deployment docker image generation
+        - stage: Test
           script:
-              # env section can't be used because that will confuse
-              # travis cache logic
-              - export BEAVER_DOCKER_IMG=sociomantictsunami/dhtnode BEAVER_DOCKER_CONTEXT=docker/runner
-              - cp "$ARTIFACTS_DIR"/*.deb $BEAVER_DOCKER_CONTEXT/
-              - beaver install
-        - stage: Upload Package
-          if: tag IS present
-          env: DMD=1.081.* F=production
-          script:
-              - beaver install
-              - beaver bintray upload -d sociomantic-tsunami/nodes/dhtnode
-                "$ARTIFACTS_DIR"/*.deb
+              - docker build --build-arg DMD=2.071.2.s* --build-arg DIST=xenial
+                -t dhtnode -f docker/Dockerfile.dhtnode .
+
+        # Package matrix
+        - <<: *package-matrix
+          env: DMD=1.082.* F=production
+        - <<: *package-matrix
+          env: DMD=2.071.2.s* F=production

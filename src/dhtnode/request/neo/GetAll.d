@@ -127,14 +127,10 @@ public scope class GetAllImpl_v0 : GetAllProtocol_v0
         if ( this.iterator.lastKey() )
             return false;
 
-        hash_t key;
-        auto ok = toHashT(this.iterator.key, key);
-        assert(ok);
-
         this.iterator.value(
             ( cstring value )
             {
-                dg(key, value);
+                dg(this.iterator.key, value);
             }
         );
 
