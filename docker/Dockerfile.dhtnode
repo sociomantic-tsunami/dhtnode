@@ -22,4 +22,6 @@ RUN /tmp/install.sh && rm /tmp/install.sh
 # Update node folder with relevant config to finalize installation
 COPY ./doc/etc/dht.config.ini /srv/dhtnode/dhtnode-0/etc/config.ini
 WORKDIR /srv/dhtnode/dhtnode-0
-CMD dhtnode -c /srv/dhtnode/dhtnode-0/etc/config.ini
+# EXECUTION
+ENTRYPOINT ["dhtnode"]
+CMD ["-c", "/srv/dhtnode/dhtnode-0/etc/config.ini"]
