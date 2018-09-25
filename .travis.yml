@@ -64,6 +64,6 @@ jobs:
 
         # Package matrix
         - <<: *package-matrix
-          env: DMD=1.082.* F=production
+          env: DMD=1.082.* F=production COV=0
         - <<: *package-matrix
-          env: DMD=2.071.2.s* F=production
+          env: DMD=2.071.2.s* F=production COV=0

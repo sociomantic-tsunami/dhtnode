@@ -13,7 +13,7 @@
 	maxage 60
 
 	missingok
-	notifempty
+	ifempty
 	delaycompress
 	compress
 	maxsize 500M

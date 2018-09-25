@@ -1,0 +1,10 @@
+/srv/dhtnode/dhtnode-?/data/*.tcm {
+  rotate 7
+  daily
+  compress
+  copy
+  dateext
+  notifempty
+  olddir ../backup-data
+  missingok
+}
