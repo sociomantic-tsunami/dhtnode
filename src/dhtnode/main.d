@@ -574,7 +574,7 @@ public class DhtNodeServer : DaemonApp
     body
     {
         return ["Put", "Get", "Exists", "Remove", "Listen", "GetAll", "GetAllKeys",
-                "GetAllFilter", "PutBatch"];
+                "GetAllFilter", "PutBatch", "Redistribute"];
     }
 
 
