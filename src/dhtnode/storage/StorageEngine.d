@@ -73,7 +73,6 @@ public class StorageEngine : IStorageEngine
     import ocean.core.TypeConvert;
     import core.stdc.stdlib : free;
 
-
     /***********************************************************************
 
         Callback type used to delete channel files when the channel is removed.
@@ -398,6 +397,7 @@ public class StorageEngine : IStorageEngine
     public typeof(this) remove ( hash_t key )
     {
         tcmdbout(this.db, &key, castFrom!(size_t).to!(int)(key.sizeof));
+        this.listeners.trigger(Listeners.Listener.Code.Deletion, key);
         return this;
     }
 

@@ -43,11 +43,19 @@ all += $B/dhtperformance
 $O/test-dhttest: $B/dhtnode
 $O/test-dhttest: override LDFLAGS += -lebtree -lrt -lgcrypt -lgpg-error -lglib-2.0 -lpcre
 
+$B/neotest: override LDFLAGS += -lebtree -lrt -lgcrypt -lgpg-error -lglib-2.0 -lpcre
+$B/neotest: neotest/main.d
+neotest: $B/neotest
+all += $B/neotest
+
 # any text passed via TURTLE_ARGS will be used as extra CLI arguments:
 #     make run-dhttest TURTLE_ARGS="--help"
 #     make run-dhttest TURTLE_ARGS="--id=7"
 run-dhttest: $O/test-dhttest $B/dhtnode
 	$(call exec, $O/test-dhttest $(TURTLE_ARGS))
+
+debug-dhttest: $O/test-dhttest $B/dhtnode
+	$(call exec, gdb --args $O/test-dhttest $(TURTLE_ARGS))
 
 # Additional flags needed when unittesting
 $O/%unittests: override LDFLAGS += -ltokyocabinet -lebtree -lrt -lgcrypt -lgpg-error -lglib-2.0 -lpcre
