@@ -117,6 +117,7 @@ public class DhtNodeServer : DaemonApp
 
     import dhtproto.client.legacy.DhtConst;
     import swarm.util.node.log.Stats;
+    import swarm.util.RecordBatcher;
 
     import ocean.core.ExceptionDefinitions : IOException, OutOfMemoryException;
 
@@ -166,6 +167,11 @@ public class DhtNodeServer : DaemonApp
         /// tokyocabinet. 0 = use tokyocabinet's default number of buckets.
         uint bnum = 0;
 
+        /// Batch size used by legacy compressed batch requests (e.g. GetAll).
+        /// This is a de facto record size limit, as any records that exceed the
+        /// configured batch size cannot be returned to clients via batch
+        /// requests.
+        size_t batch_size = RecordBatcher.DefaultMaxBatchSize;
 
         /***********************************************************************
 
