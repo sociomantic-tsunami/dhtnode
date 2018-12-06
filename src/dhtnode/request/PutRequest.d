@@ -81,6 +81,21 @@ public scope class PutRequest : Protocol.Put
 
     /***************************************************************************
 
+        Returns:
+            the maximum size (in bytes) allowed for a record to be added to the
+            storage engine. (Uses the value configured for the maximum size of
+            a GetAll record batch, ensuring that all records added to the
+            storage engine can be returned to the client via GetAll.)
+
+    ***************************************************************************/
+
+    final override protected size_t recordSizeLimit ( )
+    {
+        return this.resources.storage_channels.batch_size;
+    }
+
+    /***************************************************************************
+
         Tries storing record in DHT and reports success status
 
         Params:
