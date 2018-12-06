@@ -171,7 +171,7 @@ public class DhtNodeServer : DaemonApp
         /// This is a de facto record size limit, as any records that exceed the
         /// configured batch size cannot be returned to clients via batch
         /// requests.
-        size_t batch_size = RecordBatcher.DefaultMaxBatchSize;
+        ConfigReader.Min!(size_t, 1024, RecordBatcher.DefaultMaxBatchSize) batch_size;
 
         /***********************************************************************
 
@@ -511,7 +511,7 @@ public class DhtNodeServer : DaemonApp
         this.storage_channels = new StorageChannels(this.server_config.data_dir,
             this.memory_config.size_limit, this.hash_range,
             this.memory_config.bnum, this.memory_config.out_of_range_handling,
-            this.memory_config.disable_direct_io, this.memory_config.batch_size);
+            this.memory_config.disable_direct_io, this.memory_config.batch_size());
 
         return this.storage_channels;
     }
