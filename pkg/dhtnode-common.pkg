@@ -5,12 +5,6 @@ OPTS.update(
     description = FUN.desc('common files'),
     architecture = 'all',
     depends = 'dhtnode',
-    deb_upstart = [
-        'deploy/upstart/dht.conf',
-        'deploy/upstart/dhtnode-instance.conf',
-        'deploy/upstart/dhtdump.conf',
-        'deploy/upstart/dhtdump-instance.conf',
-    ],
 )
 
 # Replace existing args without rebinding

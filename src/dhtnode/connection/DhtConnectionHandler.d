@@ -384,7 +384,8 @@ public class DhtConnectionHandler
 
         override protected RecordBatcher new_batcher ( )
         {
-            return new RecordBatcher(this.setup.lzo.lzo);
+            return new RecordBatcher(this.setup.lzo.lzo,
+                this.setup.storage_channels.batch_size);
         }
 
 

@@ -104,6 +104,10 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
     private uint bnum;
 
 
+    /// Batch size used by legacy compressed batch requests (e.g. GetAll).
+    private size_t batch_size_;
+
+
     /***************************************************************************
 
         State of storage channels.
@@ -158,12 +162,14 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
                 direct I/O is used (false). Regular I/O is only useful for
                 testing, because direct I/O imposes some restrictions over the
                 type of filesystem that can be used.
+            batch_size = batch size used by legacy compressed batch requests
+                (e.g. GetAll).
 
     ***************************************************************************/
 
     public this ( cstring dir, ulong size_limit, DhtHashRange hash_range,
         uint bnum, OutOfRangeHandling out_of_range_handling,
-        bool disable_direct_io )
+        bool disable_direct_io, size_t batch_size )
     {
         super(size_limit);
 
@@ -176,6 +182,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
         this.hash_range_ = hash_range;
         this.bnum = bnum;
+        this.batch_size_ = batch_size;
 
         this.dump_manager = new DumpManager(this.dir, out_of_range_handling,
             disable_direct_io);
@@ -209,6 +216,19 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
     override public cstring type ( )
     {
         return "Memory";
+    }
+
+
+    /***************************************************************************
+
+        Returns:
+             batch size used by legacy compressed batch requests (e.g. GetAll)
+
+    ***************************************************************************/
+
+    public size_t batch_size ( )
+    {
+        return this.batch_size_;
     }
 
 
