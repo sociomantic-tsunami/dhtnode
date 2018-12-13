@@ -521,6 +521,20 @@ public class DhtConnectionHandler
 
     /***************************************************************************
 
+        Returns:
+            the maximum buffer size that is considered sane for a DHT node
+
+    ***************************************************************************/
+
+    override protected ulong bufferSizeWarnLimit ( )
+    {
+        return (cast(DhtConnectionSetupParams)this.setup)
+            .storage_channels.batch_size;
+    }
+
+
+    /***************************************************************************
+
         Command code 'None' handler. Treated the same as an invalid command
         code.
 
