@@ -1,0 +1,18 @@
+# requires dhtnode docker image already present in the cache
+# start with `docker-compose up dhtnode`
+#
+# after that run `docker-compose run shell` to
+# get into the interactive shell with an access to all running services.
+version: '2'
+services:
+  dhtnode:
+    image: sociomantictsunami/dhtnode
+    volumes:
+      - "dhtdata:/src/dhtnode/dhtnode-0/data"
+  shell:
+    # replace with shell environment image of your choice, use service name
+    # (for example, 'dhtnode') to resolve IP address of other docker services
+    # inside the shell
+    image: sociomantic
+volumes:
+  dhtdata:
