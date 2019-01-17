@@ -10,8 +10,8 @@ error_exit()
 }
 
 if [ "$1" = "configure" ]; then
-    addgroup --system core
-    adduser --system --no-create-home dhtnode
+    getent group core > /dev/null || addgroup --system core
+    getent passwd dhtnode > /dev/null || adduser --system --no-create-home dhtnode
 
     # Check that deployment directory exists
     test -d /srv/dhtnode || error_exit "/srv/dhtnode/dhtnode-* directories missing" 1
