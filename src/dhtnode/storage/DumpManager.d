@@ -326,6 +326,13 @@ public class DumpManager
                 continue;
             }
 
+            if ( info.bytes == 0 )
+            {
+                log.warn("File {} in data directory {} is empty", info.name,
+                    this.root_dir.toString);
+                continue;
+            }
+
             if ( this.path.suffix() == DumpFileSuffix )
             {
                 // We don't reuse this.path for the complete path to avoid
