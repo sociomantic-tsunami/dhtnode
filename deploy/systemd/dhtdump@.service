@@ -19,7 +19,7 @@ TimeoutStopSec=infinity
 SendSIGKILL=no
 Restart=on-failure
 User=dhtnode
-Group=core
+Group=rtbdata
 
 # Note infinity is used instead of unlimited
 LimitNOFILE=100000:100000
