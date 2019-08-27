@@ -42,8 +42,9 @@ public class RedistDhtClient : SchedulingDhtClient
     import swarm.client.model.IClient;
     import swarm.client.model.ClientSettings;
     import swarm.client.connection.RequestOverflow;
+    import swarm.util.Hash : HashRange;
 
-    import dhtproto.client.legacy.DhtConst : DhtConst, HashRange, NodeHashRange;
+    import dhtproto.client.legacy.DhtConst : DhtConst, NodeHashRange;
     import dhtproto.client.legacy.internal.connection.DhtNodeConnectionPool;
     import Swarm = dhtproto.client.legacy.internal.registry.DhtNodeRegistry;
     import dhtproto.client.legacy.internal.RequestSetup;
