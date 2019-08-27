@@ -288,7 +288,7 @@ public class DumpManager
             // TODO: handle case where out of disk space
         }
 
-        log.info("Finished dumping channel '{}' to disk, took {}s, "
+        log.info("Finished dumping channel '{}' to disk, took {}s, " ~
             "wrote {} records, {} records in channel",
             storage.id, progress_manager.elapsed, progress_manager.current,
             storage.num_records);
@@ -344,7 +344,7 @@ public class DumpManager
 
                 if ( !this.input.supported_file_format_version )
                 {
-                    log.warn("{}: Dump file with unsupported version ({}) found "
+                    log.warn("{}: Dump file with unsupported version ({}) found " ~
                         "while scanning directory '{}'. Ignoring file.",
                         this.path.file, this.input.file_format_version,
                         this.root_dir.toString);
@@ -360,14 +360,14 @@ public class DumpManager
             }
             else if ( this.path.suffix() == NewFileSuffix )
             {
-                log.warn("{}: Unfinished dump file found while scanning "
-                        "directory '{}', the program was probably "
+                log.warn("{}: Unfinished dump file found while scanning " ~
+                        "directory '{}', the program was probably " ~
                         "restarted uncleanly and data might be old",
                         this.path.file, this.root_dir.toString);
             }
             else
             {
-                log.warn("{}: Ignoring file while scanning directory '{}' "
+                log.warn("{}: Ignoring file while scanning directory '{}' " ~
                         "(no '{}' suffix)", this.path.file,
                         this.root_dir.toString, DumpFileSuffix);
             }
@@ -434,8 +434,8 @@ public class DumpManager
         reportBadRecordCount(too_big, "too large values");
         reportBadRecordCount(empty, "empty values");
 
-        log.info("Finished loading channel '{}' from disk, took {}s, "
-            "read {} bytes (file size including padding is {} bytes), "
+        log.info("Finished loading channel '{}' from disk, took {}s, " ~
+            "read {} bytes (file size including padding is {} bytes), " ~
             "{} records in channel", storage.id, progress_manager.elapsed,
             progress_manager.current, progress_manager.maximum,
             storage.num_records);
@@ -482,7 +482,7 @@ public class DumpManager
         }
         else if ( !Hash.isHash(key) )
         {
-            log.error("Encountered invalid non-hexadecimal key in channel '{}': "
+            log.error("Encountered invalid non-hexadecimal key in channel '{}': " ~
                 "{} -- ignored", storage.id, key);
             invalid++;
             return;
@@ -498,7 +498,7 @@ public class DumpManager
 
         if ( val.length > DhtConst.RecordSizeLimit )
         {
-            log.warn("Encountered large record ({} bytes) in channel '{}': "
+            log.warn("Encountered large record ({} bytes) in channel '{}': " ~
                 "{} -- ignored", val.length, storage.id, key);
             too_big++;
             return;
@@ -514,14 +514,14 @@ public class DumpManager
             final switch ( out_of_range_handling.mode )
             {
                 case Load:
-                    log.trace("Encountered out-of-range key in channel '{}': "
+                    log.trace("Encountered out-of-range key in channel '{}': " ~
                         "{} -- loaded", storage.id, key);
                     storage.put(key, val);
                     out_of_range++;
                     return;
 
                 case Fatal:
-                    log.fatal("Encountered out-of-range key in channel '{}': "
+                    log.fatal("Encountered out-of-range key in channel '{}': " ~
                     "{} -- rejected", storage.id, key);
                     throw new Exception(
                         cast(istring)("Encountered out-of-range key in channel '"
@@ -529,7 +529,7 @@ public class DumpManager
                     );
 
                 case Ignore:
-                    log.warn("Encountered out-of-range key in channel '{}': "
+                    log.warn("Encountered out-of-range key in channel '{}': " ~
                         "{} -- ignored", storage.id, key);
                     out_of_range++;
                     return;
