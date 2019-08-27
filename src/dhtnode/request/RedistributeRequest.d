@@ -139,7 +139,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
             }
             catch ( Exception e )
             {
-                log.error("Exception thrown while redistributing channel '{}': "
+                log.error("Exception thrown while redistributing channel '{}': " ~
                     "'{}' @ {}:{}", channel.id, e.message, e.file, e.line);
                 throw e;
             }
@@ -229,8 +229,8 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
                 if ( num_records_iterated % 100_000 == 0 )
                 {
-                    log.trace("Progress redistributing channel '{}': {}/{} "
-                        "records iterated, {} forwarded, channel now contains "
+                    log.trace("Progress redistributing channel '{}': {}/{} " ~
+                        "records iterated, {} forwarded, channel now contains " ~
                         "{} records",
                         channel.id, num_records_iterated + 1, num_records_before,
                         num_records_sent, channel.num_records);
@@ -250,8 +250,8 @@ public scope class RedistributeRequest : Protocol.Redistribute
             {
                 const uint retry_s = 2;
 
-                log.error("Finished redistributing channel '{}': {}/{} records "
-                    "iterated, channel now contains {} records, "
+                log.error("Finished redistributing channel '{}': {}/{} records " ~
+                    "iterated, channel now contains {} records, " ~
                     " (error occurred during iteration over channel, retrying in {}s)",
                     channel.id, num_records_iterated, num_records_before,
                     channel.num_records, retry_s);
@@ -260,7 +260,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
             }
             else
             {
-                log.info("Finished redistributing channel '{}': {}/{} records "
+                log.info("Finished redistributing channel '{}': {}/{} records " ~
                     "iterated, channel now contains {} records",
                     channel.id, num_records_iterated, num_records_before,
                     channel.num_records);

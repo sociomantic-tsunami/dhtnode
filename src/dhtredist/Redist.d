@@ -569,7 +569,7 @@ public class DhtRedist : CliApp
     public this ( )
     {
         const name = "dhtredist";
-        const desc = "initiates a redistribution of dht data by changing the "
+        const desc = "initiates a redistribution of dht data by changing the " ~
             "hash ranges of the nodes";
         OptionalSettings options;
         options.usage = "";
@@ -602,21 +602,21 @@ case, when adding new nodes to a dht, is as follows:
     public override void setupArgs ( IApplication app, Arguments args )
     {
         args("src").aliased('S').params(1).conflicts("ranges").
-            help("XML file describing dht -- should contain the address/port of "
+            help("XML file describing dht -- should contain the address/port of " ~
             "all nodes to be affected, including those which are currently empty.");
         args("ranges").aliased('r').params(1).conflicts("src").
-            help("Special mode to generate evenly distributed hash ranges for "
-            "the specified number of nodes, sending the results to stdout. Does "
+            help("Special mode to generate evenly distributed hash ranges for " ~
+            "the specified number of nodes, sending the results to stdout. Does " ~
             "not contact the dht.");
-        args("execute").aliased('x').help("Send calculated redistribution to the "
-            "dht. This option must be set if you want to actually trigger a "
+        args("execute").aliased('x').help("Send calculated redistribution to the " ~
+            "dht. This option must be set if you want to actually trigger a " ~
             "redistribution -- the default mode of the program is a dry run only.");
         args("strategy").aliased('s').params(1).restrict(["extend", "subdivide"]).
-            defaults("extend").help("Sets the redistribution strategy. 'extend' "
-            "mode should be used when adding new servers to the dht -- it "
-            "completely redistributes the data among the total set of nodes. "
-            "'subdivide' mode should be used when adding new nodes to existing "
-            "dht servers -- the data is redistributed such that it is not sent "
+            defaults("extend").help("Sets the redistribution strategy. 'extend' " ~
+            "mode should be used when adding new servers to the dht -- it " ~
+            "completely redistributes the data among the total set of nodes. " ~
+            "'subdivide' mode should be used when adding new nodes to existing " ~
+            "dht servers -- the data is redistributed such that it is not sent " ~
             "between servers.");
     }
 
@@ -723,7 +723,7 @@ case, when adding new nodes to a dht, is as follows:
 
             if ( no_change )
             {
-                Stdout.green.formatln("\nNo change in node hash ranges. "
+                Stdout.green.formatln("\nNo change in node hash ranges. " ~
                     "Not sending Redistribute requests.").default_colour;
                 return 0;
             }

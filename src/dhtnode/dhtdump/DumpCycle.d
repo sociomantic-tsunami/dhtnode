@@ -592,15 +592,15 @@ public class DumpCycle : SelectFiber
             wait = this.dump_config.period_s - sec_active;
             if ( wait < this.dump_config.min_wait_s )
             {
-                log.warn("Calculated wait time too short -- either the "
-                    "channel dump took an unusually long time, or the "
+                log.warn("Calculated wait time too short -- either the " ~
+                    "channel dump took an unusually long time, or the " ~
                     "dump period is set too low in config.ini.");
                 wait = this.dump_config.min_wait_s;
             }
 
             auto restart_time =
                 WallClock.now() + TimeSpan().fromSeconds(cast(long)wait);
-            log.info("Finished dumping channels, took {}s, dumped {}, "
+            log.info("Finished dumping channels, took {}s, dumped {}, " ~
                 "sleeping for {}s (next cycle scheduled at {})", sec_active,
                 BitGrouping.format(this.stats.total_bytes, this.bytes_buf, "b"),
                 wait, restart_time);

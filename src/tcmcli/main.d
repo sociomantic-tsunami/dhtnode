@@ -255,7 +255,7 @@ private class TcmCli : CliApp
                     // TODO: we could, of course, enhance this tool to support
                     // converting other record types into valid DHT records.
                     Stderr.formatln("Unexpected record format. Only key:value "
-                        "records are supported currently.");
+                        ~ "records are supported currently.");
                     error = true;
                     return 1;
             }

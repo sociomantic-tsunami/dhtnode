@@ -370,11 +370,11 @@ public class DhtNodeServer : DaemonApp
         hash_t min, max;
 
         enforce(Hash.hashDigestToHashT(this.server_config.minval(), min, true),
-            "Minimum hash specified in config file is invalid -- "
+            "Minimum hash specified in config file is invalid -- " ~
             "a full-length hash is expected");
 
         enforce(Hash.hashDigestToHashT(this.server_config.maxval(), max, true),
-            "Maximum hash specified in config file is invalid -- "
+            "Maximum hash specified in config file is invalid -- " ~
             "a full-length hash is expected");
 
         this.hash_range = new DhtHashRange(min, max,
@@ -538,11 +538,11 @@ public class DhtNodeServer : DaemonApp
             switch ( errno )
             {
                 case EPERM:
-                    msg = "Executable does not have permissions to lock "
+                    msg = "Executable does not have permissions to lock " ~
                         "memory";
                     break;
                 case ENOMEM:
-                    msg = "Attempted to lock more memory than allowed by "
+                    msg = "Attempted to lock more memory than allowed by " ~
                         "soft resource limit (RLIMIT_MEMLOCK)";
                     break;
                 default:
@@ -552,7 +552,7 @@ public class DhtNodeServer : DaemonApp
             auto error = strerror(errno);
             auto errno_desc = StringC.toDString(error);
 
-            logger.fatal("Error when attempting to lock memory: {} "
+            logger.fatal("Error when attempting to lock memory: {} " ~
                 "(errno={}, '{}')", msg, errno, errno_desc);
 
             return false;

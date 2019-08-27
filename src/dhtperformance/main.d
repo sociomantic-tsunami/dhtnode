@@ -527,7 +527,7 @@ private class DhtPerformance : CliApp
         args("channel").aliased('c').params(1).defaults("test").
             help("dht channel to operate on");
         args("number").aliased('n').params(1).defaults("1000").
-            help("the number of requests to perform in each test "
+            help("the number of requests to perform in each test " ~
             "cycle (default is 1000)");
         args("parallel").aliased('p').params(1).defaults("1").
             help("the number of parallel requests to perform (default is 1)");
@@ -537,25 +537,25 @@ private class DhtPerformance : CliApp
             help("always query the single specified key");
         args("command").aliased('m').params(1).defaults("exists").
             restrict(["exists", "get", "put"]).help("command to test (exists / "
-            "get / put)");
+            ~ "get / put)");
         args("timeout").aliased('t').params(1).
-            help("displays a count of the number of requests which"
+            help("displays a count of the number of requests which" ~
             " took longer than the specified time (in μs)");
         args("client-timeout").aliased('T').params(1).defaults("0").
-            help("time (in msec) to use for the DHT client's timeout"
+            help("time (in msec) to use for the DHT client's timeout" ~
             " facility when doing a request (reconnect on timeout)");
         args("iterations").aliased('i').params(1).defaults("0").
             help("number of test cycles to perform (default is 0, infinite)");
         args("processing-time").aliased('d').params(1).defaults("0").
-            help("simulate some processing time (delay) when handling the "
-            "requests (in μs, max 1 second. Bear in mind that the sleep() "
-            "syscall which happens can take about 50 μs extra that are added "
+            help("simulate some processing time (delay) when handling the " ~
+            "requests (in μs, max 1 second. Bear in mind that the sleep() " ~
+            "syscall which happens can take about 50 μs extra that are added " ~
             "to this value.)");
         args("request-rate").aliased('r').params(1).
-            help("set the approximate maximum request rate "
+            help("set the approximate maximum request rate " ~
             "in queries per second");
         args("per-node-mode").aliased('N').params(0, 1).defaults("4").
-            help("display information on a per-node basis instead of total, "
+            help("display information on a per-node basis instead of total, " ~
             "optionally give the number of tables to display per row");
     }
 
@@ -578,7 +578,7 @@ private class DhtPerformance : CliApp
         // validate here
         if ( args.getInt!(ulong)("processing-time") >= 1_000_000 ) // 1 sec
         {
-            return "--processing-time argument can't exceed 1.000.000 "
+            return "--processing-time argument can't exceed 1.000.000 " ~
                 " μs (1 second)";
         }
 
@@ -688,10 +688,10 @@ private class DhtPerformance : CliApp
 
         // Startup message
         Stdout.formatln("Dht performance tester:");
-        Stdout.formatln("    performing {} {} requests to channel '{}' each"
+        Stdout.formatln("    performing {} {} requests to channel '{}' each" ~
             " test cycle, with up to {} requets in parallel",
                 count, command, channel, parallel);
-        if ( command == "put" ) Stdout.formatln("    putting records of {}"
+        if ( command == "put" ) Stdout.formatln("    putting records of {}" ~
             " bytes", this.record.length);
 
         // Test cycle
