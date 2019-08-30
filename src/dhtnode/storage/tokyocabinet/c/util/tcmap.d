@@ -113,7 +113,7 @@ void tcmapput4(TCMAP* map, void* kbuf, int ksiz,
 void tcmapputcat3(TCMAP* map, void* kbuf, int ksiz, void* vbuf, int vsiz);
 
 bool tcmapputproc(TCMAP* map, void* kbuf, int ksiz, void* vbuf, int vsiz,
-                    TCPDPROC proc, void* op);
+                    scope TCPDPROC proc, void* op);
 
 void* tcmapget3(TCMAP* map, void* kbuf, int ksiz, int* sp);
 

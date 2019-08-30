@@ -287,7 +287,7 @@ private final class HashRangeUpdates
             update.min = new_min;
             update.max = new_max;
 
-            this.updates ~= update;
+            (&this).updates ~= update;
         }
 
         /***********************************************************************
@@ -309,7 +309,7 @@ private final class HashRangeUpdates
             update.min = min;
             update.max = max;
 
-            this.updates ~= update;
+            (&this).updates ~= update;
         }
 
         /***********************************************************************
@@ -327,12 +327,12 @@ private final class HashRangeUpdates
 
         public bool getNextUpdate ( out HashRangeUpdate update )
         {
-            if ( this.updates.length == 0 )
+            if ( (&this).updates.length == 0 )
                 return false;
 
-            update = this.updates[0];
-            removeShift(this.updates, 0);
-            enableStomping(this.updates);
+            update = (&this).updates[0];
+            removeShift((&this).updates, 0);
+            enableStomping((&this).updates);
 
             return true;
         }
@@ -345,8 +345,8 @@ private final class HashRangeUpdates
 
         public void clear ( )
         {
-            this.updates.length = 0;
-            enableStomping(this.updates);
+            (&this).updates.length = 0;
+            enableStomping((&this).updates);
         }
     }
 
@@ -365,7 +365,7 @@ private final class HashRangeUpdates
 
     public this ( )
     {
-        const estimated_num_clients = 1_000;
+        static immutable estimated_num_clients = 1_000;
         this.update_queues_pool = new FreeList!(UpdateQueue);
         this.listener_update_queues =
             new StandardKeyHashingMap!(UpdateQueue*, IHashRangeListener)(

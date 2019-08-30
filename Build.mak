@@ -1,19 +1,13 @@
 export ASSERT_ON_STOMPING_PREVENTION=1
 
-ifneq ($(DVER),1)
-	DC := dmd-transitional
+DC := dmd-transitional
 
-	ifeq ($F, production)
-		override DFLAGS += -release
-	endif
+ifeq ($F, production)
+	override DFLAGS += -release
 endif
 
 override LDFLAGS += -llzo2
 override DFLAGS += -w
-
-ifeq ($(DVER),1)
-override DFLAGS += -v2 -v2=-static-arr-params -v2=-volatile
-endif
 
 $B/dhtnode: override LDFLAGS += -ltokyocabinet -lebtree -lrt -lgcrypt -lgpg-error -lglib-2.0 -lpcre
 $B/dhtnode: src/dhtnode/main.d

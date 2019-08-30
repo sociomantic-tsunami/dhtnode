@@ -568,8 +568,8 @@ public class DhtRedist : CliApp
 
     public this ( )
     {
-        const name = "dhtredist";
-        const desc = "initiates a redistribution of dht data by changing the " ~
+        static immutable name = "dhtredist";
+        static immutable desc = "initiates a redistribution of dht data by changing the " ~
             "hash ranges of the nodes";
         OptionalSettings options;
         options.usage = "";
@@ -680,8 +680,8 @@ case, when adding new nodes to a dht, is as follows:
         if ( args("src").assigned )
         {
             // 1. Connect to dht nodes and query current hash ranges.
-            const num_conns = 1;
-            const queue_size = 256 * 1024;
+            static immutable num_conns = 1;
+            static immutable queue_size = 256 * 1024;
             auto dht = new RedistDhtClient(this.epoll, num_conns, queue_size);
             auto xml = args.getString("src");
             dht.addNodes(xml);
@@ -940,7 +940,7 @@ case, when adding new nodes to a dht, is as follows:
     {
         void testRange ( ulong min, ulong max )
         {
-            const max_nodes = 1000;
+            static immutable max_nodes = 1000;
             for ( uint num_nodes = 1; num_nodes <= max_nodes; num_nodes++ )
             {
                 test(HashRange(min, max).isTessellatedBy(
@@ -1055,7 +1055,7 @@ case, when adding new nodes to a dht, is as follows:
                         info.message(dht.msg_buf)).default_colour.flush;
 
                     // Reschedule Redistribute request
-                    const retry_ms = 2_000;
+                    static immutable retry_ms = 2_000;
                     dht.schedule(dht.redistribute(info.nodeitem.Address,
                         info.nodeitem.Port, &get_nodes, &notifier)
                         .context(info.context), retry_ms);

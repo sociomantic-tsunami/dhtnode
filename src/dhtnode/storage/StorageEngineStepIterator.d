@@ -192,7 +192,7 @@ public class StorageEngineStepIterator
 
     ***************************************************************************/
 
-    public void value ( void delegate ( cstring ) value_dg )
+    public void value ( scope void delegate ( cstring ) value_dg )
     {
         assert(this.storage, typeof(this).stringof ~ ".value: storage not set");
 

@@ -409,7 +409,7 @@ public class DhtConnectionHandler
 
         override protected NodeRecordBatcherMap new_node_record_batch ( )
         {
-            const estimated_num_nodes = 5;
+            static immutable estimated_num_nodes = 5;
             return new NodeRecordBatcherMap(this.setup.lzo.lzo,
                 estimated_num_nodes);
         }
@@ -510,7 +510,7 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    public this ( FinalizeDg finalize_dg, ConnectionSetupParams setup )
+    public this ( scope FinalizeDg finalize_dg, ConnectionSetupParams setup )
     {
         super(finalize_dg, setup);
 

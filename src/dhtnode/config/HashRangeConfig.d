@@ -281,7 +281,7 @@ public class HashRangeConfig
                 "updated config does not match expected content");
         }
 
-        const original =
+        static immutable original =
             "[Server]\nminval = 0x0000000000000000\nmaxval = 0xffffffffffffffff";
 
         // Non-changes

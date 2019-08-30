@@ -95,7 +95,7 @@ void tclistpushmalloc(TCLIST* list, void* ptr, int size);
 
 void tclistsortci(TCLIST* list);
 
-void tclistsortex(TCLIST* list, ListCmp cmp);
+void tclistsortex(TCLIST* list, scope ListCmp cmp);
 
 void tclistinvert(TCLIST* list);
 

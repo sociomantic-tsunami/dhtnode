@@ -38,7 +38,7 @@ public scope class GetChannelsImpl_v0 : GetChannelsProtocol_v0
 
     ***************************************************************************/
 
-    protected override int opApply ( int delegate ( ref cstring ) dg )
+    protected override int opApply ( scope int delegate ( ref cstring ) dg )
     {
         auto resources_ =
             downcast!(SharedResources.RequestResources)(this.resources);

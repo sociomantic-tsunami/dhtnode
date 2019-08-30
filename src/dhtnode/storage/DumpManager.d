@@ -308,7 +308,7 @@ public class DumpManager
 
     ***************************************************************************/
 
-    public void loadChannels ( NewChannelCb new_channel )
+    public void loadChannels ( scope NewChannelCb new_channel )
     {
         foreach ( info; this.root_dir )
         {

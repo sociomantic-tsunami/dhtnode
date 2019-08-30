@@ -210,7 +210,7 @@ public class DumpCycle : SelectFiber
 
     public this ( EpollSelectDispatcher epoll, ScopeDhtClient dht )
     {
-        const fiber_stack_bytes = 32 * 1024;
+        static immutable fiber_stack_bytes = 32 * 1024;
         super(epoll, &this.run, fiber_stack_bytes);
 
         this.dht = dht;

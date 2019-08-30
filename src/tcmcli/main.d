@@ -72,8 +72,8 @@ private class TcmCli : CliApp
 
     public this ( )
     {
-        const name = "tcmcli";
-        const desc = "tcmcli: DHT dump file (TCM) command line tool";
+        static immutable name = "tcmcli";
+        static immutable desc = "tcmcli: DHT dump file (TCM) command line tool";
 
         super(name, desc, version_info);
     }

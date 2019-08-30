@@ -72,7 +72,7 @@ public scope class UpdateImpl_v0 : UpdateProtocol_v0
     ***************************************************************************/
 
     override protected bool get ( cstring channel, hash_t key,
-        void delegate ( Const!(void)[] value ) dg )
+        scope void delegate ( Const!(void)[] value ) dg )
     {
         auto resources_ =
             downcast!(SharedResources.RequestResources)(this.resources);

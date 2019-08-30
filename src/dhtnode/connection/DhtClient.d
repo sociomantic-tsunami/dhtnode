@@ -289,8 +289,8 @@ public class DhtClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public Put put ( Key ) ( cstring channel, Key key, RequestParams.PutValueDg input,
-                             RequestNotification.Callback notifier )
+    public Put put ( Key ) ( cstring channel, Key key, scope RequestParams.PutValueDg input,
+                             scope RequestNotification.Callback notifier )
     {
         return *Put(DhtConst.Command.E.Put, notifier).channel(channel).key(key)
             .io(input).contextFromKey();
@@ -329,7 +329,7 @@ public class DhtClient : IClient
     }
 
     public PutBatch putBatch ( mstring addr, ushort port, cstring channel,
-        RequestParams.PutBatchDg input, RequestNotification.Callback notifier )
+        scope RequestParams.PutBatchDg input, scope RequestNotification.Callback notifier )
     {
         return *PutBatch(DhtConst.Command.E.PutBatch, notifier)
             .node(NodeItem(addr, port)).channel(channel).io(input);
@@ -352,7 +352,7 @@ public class DhtClient : IClient
     ***************************************************************************/
 
     override protected void scopeRequestParams (
-        void delegate ( IRequestParams params ) dg )
+        scope void delegate ( IRequestParams params ) dg )
     {
         scope params = new RequestParams;
         dg(params);

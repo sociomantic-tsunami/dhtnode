@@ -58,7 +58,7 @@ static this ( )
 
 *******************************************************************************/
 
-public const ulong FileFormatVersion = 0;
+public static immutable ulong FileFormatVersion = 0;
 
 
 /*******************************************************************************
@@ -67,9 +67,9 @@ public const ulong FileFormatVersion = 0;
 
 *******************************************************************************/
 
-public const DumpFileSuffix = ".tcm";
+public static immutable DumpFileSuffix = ".tcm";
 
-public const NewFileSuffix = ".dumping";
+public static immutable NewFileSuffix = ".dumping";
 
 
 /*******************************************************************************
@@ -80,7 +80,7 @@ public const NewFileSuffix = ".dumping";
 
 *******************************************************************************/
 
-public const IOBufferSize = 32 * 1024 * 1024;
+public static immutable IOBufferSize = 32 * 1024 * 1024;
 
 
 /*******************************************************************************
@@ -225,7 +225,7 @@ public class ChannelDumper
 
     public void close ( )
     {
-        const istring end_of_file = "";
+        static immutable istring end_of_file = "";
         SimpleStreamSerializer.write(this.output, end_of_file);
 
         this.output.close();
@@ -264,7 +264,7 @@ abstract public class ChannelLoaderBase
 
         ***********************************************************************/
 
-        public int opApply ( int delegate ( ref mstring key, ref mstring value ) dg )
+        public int opApply ( scope int delegate ( ref mstring key, ref mstring value ) dg )
         {
             int res;
 
@@ -341,9 +341,9 @@ abstract public class ChannelLoaderBase
 
     ***************************************************************************/
 
-    private const ulong min_supported_version = 0;
+    private static immutable ulong min_supported_version = 0;
 
-    private const ulong max_supported_version = 0;
+    private static immutable ulong max_supported_version = 0;
 
     static assert(min_supported_version <= max_supported_version);
 
@@ -472,12 +472,12 @@ abstract public class ChannelLoaderBase
 
     ***************************************************************************/
 
-    public int opApply ( int delegate ( ref mstring key, ref mstring value ) dg )
+    public int opApply ( scope int delegate ( ref mstring key, ref mstring value ) dg )
     {
         // Function which instantiates a reader for the appropriate file format
         // version and passes it to the provided delegate. This pattern is used
         // so that the reader can be newed at scope (on the stack).
-        void read ( void delegate ( FormatReaderBase ) use_reader )
+        void read ( scope void delegate ( FormatReaderBase ) use_reader )
         {
             if ( !this.supported_file_format_version )
             {

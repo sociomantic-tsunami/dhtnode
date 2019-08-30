@@ -322,7 +322,7 @@ private class DhtPerformance : CliApp
 
         ***************************************************************************/
 
-        private const alert_percentage = 0.2;
+        private enum alert_percentage = 0.2;
 
 
         /***********************************************************************
@@ -379,13 +379,13 @@ private class DhtPerformance : CliApp
         public void init ( )
         in
         {
-            assert(this.requests is null);
-            assert(this.avg_times is null);
+            assert((&this).requests is null);
+            assert((&this).avg_times is null);
         }
         body
         {
-            this.requests = new Distribution!(ulong);
-            this.avg_times = new SlidingAverage!(ulong)(1_000);
+            (&this).requests = new Distribution!(ulong);
+            (&this).avg_times = new SlidingAverage!(ulong)(1_000);
         }
 
 
@@ -397,11 +397,11 @@ private class DhtPerformance : CliApp
 
         public void clear ( )
         {
-            this.requests.clear();
-            this.avg_times.clear();
-            this.client_timeout_count = 0;
-            this.error_count = 0;
-            this.total_time = 0;
+            (&this).requests.clear();
+            (&this).avg_times.clear();
+            (&this).client_timeout_count = 0;
+            (&this).error_count = 0;
+            (&this).total_time = 0;
         }
 
 
@@ -421,9 +421,9 @@ private class DhtPerformance : CliApp
 
         private bool isNodeSlow ( double cmp_time )
         {
-            auto node_median = this.requests.median;
+            auto node_median = (&this).requests.median;
 
-            bool result = node_median > cmp_time * ( 1 + this.alert_percentage );
+            bool result = node_median > cmp_time * ( 1 + (&this).alert_percentage );
 
             return result;
         }
@@ -501,8 +501,8 @@ private class DhtPerformance : CliApp
 
     public this ( )
     {
-        const app_name = "dhtperformance";
-        const app_desc = "Dht performance tester";
+        static immutable app_name = "dhtperformance";
+        static immutable app_desc = "Dht performance tester";
 
         this.epoll = new EpollSelectDispatcher(new TimerEventTimeoutManager);
         this.retry_delay = 2;
@@ -943,7 +943,7 @@ private class DhtPerformance : CliApp
     private void flush ( bool force = false )
     {
         // How often the progress should be printed, in microseconds
-        const ulong progress_delay_microsec = 200_000;
+        static immutable ulong progress_delay_microsec = 200_000;
 
         if ( force || ++this.parallel_count == this.parallel )
         {
@@ -1071,7 +1071,7 @@ private class DhtPerformance : CliApp
             this.printTotalProgress();
         }
 
-        const percentages = [0.5, 0.66, 0.75, 0.8, 0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 1];
+        static immutable percentages = [0.5, 0.66, 0.75, 0.8, 0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 1];
 
         Stdout.formatln("");
 
