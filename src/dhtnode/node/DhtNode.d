@@ -225,7 +225,7 @@ public class DhtNode :
     ***************************************************************************/
 
     override protected void getResourceAcquirer (
-        void delegate ( Object request_resources ) callback )
+        scope void delegate ( Object request_resources ) callback )
     {
         scope request_resources = this.shared_resources.new RequestResources;
         callback(request_resources);

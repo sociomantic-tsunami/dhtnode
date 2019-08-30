@@ -141,7 +141,7 @@ public class StorageEngine : IStorageEngine
     ***********************************************************************/
 
     public this ( cstring id, DhtHashRange hash_range, uint bnum,
-        DeleteChannelCb delete_channel )
+        scope DeleteChannelCb delete_channel )
     {
         super(id);
 
@@ -273,7 +273,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public typeof(this) get ( cstring key, void delegate ( cstring ) value_dg )
+    public typeof(this) get ( cstring key, scope void delegate ( cstring ) value_dg )
     {
         auto hash = Hash.straightToHash(key);
         return this.get(hash, value_dg);
@@ -286,7 +286,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public typeof(this) get ( hash_t key, void delegate ( cstring ) value_dg )
+    public typeof(this) get ( hash_t key, scope void delegate ( cstring ) value_dg )
     {
         int len;
         void* value = cast(void*)tcmdbget(this.db, &key,
@@ -501,7 +501,7 @@ public class StorageEngine : IStorageEngine
 
     ***************************************************************************/
 
-    public int opApply ( IterDg dg )
+    public int opApply ( scope IterDg dg )
     {
         IterContext context;
         context.dg = dg;

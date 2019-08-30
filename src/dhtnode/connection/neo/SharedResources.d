@@ -263,7 +263,7 @@ public final class SharedResources
 
         ***********************************************************************/
 
-        override public MessageFiber getFiber ( void delegate ( ) fiber_method )
+        override public MessageFiber getFiber ( scope void delegate ( ) fiber_method )
         {
             bool new_fiber = false;
 
@@ -313,7 +313,7 @@ public final class SharedResources
         ***********************************************************************/
 
         override public ITimer getTimer ( uint period_s, uint period_ms,
-            void delegate ( ) timer_dg )
+            scope void delegate ( ) timer_dg )
         {
             auto timer = this.acquired_timers.acquire(new Timer);
             timer.initialise(period_s, period_ms, timer_dg);
@@ -364,7 +364,7 @@ public final class SharedResources
         ***********************************************************************/
 
         private void initialise ( uint period_s, uint period_ms,
-            void delegate ( ) timer_dg )
+            scope void delegate ( ) timer_dg )
         {
             this.timer_dg = timer_dg;
             this.timer.set(period_s, period_ms, period_s, period_ms);

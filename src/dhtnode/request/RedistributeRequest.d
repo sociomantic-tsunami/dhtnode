@@ -256,7 +256,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
 
             if ( error_during_iteration )
             {
-                const uint retry_s = 2;
+                static immutable uint retry_s = 2;
 
                 log.error("Finished redistributing channel '{}': {}/{} records " ~
                     "iterated, channel now contains {} records, " ~

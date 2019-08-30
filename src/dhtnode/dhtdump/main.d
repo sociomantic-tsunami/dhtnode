@@ -178,8 +178,8 @@ public class DhtDump : DaemonApp
     {
         this.epoll = new EpollSelectDispatcher;
 
-        const app_name = "dhtdump";
-        const app_desc = "iterates over all channels in a dht node, dumping the"
+        static immutable app_name = "dhtdump";
+        static immutable app_desc = "iterates over all channels in a dht node, dumping the"
             ~ " data to disk";
         super(app_name, app_desc, version_info);
 
@@ -272,7 +272,7 @@ public class DhtDump : DaemonApp
     {
         this.dht.addNode(this.dht_config.address, this.dht_config.port);
 
-        const retry_wait_s = 2;
+        static immutable retry_wait_s = 2;
         bool error;
 
         void result ( DhtClient.RequestContext, bool success )

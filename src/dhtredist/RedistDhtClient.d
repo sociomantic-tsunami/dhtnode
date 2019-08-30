@@ -194,7 +194,7 @@ public class RedistDhtClient : SchedulingDhtClient
     }
 
     public Redistribute redistribute ( mstring addr, ushort port,
-        RequestParams.RedistributeDg input, RequestNotification.Callback notifier )
+        scope RequestParams.RedistributeDg input, scope RequestNotification.Callback notifier )
     {
         return *Redistribute(DhtConst.Command.E.Redistribute,
             notifier).node(NodeItem(addr, port)).io(input);

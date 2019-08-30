@@ -94,7 +94,7 @@ public scope class PutRequest : Protocol.Put
         // Packing the record in the batch brings overhead of:
         // 16 bytes for the key (as string) and a size_t for the key's
         // length and value's length
-        const batch_overhead_size = 16 + 2 * size_t.sizeof;
+        static immutable batch_overhead_size = 16 + 2 * size_t.sizeof;
         return this.resources.storage_channels.batch_size - batch_overhead_size;
     }
 

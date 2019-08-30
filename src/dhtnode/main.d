@@ -292,8 +292,8 @@ public class DhtNodeServer : DaemonApp
             GC.monitor(&this.gcCollectStart, &this.gcCollectEnd);
         }
 
-        const app_name = "dhtnode";
-        const app_desc = "dhtnode: DHT server node.";
+        static immutable app_name = "dhtnode";
+        static immutable app_desc = "dhtnode: DHT server node.";
 
         DaemonApp.OptionalSettings optional;
         optional.signals = [SIGINT, SIGTERM, SIGQUIT];
@@ -530,7 +530,7 @@ public class DhtNodeServer : DaemonApp
     {
         if ( mlockall(MCL_CURRENT | MCL_FUTURE) )
         {
-            const default_error = "Unknown";
+            static immutable default_error = "Unknown";
             istring msg = default_error;
 
             // Provide custom error messages for expected errors

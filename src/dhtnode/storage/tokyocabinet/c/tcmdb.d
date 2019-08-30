@@ -93,7 +93,7 @@ void tcmdbput4(TCMDB* mdb, void* kbuf, int ksiz,
 void tcmdbputcat3(TCMDB* mdb, void* kbuf, int ksiz, void* vbuf, int vsiz);
 
 bool tcmdbputproc(TCMDB* mdb, void* kbuf, int ksiz, void* vbuf, int vsiz,
-                  TCPDPROC proc, void* op);
+                  scope TCPDPROC proc, void* op);
 
 void* tcmdbget3(TCMDB* mdb, in void* kbuf, int ksiz, int* sp);
 
@@ -101,4 +101,4 @@ void tcmdbiterinit2(TCMDB* mdb, in void* kbuf, int ksiz);
 
 void tcmdbiterinit3(TCMDB* mdb, char* kstr);
 
-void tcmdbforeach(TCMDB* mdb, TCITER iter, void* op);
+void tcmdbforeach(TCMDB* mdb, scope TCITER iter, void* op);

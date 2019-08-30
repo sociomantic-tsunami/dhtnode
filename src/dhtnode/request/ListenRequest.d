@@ -88,7 +88,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
 
     ***************************************************************************/
 
-    private const HashBufferMaxLength = (1024 / hash_t.sizeof) * 256; // 256 Kb of hashes
+    private static immutable HashBufferMaxLength = (1024 / hash_t.sizeof) * 256; // 256 Kb of hashes
 
     /***************************************************************************
 

@@ -34,6 +34,4 @@ apt install -y --allow-downgrades \
 
 # Build app
 
-if_d 2 make d2conv
-
 make all pkg F=production
