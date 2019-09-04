@@ -379,13 +379,13 @@ private class DhtPerformance : CliApp
         public void init ( )
         in
         {
-            assert((&this).requests is null);
-            assert((&this).avg_times is null);
+            assert(this.requests is null);
+            assert(this.avg_times is null);
         }
         body
         {
-            (&this).requests = new Distribution!(ulong);
-            (&this).avg_times = new SlidingAverage!(ulong)(1_000);
+            this.requests = new Distribution!(ulong);
+            this.avg_times = new SlidingAverage!(ulong)(1_000);
         }
 
 
@@ -397,11 +397,11 @@ private class DhtPerformance : CliApp
 
         public void clear ( )
         {
-            (&this).requests.clear();
-            (&this).avg_times.clear();
-            (&this).client_timeout_count = 0;
-            (&this).error_count = 0;
-            (&this).total_time = 0;
+            this.requests.clear();
+            this.avg_times.clear();
+            this.client_timeout_count = 0;
+            this.error_count = 0;
+            this.total_time = 0;
         }
 
 
@@ -421,9 +421,9 @@ private class DhtPerformance : CliApp
 
         private bool isNodeSlow ( double cmp_time )
         {
-            auto node_median = (&this).requests.median;
+            auto node_median = this.requests.median;
 
-            bool result = node_median > cmp_time * ( 1 + (&this).alert_percentage );
+            bool result = node_median > cmp_time * ( 1 + this.alert_percentage );
 
             return result;
         }
