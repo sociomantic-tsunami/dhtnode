@@ -119,7 +119,7 @@ public class DhtNodeServer : DaemonApp
     import swarm.util.node.log.Stats;
     import swarm.util.RecordBatcher;
 
-    import ocean.core.ExceptionDefinitions : IOException, OutOfMemoryException;
+    import ocean.core.ExceptionDefinitions : IOException;
 
     import core.sys.posix.signal: SIGINT, SIGTERM, SIGQUIT;
     import core.sys.posix.sys.mman : mlockall, MCL_CURRENT, MCL_FUTURE;
