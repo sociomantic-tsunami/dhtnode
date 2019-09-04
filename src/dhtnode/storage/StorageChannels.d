@@ -91,7 +91,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
     ***************************************************************************/
 
-    private DhtHashRange hash_range;
+    private DhtHashRange hash_range_;
 
 
     /***************************************************************************
@@ -180,7 +180,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
             this.createWorkingDir();
         }
 
-        this.hash_range = hash_range;
+        this.hash_range_ = hash_range;
         this.bnum = bnum;
         this.batch_size_ = batch_size;
 
@@ -248,28 +248,23 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
     public bool responsibleForKey ( cstring key )
     {
         auto hash = Hash.straightToHash(key);
-        return Hash.isWithinNodeResponsibility(hash, this.hash_range.range.min,
-            this.hash_range.range.max);
+        return Hash.isWithinNodeResponsibility(hash, this.hash_range_.range.min,
+            this.hash_range_.range.max);
     }
 
 
     /***************************************************************************
 
-        Changes the hash range of the node. All storage engines have a reference
-        to the same NodeHashRange instance, so will be updated immediately.
+        Getter for the hash-range object.
 
-        Params:
-            min = new min hash
-            max = new max hash
-
-        Throws:
-            if the specified range is invalid
+        Returns:
+            the hash-range object referenced in the storage channels
 
     ***************************************************************************/
 
-    public void setHashRange ( hash_t min, hash_t max )
+    public DhtHashRange hash_range ( )
     {
-        this.hash_range.set(min, max);
+        return this.hash_range_;
     }
 
 
@@ -314,7 +309,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
 
     protected override StorageEngine create_ ( cstring id )
     {
-        return new StorageEngine(id, this.hash_range, this.bnum,
+        return new StorageEngine(id, this.hash_range_, this.bnum,
                 &this.dump_manager.deleteChannel);
     }
 

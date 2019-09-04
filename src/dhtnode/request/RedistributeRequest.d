@@ -52,6 +52,7 @@ static this ( )
 public scope class RedistributeRequest : Protocol.Redistribute
 {
     import dhtproto.node.request.params.RedistributeNode;
+    import dhtproto.client.legacy.DhtConst;
 
     import dhtnode.connection.DhtClient;
     import dhtnode.node.RedistributionProcess : redistribution_process;
@@ -93,7 +94,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
     final override protected void adjustHashRange ( hash_t min, hash_t max )
     {
         log.info("Setting hash range: 0x{:X16}..0x{:X16}", min, max);
-        this.resources.storage_channels.setHashRange(min, max);
+        this.resources.storage_channels.hash_range.set(min, max);
     }
 
     /***************************************************************************
@@ -108,6 +109,13 @@ public scope class RedistributeRequest : Protocol.Redistribute
         scope ( exit )
         {
             redistribution_process.finishing();
+        }
+
+        // Inform the storage channels about the nodes being forwarded to
+        foreach ( node; *this.resources.redistribute_node_buffer )
+        {
+            this.resources.storage_channels.hash_range.newNodeAdded(
+                node.node, node.range.min, node.range.max);
         }
 
         // We don't want events on the connection handler socket (to the dht

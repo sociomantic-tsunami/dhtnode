@@ -111,6 +111,23 @@ public class StorageEngineStepIterator
 
     /***************************************************************************
 
+        Starts the iteration at the specified key (instead of from the
+        beginning).
+
+        Params:
+            key = hash representation of the key to set the iterator to
+
+    ***************************************************************************/
+
+    public void startFrom ( hash_t key )
+    {
+        this.current_key = key;
+        this.state = State.Started;
+    }
+
+
+    /***************************************************************************
+
         Gets the key of the current record the iterator is pointing to.
 
         Returns:
@@ -162,6 +179,24 @@ public class StorageEngineStepIterator
         mstring value_slice;
         this.storage.get(this.current_key, this.value_buffer, value_slice);
         return value_slice;
+    }
+
+
+    /***************************************************************************
+
+        Gets the value of the current record the iterator is pointing
+        to, passing the value to the provided delegate.
+
+        Params:
+            value_dg = delegate to pass the current value to
+
+    ***************************************************************************/
+
+    public void value ( void delegate ( cstring ) value_dg )
+    {
+        assert(this.storage, typeof(this).stringof ~ ".value: storage not set");
+
+        this.storage.get(this.current_key, value_dg);
     }
 
 

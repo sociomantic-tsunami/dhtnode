@@ -127,7 +127,6 @@ public class DhtNodeServer : DaemonApp
     import core.stdc.string : strerror;
     import ocean.text.util.StringC;
 
-
     /***************************************************************************
 
         Memory node config values
@@ -409,9 +408,9 @@ public class DhtNodeServer : DaemonApp
         redistribution_process = new RedistributionProcess(
             storage, this.performance_config.redist_memory_limit_mulitplier);
 
-        this.node = new DhtNode(this.node_item,
-            storage, this.hash_range, this.epoll,
-            server_config.backlog, this.per_request_stats);
+        this.node = new DhtNode(this.server_config, this.node_item,
+            storage, this.hash_range, this.epoll, this.per_request_stats,
+            this.performance_config.no_delay);
         this.dht_stats =
             new ChannelsNodeStats(this.node, this.stats_ext.stats_log);
 
