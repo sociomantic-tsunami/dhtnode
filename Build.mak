@@ -1,7 +1,5 @@
 export ASSERT_ON_STOMPING_PREVENTION=1
 
-DC := dmd-transitional
-
 ifeq ($F, production)
 	override DFLAGS += -release
 endif
