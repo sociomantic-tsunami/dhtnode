@@ -359,7 +359,7 @@ public scope class RedistributeRequest : Protocol.Redistribute
             return ForwardResult.Invalid;
         }
 
-        if ( value.length >= DhtConst.RecordSizeLimit )
+        if ( value.length >= this.resources.storage_channels.batch_size )
         {
             log.warn("Removing too large record ({} bytes) {}", value.length,
                 key);

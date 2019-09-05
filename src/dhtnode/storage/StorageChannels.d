@@ -104,7 +104,12 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
     private uint bnum;
 
 
-    /// Batch size used by legacy compressed batch requests (e.g. GetAll).
+    /***************************************************************************
+
+        Batch size used by legacy compressed batch requests (e.g. GetAll).
+
+    ***************************************************************************/
+
     private size_t batch_size_;
 
 
@@ -185,7 +190,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
         this.batch_size_ = batch_size;
 
         this.dump_manager = new DumpManager(this.dir, out_of_range_handling,
-            disable_direct_io);
+            disable_direct_io, this.batch_size_);
 
         this.loadChannels();
     }
@@ -209,7 +214,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
     /***************************************************************************
 
         Returns:
-             string identifying the type of the storage engine
+            string identifying the type of the storage engine
 
     ***************************************************************************/
 
@@ -222,7 +227,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
     /***************************************************************************
 
         Returns:
-             batch size used by legacy compressed batch requests (e.g. GetAll)
+            batch size used by legacy compressed batch requests (e.g. GetAll)
 
     ***************************************************************************/
 
@@ -271,7 +276,7 @@ public class StorageChannels : IStorageChannelsTemplate!(StorageEngine)
     /***************************************************************************
 
         Returns:
-             string identifying the type of the storage engine
+            string identifying the type of the storage engine
 
     ***************************************************************************/
 

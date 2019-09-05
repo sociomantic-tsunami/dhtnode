@@ -31,8 +31,6 @@ import dhtnode.storage.DumpFile;
 
 import Hash = swarm.util.Hash;
 
-import dhtproto.client.legacy.DhtConst;
-
 import ocean.core.Verify;
 import ocean.core.Array : copy, startsWith;
 
@@ -111,6 +109,14 @@ public class DumpManager
     ***************************************************************************/
 
     public alias StorageEngine delegate ( cstring id ) NewChannelCb;
+
+    /***************************************************************************
+
+        Batch size used by legacy compressed batch requests (e.g. GetAll).
+
+    ***************************************************************************/
+
+    private size_t batch_size;
 
 
     /***************************************************************************
@@ -197,7 +203,7 @@ public class DumpManager
     ***************************************************************************/
 
     public this ( FilePath root_dir, OutOfRangeHandling out_of_range_handling,
-        bool disable_direct_io )
+        bool disable_direct_io, size_t batch_size )
     {
         this.root_dir = new FilePath(root_dir.toString());
         this.delete_dir = new FilePath(root_dir.toString());
@@ -218,6 +224,8 @@ public class DumpManager
         this.input = new ChannelLoader(buffer, disable_direct_io);
 
         this.out_of_range_handling = out_of_range_handling;
+
+        this.batch_size = batch_size;
     }
 
 
@@ -390,7 +398,7 @@ public class DumpManager
 
     ***************************************************************************/
 
-    static private void loadChannel ( StorageEngine storage,
+    private void loadChannel ( StorageEngine storage,
         ChannelLoaderBase input, OutOfRangeHandling out_of_range_handling )
     {
         log.info("Loading channel '{}' from disk", storage.id);
@@ -405,7 +413,7 @@ public class DumpManager
 
             progress_manager.progress(k.length + v.length + (size_t.sizeof * 2));
 
-            loadRecord(storage, k, v, out_of_range_handling,
+            this.loadRecord(storage, k, v, out_of_range_handling,
                 out_of_range, invalid, too_big, empty);
 
             if ( out_of_range_handling.abort_after_all_out_of_range > 0 &&
@@ -456,7 +464,7 @@ public class DumpManager
                 outside of the node's hash range
             invalid = count of invalid keys; incremented if key is invalid
             too_big = count of too large records; incremented if value is bigger
-                than defined maximum (see DhtConst.RecordSizeLimit)
+                than defined maximum (defined in the nodes config file)
             empty = count of empty records; incremented if record value has
                 length 0
 
@@ -465,7 +473,7 @@ public class DumpManager
 
     ***************************************************************************/
 
-    static private void loadRecord ( StorageEngine storage, cstring key,
+    private void loadRecord ( StorageEngine storage, cstring key,
         cstring val, OutOfRangeHandling out_of_range_handling,
         ref ulong out_of_range, ref ulong invalid, ref ulong too_big,
         ref ulong empty )
@@ -496,7 +504,7 @@ public class DumpManager
             return;
         }
 
-        if ( val.length > DhtConst.RecordSizeLimit )
+        if ( val.length > this.batch_size )
         {
             log.warn("Encountered large record ({} bytes) in channel '{}': " ~
                 "{} -- ignored", val.length, storage.id, key);
@@ -586,6 +594,10 @@ version ( UnitTest )
     import dhtnode.node.DhtHashRange;
     import ocean.io.serialize.SimpleStreamSerializer : EofException;
 
+    // the RecordSizeLimit is initialized when the app is started
+    // using the config file option. For unittest we define a constant here.
+    const RecordSizeLimit = 1024;
+
     private class DummyStorageEngine : StorageEngine
     {
         private uint count;
@@ -643,7 +655,16 @@ version ( UnitTest )
 
         DumpManager.OutOfRangeHandling out_of_range_handling;
         out_of_range_handling.mode = out_of_range_handling_mode;
-        DumpManager.loadChannel(storage, input, out_of_range_handling);
+
+        // use dummy path, we are only interested in testing loadChannel
+        // with a DummyStorageEngine
+        FilePath path = new FilePath;
+        path.set("");
+
+        auto dump_manager = new DumpManager(path, out_of_range_handling,
+            true, RecordSizeLimit);
+
+        dump_manager.loadChannel(storage, input, out_of_range_handling);
 
         return storage.num_records;
     }
@@ -832,11 +853,11 @@ unittest
     test!("==")(testData(data_header ~ key ~ small_val ~ data_footer), 1);
 
     // load maximum sized record
-    auto max_val = recordValue(DhtConst.RecordSizeLimit);
+    auto max_val = recordValue(RecordSizeLimit);
     test!("==")(testData(data_header ~ key ~ max_val ~ data_footer), 1);
 
     // reject over-large record
-    auto over_large_val = recordValue(DhtConst.RecordSizeLimit + 1);
+    auto over_large_val = recordValue(RecordSizeLimit + 1);
     test!("==")(testData(data_header ~ key ~ over_large_val ~ data_footer), 0);
 }
 
