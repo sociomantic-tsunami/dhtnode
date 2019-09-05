@@ -90,15 +90,12 @@ public class DhtNode :
             hash_range = min/max hash range tracker
             epoll = epoll select dispatcher to be used internally
             per_request_stats = names of requests to be stats tracked
-            no_delay = toggle Nagle's algorithm (true = disabled, false =
-                enabled) on the connection sockets
 
     ***************************************************************************/
 
     public this ( ServerConfig server_config, NodeItem node_item,
         StorageChannels channels, DhtHashRange hash_range,
-        EpollSelectDispatcher epoll, istring[] per_request_stats,
-        bool no_delay )
+        EpollSelectDispatcher epoll, istring[] per_request_stats )
     {
         this.hash_range = hash_range;
 
@@ -117,7 +114,6 @@ public class DhtNode :
         options.epoll = epoll;
         options.requests = requests;
         options.shared_resources = this.shared_resources;
-        options.no_delay = no_delay;
         options.unix_socket_path = idup(server_config.unix_socket_path());
         options.credentials_filename = "etc/credentials";
 
