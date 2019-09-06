@@ -37,7 +37,6 @@ class DhtTest : Task
         ubyte[] auth_key = Key.init.content;
         this.dht = new DhtClient(theScheduler.epoll, auth_name, auth_key,
             &this.connNotifier);
-        this.dht.neo.enableSocketNoDelay();
         this.dht.neo.addNode("127.0.0.1", 10_100);
     }
 
