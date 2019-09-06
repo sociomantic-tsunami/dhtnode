@@ -72,7 +72,7 @@ class DhtTest : Task
 
             case connection_error:
                 Stderr.formatln("Connection error '{}' on {}:{}",
-                    getMsg(info.connection_error.e),
+                    info.connection_error.e.message,
                     info.connection_error.node_addr.address_bytes, info.connection_error.node_addr.port);
                 break;
 
