@@ -214,8 +214,7 @@ class Update : DhtTest
                 Stdout.formatln("Finished: error");
                 this.resume();
                 break;
-
-            mixin(typeof(info).handleInvalidCases);
+            case none: assert(false);
         }
     }
 }
