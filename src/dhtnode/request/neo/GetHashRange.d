@@ -33,6 +33,22 @@ import dhtnode.node.DhtHashRange;
 
 public scope class GetHashRangeImpl_v0 : GetHashRangeProtocol_v0, IHashRangeListener
 {
+    import dhtproto.common.RequestCodes;
+
+    /// Request code / version. Required by ConnectionHandler.
+    static immutable Command command = Command(RequestCode.GetHashRange, 0);
+
+    /// Request name for stats tracking. Required by ConnectionHandler.
+    static immutable istring name = "GetHashRange";
+
+    /// Flag indicating whether timing stats should be gathered for requests of
+    /// this type.
+    static immutable bool timing = false;
+
+    /// Flag indicating whether this request type is scheduled for removal. (If
+    /// true, clients will be warned.)
+    static immutable bool scheduled_for_removal = false;
+
     /***************************************************************************
 
         Gets the current hash range of this node.

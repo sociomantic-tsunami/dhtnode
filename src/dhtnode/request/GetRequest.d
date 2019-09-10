@@ -59,7 +59,8 @@ public scope class GetRequest : Protocol.Get
 
     ***************************************************************************/
 
-    final override protected void[] getValue ( cstring channel_name, cstring key )
+    final override protected void getValue ( cstring channel_name,
+        cstring key, scope void delegate ( const(void)[] ) value_getter_dg )
     {
         auto storage_channel = channel_name in this.resources.storage_channels;
 
@@ -71,9 +72,10 @@ public scope class GetRequest : Protocol.Get
             dht_channel.get(key, *this.resources.value_buffer, value_slice);
             this.resources.node_info.record_action_counters
                 .increment("read", value_slice.length);
-            return value_slice;
+            value_getter_dg(value_slice);
+            return;
         }
 
-        return null;
+        value_getter_dg(null);
     }
 }

@@ -48,7 +48,8 @@ public scope class GetSizeRequest : Protocol.GetSize
 
     ***************************************************************************/
 
-    final override protected SizeData getSizeData ( )
+    final override protected void getSizeData (
+        scope void delegate ( SizeData ) value_getter_dg )
     {
         ulong records, bytes;
 
@@ -61,11 +62,13 @@ public scope class GetSizeRequest : Protocol.GetSize
             bytes += channel_bytes;
         }
 
-        return SizeData(
-            this.resources.node_info.node_item.Address,
-            this.resources.node_info.node_item.Port,
-            records,
-            bytes
+        value_getter_dg(
+            SizeData(
+                this.resources.node_info.node_item.Address,
+                this.resources.node_info.node_item.Port,
+                records,
+                bytes
+            )
         );
     }
 }

@@ -47,16 +47,15 @@ public scope class GetChannelsRequest : Protocol.GetChannels
         Must return list of all channels stored in this node.
 
         Returns:
-            list of channel names
+            value_getter_dg = The delegate that is called with the list of
+                              channel names.
 
     ***************************************************************************/
 
-    final override protected cstring[] getChannelsIds ( )
+    final override protected void getChannelsIds (
+        scope void delegate ( const(void)[] ) value_getter_dg )
     {
-        auto list = this.resources.channel_list_buffer;
-
         foreach (channel; this.resources.storage_channels)
-            *list ~= channel.id;
-        return *list;
+            value_getter_dg(channel.id);
     }
 }

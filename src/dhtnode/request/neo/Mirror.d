@@ -35,6 +35,21 @@ public scope class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
     import ocean.text.convert.Hash : toHashT;
     import ocean.core.array.Mutation : pop;
     import dhtnode.storage.StorageEngineStepIterator;
+    import dhtproto.common.RequestCodes;
+
+    /// Request code / version. Required by ConnectionHandler.
+    static immutable Command command = Command(RequestCode.Mirror, 0);
+
+    /// Request name for stats tracking. Required by ConnectionHandler.
+    static immutable istring name = "Mirror";
+
+    /// Flag indicating whether timing stats should be gathered for requests of
+    /// this type.
+    static immutable bool timing = false;
+
+    /// Flag indicating whether this request type is scheduled for removal. (If
+    /// true, clients will be warned.)
+    static immutable bool scheduled_for_removal = false;
 
     /// Storage channel being mirrored.
     private StorageEngine channel;

@@ -18,6 +18,7 @@ import dhtnode.connection.neo.SharedResources;
 import dhtnode.node.DhtHashRange;
 
 import swarm.neo.node.RequestOnConn;
+import swarm.neo.request.Command;
 
 import ocean.transition;
 import ocean.core.TypeConvert : downcast;
@@ -31,7 +32,22 @@ import ocean.core.Verify;
 
 public scope class UpdateImpl_v0 : UpdateProtocol_v0
 {
+    import dhtproto.common.RequestCodes;
     import swarm.util.Hash : isWithinNodeResponsibility;
+
+    /// Request code / version. Required by ConnectionHandler.
+    static immutable Command command = Command(RequestCode.Update, 0);
+
+    /// Request name for stats tracking. Required by ConnectionHandler.
+    static immutable istring name = "Update";
+
+    /// Flag indicating whether timing stats should be gathered for requests of
+    /// this type.
+    static immutable bool timing = true;
+
+    /// Flag indicating whether this request type is scheduled for removal. (If
+    /// true, clients will be warned.)
+    static immutable bool scheduled_for_removal = false;
 
     /***************************************************************************
 

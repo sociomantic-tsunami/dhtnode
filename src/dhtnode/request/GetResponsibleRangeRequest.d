@@ -45,14 +45,15 @@ public scope class GetResponsibleRangeRequest : Protocol.GetResponsibleRange
         is responsible for.
 
         Params:
-            min = minimal allowed hash
-            max = maximal allowed hash
+            value_getter_dg = The delegate that is called with the minimum and
+                              the maximum allowed hashes.
 
     ***************************************************************************/
 
-    final override protected void getRangeLimits ( out hash_t min, out hash_t max )
+    final override protected void getRangeLimits (
+        scope void delegate ( hash_t min, hash_t max ) value_getter_dg )
     {
-        min = this.resources.node_info.min_hash;
-        max = this.resources.node_info.max_hash;
+        value_getter_dg(this.resources.node_info.min_hash,
+            this.resources.node_info.max_hash);
     }
 }

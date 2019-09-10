@@ -32,6 +32,22 @@ import ocean.core.Verify;
 
 public scope class RemoveChannelImpl_v0 : RemoveChannelProtocol_v0
 {
+    import dhtproto.common.RequestCodes;
+
+    /// Request code / version. Required by ConnectionHandler.
+    static immutable Command command = Command(RequestCode.RemoveChannel, 0);
+
+    /// Request name for stats tracking. Required by ConnectionHandler.
+    static immutable istring name = "RemoveChannel";
+
+    /// Flag indicating whether timing stats should be gathered for requests of
+    /// this type.
+    static immutable bool timing = false;
+
+    /// Flag indicating whether this request type is scheduled for removal. (If
+    /// true, clients will be warned.)
+    static immutable bool scheduled_for_removal = false;
+
     /***************************************************************************
 
         Checks whether the specified client is permitted to remove channels.

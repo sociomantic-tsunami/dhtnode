@@ -33,7 +33,22 @@ import dhtnode.node.DhtHashRange;
 
 public scope class PutImpl_v0 : PutProtocol_v0
 {
+    import dhtproto.common.RequestCodes;
     import swarm.util.Hash : isWithinNodeResponsibility;
+
+    /// Request code / version. Required by ConnectionHandler.
+    static immutable Command command = Command(RequestCode.Put, 0);
+
+    /// Request name for stats tracking. Required by ConnectionHandler.
+    static immutable istring name = "Put";
+
+    /// Flag indicating whether timing stats should be gathered for requests of
+    /// this type.
+    static immutable bool timing = true;
+
+    /// Flag indicating whether this request type is scheduled for removal. (If
+    /// true, clients will be warned.)
+    static immutable bool scheduled_for_removal = false;
 
     /***************************************************************************
 

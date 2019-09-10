@@ -37,7 +37,7 @@ public final class SharedResources
     import dhtnode.storage.StorageEngineStepIterator;
     import dhtnode.node.IDhtNodeInfo;
     import dhtproto.node.neo.request.core.IRequestResources;
-    import swarm.neo.util.AcquiredResources;
+    import ocean.util.container.pool.AcquiredResources;
     import swarm.util.RecordBatcher;
     import ocean.io.compress.Lzo;
 

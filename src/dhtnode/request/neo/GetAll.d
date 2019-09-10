@@ -36,6 +36,21 @@ public scope class GetAllImpl_v0 : GetAllProtocol_v0
     import ocean.text.convert.Hash : toHashT;
     import ocean.core.array.Mutation : pop;
     import dhtnode.storage.StorageEngineStepIterator;
+    import dhtproto.common.RequestCodes;
+
+    /// Request code / version. Required by ConnectionHandler.
+    static immutable Command command = Command(RequestCode.GetAll, 0);
+
+    /// Request name for stats tracking. Required by ConnectionHandler.
+    static immutable istring name = "GetAll";
+
+    /// Flag indicating whether timing stats should be gathered for requests of
+    /// this type.
+    static immutable bool timing = false;
+
+    /// Flag indicating whether this request type is scheduled for removal. (If
+    /// true, clients will be warned.)
+    static immutable bool scheduled_for_removal = false;
 
     /// Storage channel being iterated.
     private StorageEngine channel;
