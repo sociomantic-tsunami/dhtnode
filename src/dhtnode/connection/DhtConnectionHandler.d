@@ -271,17 +271,6 @@ public class DhtConnectionHandler
 
         /***********************************************************************
 
-            Channel list buffer newer
-
-        ***********************************************************************/
-
-        override protected cstring[] new_channel_list_buffer ( )
-        {
-            return new cstring[this.setup.storage_channels.length];
-        }
-
-        /***********************************************************************
-
             Filter buffer newer.
 
         ***********************************************************************/

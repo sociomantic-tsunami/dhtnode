@@ -14,7 +14,6 @@ module dhtnode.node.RequestHandlers;
 
 import swarm.neo.node.ConnectionHandler;
 import swarm.neo.request.Command;
-import dhtproto.common.RequestCodes;
 
 import dhtnode.request.neo.GetHashRange;
 import dhtnode.request.neo.Put;
@@ -39,24 +38,14 @@ public ConnectionHandler.RequestMap requests;
 
 static this ( )
 {
-    requests.add(Command(RequestCode.GetHashRange, 0), "GetHashRange",
-        GetHashRangeImpl_v0.classinfo, false);
-    requests.add(Command(RequestCode.Put, 0), "Put",
-        PutImpl_v0.classinfo, true);
-    requests.add(Command(RequestCode.Exists, 0), "Exists",
-        ExistsImpl_v0.classinfo, true);
-    requests.add(Command(RequestCode.Get, 0), "Get",
-        GetImpl_v0.classinfo, true);
-    requests.add(Command(RequestCode.Update, 0), "Update",
-        UpdateImpl_v0.classinfo, true);
-    requests.add(Command(RequestCode.Mirror, 0), "Mirror",
-        MirrorImpl_v0.classinfo, false);
-    requests.add(Command(RequestCode.GetAll, 0), "GetAll",
-        GetAllImpl_v0.classinfo, false);
-    requests.add(Command(RequestCode.GetChannels, 0), "GetChannels",
-        GetChannelsImpl_v0.classinfo, false);
-    requests.add(Command(RequestCode.Remove, 0), "Remove",
-        RemoveImpl_v0.classinfo, true);
-    requests.add(Command(RequestCode.RemoveChannel, 0), "RemoveChannel",
-        RemoveChannelImpl_v0.classinfo, false);
+    requests.addHandler!(GetHashRangeImpl_v0)();
+    requests.addHandler!(PutImpl_v0)();
+    requests.addHandler!(ExistsImpl_v0)();
+    requests.addHandler!(GetImpl_v0)();
+    requests.addHandler!(UpdateImpl_v0)();
+    requests.addHandler!(MirrorImpl_v0)();
+    requests.addHandler!(GetAllImpl_v0)();
+    requests.addHandler!(GetChannelsImpl_v0)();
+    requests.addHandler!(RemoveImpl_v0)();
+    requests.addHandler!(RemoveChannelImpl_v0)();
 }

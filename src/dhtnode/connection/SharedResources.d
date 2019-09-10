@@ -63,7 +63,6 @@ public struct ConnectionResources
     mstring filter_buffer;
     mstring batch_buffer;
     mstring value_buffer;
-    cstring[] channel_list_buffer;
     hash_t[] hash_buffer;
     FiberSelectEvent event;
     FiberTimerEvent timer;

@@ -48,12 +48,15 @@ public scope class GetNumConnectionsRequest : Protocol.GetNumConnections
 
     ***************************************************************************/
 
-    final override protected NumConnectionsData getConnectionsData ( )
+    final override protected void getConnectionsData (
+        scope void delegate ( NumConnectionsData ) value_getter_dg )
     {
-        return NumConnectionsData(
-            this.resources.node_info.node_item.Address,
-            this.resources.node_info.node_item.Port,
-            this.resources.node_info.num_open_connections
+        value_getter_dg(
+            NumConnectionsData(
+                this.resources.node_info.node_item.Address,
+                this.resources.node_info.node_item.Port,
+                this.resources.node_info.num_open_connections
+            )
         );
     }
 }
