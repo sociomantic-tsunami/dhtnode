@@ -1,5 +1,9 @@
 export ASSERT_ON_STOMPING_PREVENTION=1
 
+ifneq ($(DISABLE_STOMPING_STATS), 1)
+	override DFLAGS += -version=StompingPreventionStats
+endif
+
 ifeq ($F, production)
 	override DFLAGS += -release
 endif

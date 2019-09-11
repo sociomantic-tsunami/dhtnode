@@ -36,7 +36,7 @@ import core.memory;
 
 *******************************************************************************/
 
-version ( D_Version2 )
+version ( StompingPreventionStats )
 {
     mixin(`
         extern(C) extern shared long stomping_prevention_counter;
@@ -445,15 +445,15 @@ public class DhtNodeServer : DaemonApp
         this.dht_stats.log();
         this.stats_ext.stats_log.add(.Log.stats());
 
-        struct StompingPreventionStats
+        version ( StompingPreventionStats )
         {
-            long stomping_prevention_counter;
-        }
+            struct StompingPreventionStats
+            {
+                long stomping_prevention_counter;
+            }
 
-        StompingPreventionStats stomping_stats;
+            StompingPreventionStats stomping_stats;
 
-        version ( D_Version2 )
-        {
             mixin(`
                 import core.atomic : atomicLoad, atomicStore;
 
@@ -461,9 +461,10 @@ public class DhtNodeServer : DaemonApp
                     atomicLoad(.stomping_prevention_counter);
                 atomicStore(.stomping_prevention_counter, 0UL);
             `);
+
+            this.stats_ext.stats_log.add(stomping_stats);
         }
 
-        this.stats_ext.stats_log.add(stomping_stats);
         this.stats_ext.stats_log.flush();
     }
 
