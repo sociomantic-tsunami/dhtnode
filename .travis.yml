@@ -51,13 +51,25 @@ jobs:
           env: DMD=2.071.2.s* F=production
         - <<: *test-matrix
           env: DMD=2.071.2.s* F=devel
+        - <<: *test-matrix
+          env: DMD=2.078.3.s* F=production
+        - <<: *test-matrix
+          env: DMD=2.078.3.s* F=devel
+        - <<: *test-matrix
+          env: DIST=bionic DMD=2.078.3.s* F=production
+        - <<: *test-matrix
+          env: DIST=bionic DMD=2.078.3.s* F=devel
 
         # Test deployment docker image generation
         - stage: Test
           script:
               - docker build --build-arg DMD=2.071.2.s* --build-arg DIST=xenial
                 -t dhtnode -f docker/Dockerfile.dhtnode .
+              - docker build --build-arg DMD=2.071.2.s* --build-arg DIST=bionic
+                -t dhtnode -f docker/Dockerfile.dhtnode .
 
         # Package matrix
         - <<: *package-matrix
           env: DMD=2.071.2.s* F=production COV=0
+          env: DMD=2.078.3.s* F=production COV=0
+          env: DIST=bionic DMD=2.078.3.s* F=production COV=0
