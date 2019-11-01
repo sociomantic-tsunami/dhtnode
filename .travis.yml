@@ -65,7 +65,7 @@ jobs:
           script:
               - docker build --build-arg DMD=2.071.2.s* --build-arg DIST=xenial
                 -t dhtnode -f docker/Dockerfile.dhtnode .
-              - docker build --build-arg DMD=2.071.2.s* --build-arg DIST=bionic
+              - docker build --build-arg DMD=2.078.3.s* --build-arg DIST=bionic
                 -t dhtnode -f docker/Dockerfile.dhtnode .
 
         # Package matrix
