@@ -12,52 +12,26 @@
 
 module dhtnode.dhtdump.main;
 
-
-
-/*******************************************************************************
-
-    Imports
-
-*******************************************************************************/
-
-import ocean.transition;
-
 import Version;
 
 import dhtnode.dhtdump.DumpCycle;
 import dhtnode.dhtdump.DumpStats;
 
-import ocean.io.select.EpollSelectDispatcher;
-
-import ocean.io.select.client.TimerEvent;
-
-import ocean.util.app.DaemonApp;
-
-import ConfigReader = ocean.util.config.ConfigFiller;
-
 import dhtproto.client.DhtClient;
-
+import dhtproto.client.legacy.internal.helper.RetryHandshake;
 import dhtproto.client.legacy.internal.registry.DhtNodeRegistry;
 
-import dhtproto.client.legacy.internal.helper.RetryHandshake;
-
+import ocean.core.Time;
+import ocean.io.select.EpollSelectDispatcher;
+import ocean.io.select.client.TimerEvent;
 import ocean.math.random.Random;
-
-import core.thread;
-
 import ocean.time.StopWatch;
-
+import ocean.transition;
+import ocean.util.app.DaemonApp;
+import ConfigReader = ocean.util.config.ConfigFiller;
 import ocean.util.log.Logger;
 
-import ocean.core.Time;
-
-
-
-/*******************************************************************************
-
-    Static module logger
-
-*******************************************************************************/
+import core.thread;
 
 private Logger log;
 
@@ -65,7 +39,6 @@ static this ( )
 {
     log = Log.lookup("dhtnode.dhtdump.main");
 }
-
 
 
 /*******************************************************************************
@@ -314,4 +287,3 @@ public class DhtDump : DaemonApp
         while ( error );
     }
 }
-

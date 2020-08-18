@@ -12,53 +12,33 @@
 
 module dhtperformance.main;
 
+import Version;
 
+import dhtproto.client.DhtClient;
+import dhtproto.client.legacy.DhtConst;
 
-/*******************************************************************************
+import swarm.Const;
 
-    Imports
-
-*******************************************************************************/
-
+import ocean.core.Array;
+import ocean.core.Time;
+import ocean.io.Stdout;
+import ocean.io.Terminal;
+import ocean.io.console.Tables;
+import ocean.io.select.EpollSelectDispatcher;
+import ocean.io.select.timeout.TimerEventTimeoutManager;
+import ocean.text.Arguments;
+import ocean.text.convert.Formatter;
+import Integer = ocean.text.convert.Integer_tango;
+import ocean.time.StopWatch;
 import ocean.transition;
-
-private import Version;
-
-private import ocean.io.Stdout;
-private import ocean.io.Terminal;
-private import ocean.io.console.Tables;
-
-private import ocean.io.select.EpollSelectDispatcher;
-private import ocean.io.select.timeout.TimerEventTimeoutManager;
-
-private import ocean.text.Arguments;
-
-private import ocean.text.convert.Formatter;
-
-private import ocean.util.app.Application;
-private import ocean.util.app.CliApp;
-private import ocean.util.log.StaticTrace;
-
-private import ocean.math.SlidingAverage;
-private import ocean.math.Distribution;
-
-private import swarm.Const;
-
-private import dhtproto.client.DhtClient;
-
-private import dhtproto.client.legacy.DhtConst;
-
-private import core.thread;
-
-private import ocean.time.StopWatch;
-
-private import Integer = ocean.text.convert.Integer_tango;
+import ocean.util.app.Application;
+import ocean.util.app.CliApp;
+import ocean.util.log.StaticTrace;
+import ocean.math.SlidingAverage;
+import ocean.math.Distribution;
 
 import core.sys.posix.time: timespec, nanosleep;
-
-import ocean.core.Time;
-import ocean.core.Array;
-
+import core.thread;
 
 /*******************************************************************************
 
@@ -75,8 +55,6 @@ int main ( istring[] cl_args )
     auto app = new DhtPerformance;
     return app.main(cl_args);
 }
-
-
 
 /*******************************************************************************
 
