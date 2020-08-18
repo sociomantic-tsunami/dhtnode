@@ -21,7 +21,6 @@ import dhtproto.client.DhtClient;
 import dhtproto.client.legacy.internal.helper.RetryHandshake;
 import dhtproto.client.legacy.internal.registry.DhtNodeRegistry;
 
-import ocean.core.Time;
 import ocean.io.select.EpollSelectDispatcher;
 import ocean.io.select.client.TimerEvent;
 import ocean.math.random.Random;
@@ -32,6 +31,7 @@ import ConfigReader = ocean.util.config.ConfigFiller;
 import ocean.util.log.Logger;
 
 import core.thread;
+import core.time;
 
 private Logger log;
 
@@ -281,7 +281,7 @@ public class DhtDump : DaemonApp
             if ( error )
             {
                 // no fibers in existence yet, so we can just do a blocking wait
-                Thread.sleep(ocean.core.Time.seconds(retry_wait_s));
+                Thread.sleep(seconds(retry_wait_s));
             }
         }
         while ( error );

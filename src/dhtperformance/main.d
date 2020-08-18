@@ -20,7 +20,6 @@ import dhtproto.client.legacy.DhtConst;
 import swarm.Const;
 
 import ocean.core.Array;
-import ocean.core.Time;
 import ocean.io.Stdout;
 import ocean.io.Terminal;
 import ocean.io.console.Tables;
@@ -39,6 +38,7 @@ import ocean.math.Distribution;
 
 import core.sys.posix.time: timespec, nanosleep;
 import core.thread;
+import core.time;
 
 /*******************************************************************************
 
@@ -726,7 +726,7 @@ private class DhtPerformance : CliApp
 
         while (error)
         {
-            Thread.sleep(ocean.core.Time.seconds(this.retry_delay));
+            Thread.sleep(seconds(this.retry_delay));
             error = this.handshake(xml, client, false);
         }
 
