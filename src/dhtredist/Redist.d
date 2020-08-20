@@ -23,7 +23,7 @@ import ocean.transition;
 
 import ocean.util.app.CliApp;
 
-version ( UnitTest )
+version (unittest)
 {
     import ocean.core.Test;
 }

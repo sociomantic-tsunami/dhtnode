@@ -585,7 +585,7 @@ public class DumpManager
 
 *******************************************************************************/
 
-version ( UnitTest )
+version (unittest)
 {
     import ocean.core.Test : test, testThrown;
     import ocean.io.device.MemoryDevice;

@@ -49,7 +49,7 @@ import core.time;
 
 *******************************************************************************/
 
-version (UnitTest) {} else
+version (unittest) {} else
 int main ( istring[] cl_args )
 {
     auto app = new DhtPerformance;
