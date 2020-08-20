@@ -42,7 +42,7 @@ import dhtredist.Redist;
 
 *******************************************************************************/
 
-version (UnitTest) {} else
+version (unittest) {} else
 private int main ( istring[] args )
 {
     auto app = new DhtRedist;

@@ -51,7 +51,7 @@ static this ( )
 
 *******************************************************************************/
 
-version (UnitTest) {} else
+version (unittest) {} else
 private int main ( istring[] cl_args )
 {
     try

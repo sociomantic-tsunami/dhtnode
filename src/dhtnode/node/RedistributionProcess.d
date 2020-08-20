@@ -198,7 +198,7 @@ public class RedistributionProcess
     }
 }
 
-version ( UnitTest )
+version (unittest)
 {
     import ocean.core.Test;
     import dhtnode.config.HashRangeConfig;

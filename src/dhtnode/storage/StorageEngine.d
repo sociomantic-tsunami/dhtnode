@@ -749,7 +749,7 @@ public class StorageEngine : IStorageEngine
     }
 }
 
-version ( UnitTest )
+version (unittest)
 {
     import ocean.core.Test;
     import Hash = swarm.util.Hash;
