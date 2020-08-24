@@ -29,22 +29,6 @@ import ocean.util.log.Logger;
 import core.memory;
 
 
-
-/*******************************************************************************
-
-    D2-only stomping prevention counter
-
-*******************************************************************************/
-
-version ( StompingPreventionStats )
-{
-    mixin(`
-        extern(C) extern shared long stomping_prevention_counter;
-    `);
-}
-
-
-
 /*******************************************************************************
 
     Static module logger
@@ -444,27 +428,6 @@ public class DhtNodeServer : DaemonApp
         this.reportSystemStats();
         this.dht_stats.log();
         this.stats_ext.stats_log.add(.Log.stats());
-
-        version ( StompingPreventionStats )
-        {
-            struct StompingPreventionStats
-            {
-                long stomping_prevention_counter;
-            }
-
-            StompingPreventionStats stomping_stats;
-
-            mixin(`
-                import core.atomic : atomicLoad, atomicStore;
-
-                stomping_stats.stomping_prevention_counter =
-                    atomicLoad(.stomping_prevention_counter);
-                atomicStore(.stomping_prevention_counter, 0UL);
-            `);
-
-            this.stats_ext.stats_log.add(stomping_stats);
-        }
-
         this.stats_ext.stats_log.flush();
     }
 
@@ -707,4 +670,3 @@ public class DhtNodeServer : DaemonApp
         }
     }
 }
-
