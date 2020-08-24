@@ -144,7 +144,7 @@ public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
     ***************************************************************************/
 
     final override protected bool getNextRecord ( cstring channel_name,
-        mstring key, out Const!(void)[] value )
+        mstring key, out const(void)[] value )
     {
         enforce(key.length == Hash.HashDigits);
 

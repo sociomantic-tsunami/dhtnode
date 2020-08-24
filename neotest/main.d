@@ -176,7 +176,7 @@ class Update : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.Update.Notification info,
-        Const!(DhtClient.Neo.Update.Args) args )
+        const(DhtClient.Neo.Update.Args) args )
     {
         with ( info.Active ) final switch ( info.active )
         {
@@ -231,7 +231,7 @@ class GetAll : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.GetAll.Notification info,
-        Const!(DhtClient.Neo.GetAll.Args) args )
+        const(DhtClient.Neo.GetAll.Args) args )
     {
         with ( info.Active ) switch ( info.active )
         {
@@ -266,7 +266,7 @@ class Mirror : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.Mirror.Notification info,
-        Const!(DhtClient.Neo.Mirror.Args) args )
+        const(DhtClient.Neo.Mirror.Args) args )
     {
         mstring buf;
         //~ Stdout.formatln(formatNotification(info, buf));
@@ -314,7 +314,7 @@ class MirrorFill : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.Mirror.Notification info,
-        Const!(DhtClient.Neo.Mirror.Args) args )
+        const(DhtClient.Neo.Mirror.Args) args )
     {
         mstring buf;
         Stdout.formatln(formatNotification(info, buf));
@@ -339,7 +339,7 @@ class MultiMirror : DhtTest
     }
 
     private void notifier ( DhtClient.Neo.Mirror.Notification info,
-        Const!(DhtClient.Neo.Mirror.Args) args )
+        const(DhtClient.Neo.Mirror.Args) args )
     {
         mstring buf;
         Stdout.formatln("{}: {}", args.channel, formatNotification(info, buf));
