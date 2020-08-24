@@ -609,4 +609,3 @@ public class DumpCycle : SelectFiber
         this.timer.wait(wait);
     }
 }
-

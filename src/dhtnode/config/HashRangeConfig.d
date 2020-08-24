@@ -296,4 +296,3 @@ public class HashRangeConfig
             "[Server]\nminval = 0x0000000000000000\nmaxval = 0x8765432187654321");
     }
 }
-
