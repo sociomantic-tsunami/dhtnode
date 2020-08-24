@@ -79,7 +79,7 @@ public class HashRangeConfig
 
     ***************************************************************************/
 
-    private Const!(mstring)[] config_files;
+    private const(mstring)[] config_files;
 
     /***************************************************************************
 

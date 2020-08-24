@@ -357,7 +357,7 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    private Const!(mstring[]) getChannels ( ref bool error )
+    private const(cstring[]) getChannels ( ref bool error )
     {
         // Copy the last cycle's list of channels
         this.last_cycle_channels.length = this.channels.length;
@@ -373,7 +373,7 @@ public class DumpCycle : SelectFiber
         {
             // make const view of channels to make badly ported `contains`
             // API happy
-            Const!(cstring[]) cchannels = this.channels;
+            const(cstring[]) cchannels = this.channels;
             if ( !cchannels.contains(old_channel) )
             {
                 log.info("Detected removed channel '{}'", old_channel);
@@ -398,7 +398,7 @@ public class DumpCycle : SelectFiber
 
     ***************************************************************************/
 
-    private Const!(mstring[]) getCurrentChannels ( ref bool error )
+    private const(cstring[]) getCurrentChannels ( ref bool error )
     {
         log.info("Getting list of channels");
         scope ( exit ) log.info("Got list of channels: {}", this.channels);
@@ -411,7 +411,7 @@ public class DumpCycle : SelectFiber
                 log.trace("GetChannels: {}:{}, '{}'", addr, port, channel);
                 // make const view of channels to make badly ported `contains`
                 // API happy
-                Const!(cstring[]) cchannels = this.channels;
+                const(cstring[]) cchannels = this.channels;
                 if ( !cchannels.contains(channel) )
                 {
                     this.channels.appendCopy(channel);

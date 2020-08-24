@@ -136,7 +136,7 @@ public scope class GetAllImpl_v0 : GetAllProtocol_v0
     ***************************************************************************/
 
     override protected bool getNext (
-        scope void delegate ( hash_t key, Const!(void)[] value ) dg )
+        scope void delegate ( hash_t key, const(void)[] value ) dg )
     {
         this.iterator.next();
         if ( this.iterator.lastKey() )
