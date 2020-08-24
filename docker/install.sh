@@ -9,5 +9,4 @@ apt install -y libebtree6
 # Prepare folder structure and install dhtnode
 
 mkdir -p /srv/dhtnode/dhtnode-0
-apt install -y /packages/dhtnode-d*.deb
-ln -s /usr/sbin/dhtnode-* /usr/sbin/dhtnode
+apt install -y /packages/dhtnode*.deb

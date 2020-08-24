@@ -14,8 +14,8 @@ git:
 # Global environment variables
 env:
     global:
-        - DIST=xenial
-        - COV=1
+        - DIST=bionic
+        - COV=0
         # Default beaver image names. May be overriden in specific stages
         - BEAVER_DOCKER_IMG=builder
         - BEAVER_DOCKER_CONTEXT=docker/builder
@@ -48,28 +48,20 @@ jobs:
     include:
         # Test matrix
         - <<: *test-matrix
-          env: DIST=xenial DMD=2.078.3.s* F=production
+          env: DMD=2.092.* F=production
         - <<: *test-matrix
-          env: DIST=xenial DMD=2.078.3.s* F=devel
+          env: DMD=2.092.* F=devel
         - <<: *test-matrix
-          env: DIST=bionic DMD=2.085.* F=production
+          env: DMD=2.093.* F=production COV=1
         - <<: *test-matrix
-          env: DIST=bionic DMD=2.085.* F=devel
-        - <<: *test-matrix
-          env: DIST=bionic DMD=2.092.* F=production
-        - <<: *test-matrix
-          env: DIST=bionic DMD=2.092.* F=devel
-        - <<: *test-matrix
-          env: DIST=bionic DMD=2.093.* F=production
-        - <<: *test-matrix
-          env: DIST=bionic DMD=2.093.* F=devel
+          env: DMD=2.093.* F=devel COV=1
 
         # Test deployment docker image generation
         - stage: Test
           script:
-              - docker build --build-arg DMD=2.078.3.s* --build-arg DIST=xenial
+              - docker build --build-arg DMD=2.093.* --build-arg DIST=${DIST}
                 -t dhtnode -f docker/Dockerfile.dhtnode .
 
         # Package matrix
         - <<: *package-matrix
-          env: DMD=2.078.3.s* F=production COV=0
+          env: DMD=2.093.* F=production
