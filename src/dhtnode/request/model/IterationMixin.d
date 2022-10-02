@@ -28,9 +28,9 @@ enum IterationKind
 /*******************************************************************************
 
     Common code shared by all requests that implement protocol based on
-    dhtproto.node.request.model.CompressedBatch 
+    dhtproto.node.request.model.CompressedBatch
 
-    Template Params:
+    Params:
         resources = host field which stores IRequestResources
         kind = indicates which version of getNext to generate
         predicate = optional predicate function to filter away some records.
@@ -103,7 +103,7 @@ public template ChannelIteration ( alias resources, IterationKind kind,
     }
 
     /***************************************************************************
-        
+
         Iterates records for the protocol
 
         Params:
@@ -122,7 +122,7 @@ public template ChannelIteration ( alias resources, IterationKind kind,
 
         // loops either until match is found or last key processed
         while (true)
-        { 
+        {
             this.iterator.next();
 
             resources.loop_ceder.handleCeding();
