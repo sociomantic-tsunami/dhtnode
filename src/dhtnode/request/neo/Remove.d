@@ -31,7 +31,7 @@ import dhtnode.node.DhtHashRange;
 
 *******************************************************************************/
 
-public scope class RemoveImpl_v0 : RemoveProtocol_v0
+public class RemoveImpl_v0 : RemoveProtocol_v0
 {
     import dhtproto.common.RequestCodes;
     import swarm.util.Hash : isWithinNodeResponsibility;
@@ -40,7 +40,7 @@ public scope class RemoveImpl_v0 : RemoveProtocol_v0
     static immutable Command command = Command(RequestCode.Remove, 0);
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "Remove";
+    static immutable string name = "Remove";
 
     /// Flag indicating whether timing stats should be gathered for requests of
     /// this type.

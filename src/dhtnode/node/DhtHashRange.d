@@ -394,7 +394,7 @@ private final class HashRangeUpdates
         assert((listener in this.listener_update_queues) !is null,
             "register() failed to add listener to set");
     }
-    body
+    do
     {
         bool added;
         *(this.listener_update_queues.put(listener, added)) =
@@ -423,7 +423,7 @@ private final class HashRangeUpdates
         assert((listener in this.listener_update_queues) is null,
             "unregister() failed to remove listener from set");
     }
-    body
+    do
     {
         auto removed = this.listener_update_queues.remove(listener,
             ( ref UpdateQueue* update_queue )
@@ -455,7 +455,7 @@ private final class HashRangeUpdates
         assert((listener in this.listener_update_queues) !is null,
             "Cannot get updates for non-registered listener");
     }
-    body
+    do
     {
         auto update_queue = listener in this.listener_update_queues;
         return (*update_queue).getNextUpdate(update);

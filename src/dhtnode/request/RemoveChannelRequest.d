@@ -28,7 +28,7 @@ import Protocol = dhtproto.node.request.RemoveChannel;
 
 *******************************************************************************/
 
-public scope class RemoveChannelRequest : Protocol.RemoveChannel
+public class RemoveChannelRequest : Protocol.RemoveChannel
 {
     import dhtnode.request.model.ConstructorMixin;
 

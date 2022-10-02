@@ -31,7 +31,7 @@ import dhtnode.node.DhtHashRange;
 
 *******************************************************************************/
 
-public scope class GetHashRangeImpl_v0 : GetHashRangeProtocol_v0, IHashRangeListener
+public class GetHashRangeImpl_v0 : GetHashRangeProtocol_v0, IHashRangeListener
 {
     import dhtproto.common.RequestCodes;
 
@@ -39,7 +39,7 @@ public scope class GetHashRangeImpl_v0 : GetHashRangeProtocol_v0, IHashRangeList
     static immutable Command command = Command(RequestCode.GetHashRange, 0);
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "GetHashRange";
+    static immutable string name = "GetHashRange";
 
     /// Flag indicating whether timing stats should be gathered for requests of
     /// this type.

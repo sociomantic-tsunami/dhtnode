@@ -43,7 +43,7 @@ static this ( )
 
 *******************************************************************************/
 
-public scope class ListenRequest : Protocol.Listen, StorageEngine.IListener
+public class ListenRequest : Protocol.Listen, StorageEngine.IListener
 {
     import dhtnode.request.model.ConstructorMixin;
     import Hash = swarm.util.Hash;

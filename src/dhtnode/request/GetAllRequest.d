@@ -26,7 +26,7 @@ import Protocol = dhtproto.node.request.GetAll;
 
 *******************************************************************************/
 
-public scope class GetAllRequest : Protocol.GetAll
+public class GetAllRequest : Protocol.GetAll
 {
     import dhtnode.request.model.IterationMixin;
     import dhtnode.request.model.ConstructorMixin;

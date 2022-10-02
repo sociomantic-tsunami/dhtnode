@@ -28,7 +28,7 @@ import Protocol = dhtproto.node.request.Put;
 
 *******************************************************************************/
 
-public scope class PutRequest : Protocol.Put
+public class PutRequest : Protocol.Put
 {
     import dhtnode.request.model.ConstructorMixin;
     import dhtnode.storage.StorageEngine;

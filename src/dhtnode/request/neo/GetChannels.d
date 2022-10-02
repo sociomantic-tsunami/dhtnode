@@ -30,7 +30,7 @@ import ocean.core.Verify;
 
 *******************************************************************************/
 
-public scope class GetChannelsImpl_v0 : GetChannelsProtocol_v0
+public class GetChannelsImpl_v0 : GetChannelsProtocol_v0
 {
     import dhtproto.common.RequestCodes;
 
@@ -38,7 +38,7 @@ public scope class GetChannelsImpl_v0 : GetChannelsProtocol_v0
     static immutable Command command = Command(RequestCode.GetChannels, 0);
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "GetChannels";
+    static immutable string name = "GetChannels";
 
     /// Flag indicating whether timing stats should be gathered for requests of
     /// this type.

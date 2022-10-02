@@ -49,7 +49,7 @@ static this ( )
 
 *******************************************************************************/
 
-public scope class RedistributeRequest : Protocol.Redistribute
+public class RedistributeRequest : Protocol.Redistribute
 {
     import dhtproto.node.request.params.RedistributeNode;
     import dhtproto.client.legacy.DhtConst;

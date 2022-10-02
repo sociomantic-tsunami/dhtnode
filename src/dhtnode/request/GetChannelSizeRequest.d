@@ -28,7 +28,7 @@ import ocean.transition;
 
 *******************************************************************************/
 
-public scope class GetChannelSizeRequest : Protocol.GetChannelSize
+public class GetChannelSizeRequest : Protocol.GetChannelSize
 {
     import dhtnode.request.model.ConstructorMixin;
 

@@ -36,7 +36,7 @@ import ocean.util.app.CliApp;
 *******************************************************************************/
 
 version (unittest) {} else
-private int main ( istring[] cl_args )
+private int main ( string[] cl_args )
 {
     auto app = new TcmCli;
     return app.main(cl_args);
@@ -114,7 +114,7 @@ private class TcmCli : CliApp
 
     ***************************************************************************/
 
-    override public istring validateArgs ( IApplication app, Arguments args )
+    override public string validateArgs ( IApplication app, Arguments args )
     {
         if ( args("read").assigned )
         {

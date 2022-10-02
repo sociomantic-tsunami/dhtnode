@@ -30,7 +30,7 @@ import ocean.core.Verify;
 
 *******************************************************************************/
 
-public scope class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
+public class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
 {
     import ocean.text.convert.Hash : toHashT;
     import ocean.core.array.Mutation : pop;
@@ -41,7 +41,7 @@ public scope class MirrorImpl_v0 : MirrorProtocol_v0, StorageEngine.IListener
     static immutable Command command = Command(RequestCode.Mirror, 0);
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "Mirror";
+    static immutable string name = "Mirror";
 
     /// Flag indicating whether timing stats should be gathered for requests of
     /// this type.

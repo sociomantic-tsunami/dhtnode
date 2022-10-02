@@ -54,7 +54,7 @@ static this ( )
 *******************************************************************************/
 
 version (unittest) {} else
-private int main ( istring[] cl_args )
+private int main ( string[] cl_args )
 {
     auto app = new DhtNodeServer;
     return app.main(cl_args);
@@ -129,7 +129,7 @@ public class DhtNodeServer : DaemonApp
         bool lock_memory = true;
 
         /// Behaviour upon encountering an out-of-range record.
-        ConfigReader.LimitInit!(istring, "load", "load", "fatal", "ignore")
+        ConfigReader.LimitInit!(string, "load", "load", "fatal", "ignore")
             allow_out_of_range;
 
         /// If this many records have been loaded from a channel file and all
@@ -494,7 +494,7 @@ public class DhtNodeServer : DaemonApp
         if ( mlockall(MCL_CURRENT | MCL_FUTURE) )
         {
             static immutable default_error = "Unknown";
-            istring msg = default_error;
+            string msg = default_error;
 
             // Provide custom error messages for expected errors
             switch ( errno )
@@ -531,7 +531,7 @@ public class DhtNodeServer : DaemonApp
 
     ***************************************************************************/
 
-    private istring[] per_request_stats ( )
+    private string[] per_request_stats ( )
     out ( rqs )
     {
         foreach ( rq; rqs )
@@ -540,7 +540,7 @@ public class DhtNodeServer : DaemonApp
                 "Cannot track stats for unknown request " ~ rq);
         }
     }
-    body
+    do
     {
         return ["Put", "Get", "Exists", "Remove", "Listen", "GetAll", "GetAllKeys",
                 "GetAllFilter", "PutBatch", "Redistribute"];

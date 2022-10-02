@@ -532,7 +532,7 @@ public class DumpManager
                     log.fatal("Encountered out-of-range key in channel '{}': " ~
                     "{} -- rejected", storage.id, key);
                     throw new Exception(
-                        cast(istring)("Encountered out-of-range key in channel '"
+                        cast(string)("Encountered out-of-range key in channel '"
                             ~ storage.id ~ "': " ~ key)
                     );
 
@@ -909,7 +909,7 @@ unittest
 
 *******************************************************************************/
 
-private scope class ProgressManager
+private class ProgressManager
 {
     /***************************************************************************
 

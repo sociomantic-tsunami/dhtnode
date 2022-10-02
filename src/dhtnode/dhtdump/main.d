@@ -52,7 +52,7 @@ static this ( )
 *******************************************************************************/
 
 version (unittest) {} else
-private int main ( istring[] cl_args )
+private int main ( string[] cl_args )
 {
     try
     {

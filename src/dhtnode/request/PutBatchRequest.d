@@ -42,7 +42,7 @@ static this ( )
 
 *******************************************************************************/
 
-public scope class PutBatchRequest : Protocol.PutBatch
+public class PutBatchRequest : Protocol.PutBatch
 {
     import dhtnode.node.RedistributionProcess;
     import dhtnode.storage.StorageEngine;

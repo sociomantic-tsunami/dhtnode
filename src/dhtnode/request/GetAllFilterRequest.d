@@ -28,7 +28,7 @@ import Protocol = dhtproto.node.request.GetAllFilter;
 
 *******************************************************************************/
 
-public scope class GetAllFilterRequest : Protocol.GetAllFilter
+public class GetAllFilterRequest : Protocol.GetAllFilter
 {
     import dhtnode.request.model.IterationMixin;
     import dhtnode.request.model.ConstructorMixin;

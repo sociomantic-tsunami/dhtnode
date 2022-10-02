@@ -30,7 +30,7 @@ import ocean.core.Verify;
 
 *******************************************************************************/
 
-public scope class RemoveChannelImpl_v0 : RemoveChannelProtocol_v0
+public class RemoveChannelImpl_v0 : RemoveChannelProtocol_v0
 {
     import dhtproto.common.RequestCodes;
 
@@ -38,7 +38,7 @@ public scope class RemoveChannelImpl_v0 : RemoveChannelProtocol_v0
     static immutable Command command = Command(RequestCode.RemoveChannel, 0);
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "RemoveChannel";
+    static immutable string name = "RemoveChannel";
 
     /// Flag indicating whether timing stats should be gathered for requests of
     /// this type.
