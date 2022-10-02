@@ -26,7 +26,7 @@ import Protocol = dhtproto.node.request.GetNumConnections;
 
 *******************************************************************************/
 
-public scope class GetNumConnectionsRequest : Protocol.GetNumConnections
+public class GetNumConnectionsRequest : Protocol.GetNumConnections
 {
     import dhtnode.request.model.ConstructorMixin;
 

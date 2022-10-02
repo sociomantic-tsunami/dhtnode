@@ -28,7 +28,7 @@ import Protocol = dhtproto.node.request.Exists;
 
 *******************************************************************************/
 
-public scope class ExistsRequest : Protocol.Exists
+public class ExistsRequest : Protocol.Exists
 {
     import dhtnode.request.model.ConstructorMixin;
     import dhtnode.storage.StorageEngine;

@@ -28,7 +28,7 @@ import Protocol = dhtproto.node.request.Get;
 
 *******************************************************************************/
 
-public scope class GetRequest : Protocol.Get
+public class GetRequest : Protocol.Get
 {
     import dhtnode.request.model.ConstructorMixin;
     import dhtnode.storage.StorageEngine;

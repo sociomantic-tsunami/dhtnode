@@ -95,7 +95,7 @@ public class DhtNode :
 
     public this ( ServerConfig server_config, NodeItem node_item,
         StorageChannels channels, DhtHashRange hash_range,
-        EpollSelectDispatcher epoll, istring[] per_request_stats )
+        EpollSelectDispatcher epoll, string[] per_request_stats )
     {
         this.hash_range = hash_range;
 
@@ -205,7 +205,7 @@ public class DhtNode :
 
     ***************************************************************************/
 
-    override protected istring[] record_action_counter_ids ( )
+    override protected string[] record_action_counter_ids ( )
     {
         return ["written", "read", "forwarded", "iterated", "deleted"];
     }

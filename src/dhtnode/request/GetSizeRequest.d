@@ -26,7 +26,7 @@ import Protocol = dhtproto.node.request.GetSize;
 
 *******************************************************************************/
 
-public scope class GetSizeRequest : Protocol.GetSize
+public class GetSizeRequest : Protocol.GetSize
 {
     import dhtnode.request.model.ConstructorMixin;
 

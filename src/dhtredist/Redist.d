@@ -468,7 +468,7 @@ public class DhtRedist : CliApp
 
             foreach ( node; nodes_on_server )
             {
-                enforce(node.range.is_valid, cast(istring) ("Node on " ~ ip ~
+                enforce(node.range.is_valid, cast(string) ("Node on " ~ ip ~
                     " has an invalid range"));
 
                 // Empty node, doesn't affect server range.
@@ -494,7 +494,7 @@ public class DhtRedist : CliApp
             }
 
             // Cannot subdivide if no node has its hash range set
-            enforce(!server_range.is_empty, cast(istring) ("No node on " ~ ip ~
+            enforce(!server_range.is_empty, cast(string) ("No node on " ~ ip ~
                 " has a defined range"));
 
             // Check that the sum of all the nodes' hash ranges == the server's
@@ -505,7 +505,7 @@ public class DhtRedist : CliApp
                 hash_ranges ~= node.range;
             }
             enforce(server_range.isTessellatedBy(sort(hash_ranges.dup)),
-                cast(istring) ("Range gap or overlap on " ~ ip));
+                cast(string) ("Range gap or overlap on " ~ ip));
 
             return server_range;
         }
@@ -634,7 +634,7 @@ case, when adding new nodes to a dht, is as follows:
 
     ***************************************************************************/
 
-    protected override istring validateArgs ( IApplication app, Arguments args )
+    protected override string validateArgs ( IApplication app, Arguments args )
     {
         if ( !(args("src").assigned || args("ranges").assigned) )
         {

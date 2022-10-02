@@ -29,7 +29,7 @@ import ocean.transition;
 
 *******************************************************************************/
 
-public scope class GetChannelsRequest : Protocol.GetChannels
+public class GetChannelsRequest : Protocol.GetChannels
 {
     import dhtnode.request.model.ConstructorMixin;
 

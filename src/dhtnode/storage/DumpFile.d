@@ -225,7 +225,7 @@ public class ChannelDumper
 
     public void close ( )
     {
-        static immutable istring end_of_file = "";
+        static immutable string end_of_file = "";
         SimpleStreamSerializer.write(this.output, end_of_file);
 
         this.output.close();
@@ -482,7 +482,7 @@ abstract public class ChannelLoaderBase
             if ( !this.supported_file_format_version )
             {
                 throw new Exception(
-                    cast(istring)("Unsupported dump file format: "
+                    cast(string)("Unsupported dump file format: "
                         ~ Integer.toString(this.file_format_version_))
                 );
             }

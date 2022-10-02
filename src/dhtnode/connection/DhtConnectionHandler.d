@@ -127,7 +127,7 @@ public class DhtConnectionHandler
 
     ***************************************************************************/
 
-    private scope class DhtRequestResources
+    private class DhtRequestResources
         : RequestResources, IDhtRequestResources
     {
         import ocean.io.compress.lzo.LzoChunkCompressor;

@@ -31,7 +31,7 @@ import dhtnode.node.DhtHashRange;
 
 *******************************************************************************/
 
-public scope class PutImpl_v0 : PutProtocol_v0
+public class PutImpl_v0 : PutProtocol_v0
 {
     import dhtproto.common.RequestCodes;
     import swarm.util.Hash : isWithinNodeResponsibility;
@@ -40,7 +40,7 @@ public scope class PutImpl_v0 : PutProtocol_v0
     static immutable Command command = Command(RequestCode.Put, 0);
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "Put";
+    static immutable string name = "Put";
 
     /// Flag indicating whether timing stats should be gathered for requests of
     /// this type.

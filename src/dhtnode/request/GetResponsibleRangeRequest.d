@@ -26,7 +26,7 @@ import Protocol = dhtproto.node.request.GetResponsibleRange;
 
 *******************************************************************************/
 
-public scope class GetResponsibleRangeRequest : Protocol.GetResponsibleRange
+public class GetResponsibleRangeRequest : Protocol.GetResponsibleRange
 {
     import dhtnode.request.model.ConstructorMixin;
 

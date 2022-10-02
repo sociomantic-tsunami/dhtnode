@@ -26,7 +26,7 @@ import Protocol = dhtproto.node.request.GetAllKeys;
 
 *******************************************************************************/
 
-public scope class GetAllKeysRequest : Protocol.GetAllKeys
+public class GetAllKeysRequest : Protocol.GetAllKeys
 {
     import dhtnode.request.model.IterationMixin;
     import dhtnode.request.model.ConstructorMixin;

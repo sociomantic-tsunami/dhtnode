@@ -28,7 +28,7 @@ import Protocol = dhtproto.node.request.Remove;
 
 *******************************************************************************/
 
-public scope class RemoveRequest : Protocol.Remove
+public class RemoveRequest : Protocol.Remove
 {
     import dhtnode.request.model.ConstructorMixin;
     import dhtnode.storage.StorageEngine;

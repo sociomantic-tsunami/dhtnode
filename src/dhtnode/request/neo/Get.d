@@ -31,7 +31,7 @@ import dhtnode.node.DhtHashRange;
 
 *******************************************************************************/
 
-public scope class GetImpl_v0 : GetProtocol_v0
+public class GetImpl_v0 : GetProtocol_v0
 {
     import dhtproto.common.RequestCodes;
     import swarm.util.Hash : isWithinNodeResponsibility;
@@ -40,7 +40,7 @@ public scope class GetImpl_v0 : GetProtocol_v0
     static immutable Command command = Command(RequestCode.Get, 0);
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "Get";
+    static immutable string name = "Get";
 
     /// Flag indicating whether timing stats should be gathered for requests of
     /// this type.

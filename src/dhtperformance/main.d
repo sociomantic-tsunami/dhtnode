@@ -50,7 +50,7 @@ import core.time;
 *******************************************************************************/
 
 version (unittest) {} else
-int main ( istring[] cl_args )
+int main ( string[] cl_args )
 {
     auto app = new DhtPerformance;
     return app.main(cl_args);
@@ -551,7 +551,7 @@ private class DhtPerformance : CliApp
 
     ***************************************************************************/
 
-    override public istring validateArgs ( IApplication app, Arguments args )
+    override public string validateArgs ( IApplication app, Arguments args )
     {
         // validate here
         if ( args.getInt!(ulong)("processing-time") >= 1_000_000 ) // 1 sec
@@ -810,7 +810,7 @@ private class DhtPerformance : CliApp
 
         if ( strict_handshake )
         {
-            enforce(!error, cast(istring) (typeof(this).stringof ~
+            enforce(!error, cast(string) (typeof(this).stringof ~
                 ".initClient - error during client initialisation of " ~
                 xml)
             );

@@ -161,7 +161,7 @@ class Get : DhtTest
 class Update : DhtTest
 {
     import core.thread : Thread;
-    import ocean.core.Time;
+    import core.time;
     import ocean.core.array.Mutation : copy;
 
     /// When the record has been received, pause 5s before sending back the

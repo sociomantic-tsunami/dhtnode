@@ -27,7 +27,7 @@ import Protocol = dhtproto.node.request.GetVersion;
 
 *******************************************************************************/
 
-public scope class GetVersionRequest : Protocol.GetVersion
+public class GetVersionRequest : Protocol.GetVersion
 {
     import dhtnode.request.model.ConstructorMixin;
 
