@@ -38,7 +38,7 @@ TCMDB* tcmdbnew2(uint bnum);
 
 void tcmdbdel(TCMDB* mdb);
 
-void tcmdbput(TCMDB* mdb, in void* kbuf, int ksiz, in void* vbuf, int vsiz);
+void tcmdbput(TCMDB* mdb, scope const(void)* kbuf, int ksiz, scope const(void)* vbuf, int vsiz);
 
 void tcmdbput2(TCMDB* mdb, char* kstr, char* vstr);
 
@@ -50,15 +50,15 @@ void tcmdbputcat(TCMDB* mdb, void* kbuf, int ksiz, void* vbuf, int vsiz);
 
 void tcmdbputcat2(TCMDB* mdb, char* kstr, char* vstr);
 
-bool tcmdbout(TCMDB* mdb, in void* kbuf, int ksiz);
+bool tcmdbout(TCMDB* mdb, scope const(void)* kbuf, int ksiz);
 
 bool tcmdbout2(TCMDB* mdb, char* kstr);
 
-void* tcmdbget(TCMDB* mdb, in void* kbuf, int ksiz, int* sp);
+void* tcmdbget(TCMDB* mdb, scope const(void)* kbuf, int ksiz, int* sp);
 
-char* tcmdbget2(TCMDB* mdb, in char* kstr);
+char* tcmdbget2(TCMDB* mdb, scope const(char)* kstr);
 
-int tcmdbvsiz(TCMDB* mdb, in void* kbuf, int ksiz);
+int tcmdbvsiz(TCMDB* mdb, scope const(void)* kbuf, int ksiz);
 
 int tcmdbvsiz2(TCMDB* mdb, char* kstr);
 
@@ -95,9 +95,9 @@ void tcmdbputcat3(TCMDB* mdb, void* kbuf, int ksiz, void* vbuf, int vsiz);
 bool tcmdbputproc(TCMDB* mdb, void* kbuf, int ksiz, void* vbuf, int vsiz,
                   scope TCPDPROC proc, void* op);
 
-void* tcmdbget3(TCMDB* mdb, in void* kbuf, int ksiz, int* sp);
+void* tcmdbget3(TCMDB* mdb, scope const(void)* kbuf, int ksiz, int* sp);
 
-void tcmdbiterinit2(TCMDB* mdb, in void* kbuf, int ksiz);
+void tcmdbiterinit2(TCMDB* mdb, scope const(void)* kbuf, int ksiz);
 
 void tcmdbiterinit3(TCMDB* mdb, char* kstr);
 
